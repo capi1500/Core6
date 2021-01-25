@@ -23,28 +23,13 @@
 #ifndef CORE6_STORAGE_HPP
 #define CORE6_STORAGE_HPP
 
-#include <cstddef>
-#include <map>
 #include <Core6/utils/commonFunctions.hpp>
-#include <iostream>
+#include <unordered_map>
 
 namespace c6{
 	template<class Key, class Type>
-	class Storage : public std::map<size_t, Type>{
-		private:
-			size_t getId(const Key& key){
-				return hash(key);
-			}
-		public:
-			Type& operator [] (const Key& key){
-				return std::map<size_t, Type>::operator [](getId(key));
-			}
-			bool ifInStorage(const Key& key){
-				return this->count(getId(key)) != 0;
-			}
-			void remove(const Key& key){
-				this->erase(getId(key));
-			}
+	class Storage : public std::unordered_map<Key, Type>{
+	
 	};
 }
 

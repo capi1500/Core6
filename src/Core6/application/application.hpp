@@ -27,17 +27,21 @@
 #include <Core6/systems/console.hpp>
 #include <SFML/System/Clock.hpp>
 #include <Core6/state/finiteStateMachine.hpp>
+#include <Core6/scene.hpp>
 #include "bundle.hpp"
 
 namespace c6{
-	class Application : public Listener<CoreSignal>, Listener<sf::Event>{
-		private:
+	class Application : public Listener<CoreSignal>{
+		protected:
 			Console m_console;
-			sf::Clock clock;
+			sf::Clock m_clock;
 			FiniteStateMachine m_finiteStateMachine;
+			
+			Scene* getScene();
 		public:
-			void loadBundle(const Bundle& bundle);
-			void unloadBundle(const Bundle& bundle);
+			void onSignal(const CoreSignal& signal) override;
+			
+			virtual void run() = 0;
 	};
 }
 

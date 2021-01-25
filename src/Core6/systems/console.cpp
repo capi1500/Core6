@@ -31,6 +31,11 @@ namespace c6{
 	}
 	
 	void Console::onSignal(const Message& signal){
-		std::clog << signal.write() << "\n";
+		if(signal.getType() == MessageType::Error and m_error)
+			std::cerr << signal.write() << "\n";
+		else if(signal.getType() == MessageType::Debug and m_debug)
+			std::clog << signal.write() << "\n";
+		else if(signal.getType() == MessageType::Info and m_info)
+			std::cout << signal.write() << "\n";
 	}
 }

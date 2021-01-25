@@ -23,18 +23,21 @@
 #ifndef CORE6_CORESIGNAL_HPP
 #define CORE6_CORESIGNAL_HPP
 
+#include <Core6/application/bundle.hpp>
+
 namespace c6{
 	class CoreSignal{
 		public:
-			
 			enum EventType{
-				Close
+				Close,
+				LoadBundle,
+				UnloadBundle
 			};
 			
 			EventType type;
 			
 			union{
-			
+				Bundle* bundle;
 			};
 	};
 }

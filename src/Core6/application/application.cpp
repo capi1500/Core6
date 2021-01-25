@@ -23,11 +23,14 @@
 #include "application.hpp"
 
 namespace c6{
-	void Application::loadBundle(const Bundle& bundle){
-		bundle.onLoad();
+	Scene* Application::getScene(){
+		return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
 	}
 	
-	void Application::unloadBundle(const Bundle& bundle){
-		bundle.onUnload();
+	void Application::onSignal(const CoreSignal& signal){
+		if(signal.type == CoreSignal::LoadBundle)
+			signal.bundle->onLoad();
+		else if(signal.type == CoreSignal::UnloadBundle)
+			signal.bundle->onUnload();
 	}
 }
