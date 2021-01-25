@@ -3,15 +3,20 @@ project(Core6 VERSION 0.1.0 DESCRIPTION "basic game engine, edition 6")
 
 set(CMAKE_CXX_STANDARD 17)
 
-# find SFML 2.5
 if(WIN32)
-    set(SFML_DIR libraries/SFML-2.5.1/lib/cmake/SFML/)
+    set(LIB_DIR libraries/win/)
+    set(SHRD_EXT dll)
+else()
+    set(LIB_DIR libraries/unix/)
+    set(SHRD_EXT so)
 endif(WIN32)
 
+# find SFML 2.5
+set(SFML_DIR ${LIB_DIR}/SFML-2.5.1/lib/cmake/SFML/)
 find_package(SFML 2.5 COMPONENTS graphics window system audio network REQUIRED)
 
 # find Box2D
-include_directories(libraries/Box2D/include)
+#include_directories(libraries/Box2D/include)
 
 # includes
 include_directories(src)
@@ -30,9 +35,9 @@ target_compile_options(Core6 PRIVATE -Wall)
 
 # link libraries
 target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
-target_link_libraries(Core6 ${CMAKE_HOME_DIRECTORY}/libraries/Box2D/bin/libbox2d.dll)
+#target_link_libraries(Core6 ${CMAKE_HOME_DIRECTORY}/libraries/Box2D/bin/libbox2d.dll)
 target_link_libraries(Core6 stdc++fs)
 
 target_link_libraries(Core6debug sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
-target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/libraries/Box2D/bin/libbox2d.dll)
-target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/Core6/bin/libCore6.dll)
+#target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/libraries/Box2D/bin/libbox2d.dll)
+target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/Core6/bin/libCore6.${SHRD_EXT})
