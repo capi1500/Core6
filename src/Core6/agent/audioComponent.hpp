@@ -23,8 +23,13 @@
 #ifndef CORE6_AUDIOCOMPONENT_HPP
 #define CORE6_AUDIOCOMPONENT_HPP
 
+#include <Core6/plugin/extensionable.hpp>
+
 namespace c6{
-	class AudioComponent{
+	class AudioComponent : public Extensionable{
+		public:
+			virtual AudioComponent* clone();
+			virtual ~AudioComponent() = default;
 	};
 }
 

@@ -23,8 +23,7 @@
 #ifndef CORE6_CONCURENT_HPP
 #define CORE6_CONCURENT_HPP
 
-#include <condition_variable>
-#include <iostream>
+#include <mutex>
 
 namespace c6{
 	template<class Type>

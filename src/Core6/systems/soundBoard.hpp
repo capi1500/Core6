@@ -20,12 +20,28 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_AUDIOMANAGER_HPP
-#define CORE6_AUDIOMANAGER_HPP
+#ifndef CORE6_SOUNDBOARD_HPP
+#define CORE6_SOUNDBOARD_HPP
+
+#include <Core6/utils/storage.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <map>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Audio/Music.hpp>
 
 namespace c6{
-	class AudioManager{
+	class SoundBoard{
+		private:
+			sf::Clock m_clock;
+			std::map<long long, sf::Sound> m_sound;
+		public:
+			Storage<std::string, sf::Music> music;
+			
+			long long playSound(const sf::Sound& sound);
+			sf::Sound& getSound(const long long id);
+			
+			void clean();
 	};
 }
 
-#endif //CORE6_AUDIOMANAGER_HPP
+#endif //CORE6_SOUNDBOARD_HPP

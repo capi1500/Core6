@@ -5,8 +5,5 @@
 #include "loader.hpp"
 
 namespace c6{
-	
-	
-	Loader::~Loader(){
-	}
+
 }

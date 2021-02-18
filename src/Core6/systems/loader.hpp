@@ -32,10 +32,8 @@ namespace c6{
 	 * @brief Loading class
 	 */
 	class Loader{
-		private:
-		
 		public:
-			~Loader();
+		
 	};
 }
 

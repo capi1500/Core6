@@ -20,29 +20,43 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_APPLICATION_HPP
-#define CORE6_APPLICATION_HPP
-
-#include <Core6/framework.hpp>
-#include <Core6/systems/console.hpp>
-#include <SFML/System/Clock.hpp>
-#include <Core6/state/finiteStateMachine.hpp>
-#include <Core6/scene.hpp>
-#include "bundle.hpp"
+#include "entryPoint.hpp"
 
 namespace c6{
-	class Application : public Listener<CoreSignal>{
-		protected:
-			Console m_console;
-			sf::Clock m_clock;
-			FiniteStateMachine m_finiteStateMachine;
-			
-			Scene* getScene();
-		public:
-			void onSignal(const CoreSignal& signal) override;
-			
-			virtual void run() = 0;
-	};
+	void EntryPoint::setDefaultTemplate(const std::string& name, Extensionable* extensionable){
+		m_defaultTemplates[name] = extensionable;
+	}
+	
+	void EntryPoint::addTemplate(const std::string& name, Extensionable* extensionable){
+		m_templates[name] = extensionable;
+	}
+	
+	bool EntryPoint::tryAddTemplate(const std::string& name, Extensionable* extensionable){
+		if(m_templates.count(name) != 0)
+			return false;
+		addTemplate(name, extensionable);
+		return true;
+	}
+	
+	bool EntryPoint::removeTemplate(const std::string& name){
+		if(m_templates.count(name) == 0)
+			return false;
+		delete m_templates[name];
+		m_templates[name] = nullptr;
+		m_templates.erase(name);
+		return true;
+	}
+	
+	EntryPoint::~EntryPoint(){
+		for(auto& t : m_templates){
+			delete t.second;
+			t.second = nullptr;
+		}
+		for(auto& t : m_defaultTemplates){
+			delete t.second;
+			t.second = nullptr;
+		}
+		m_templates.clear();
+		m_defaultTemplates.clear();
+	}
 }
-
-#endif //CORE6_APPLICATION_HPP

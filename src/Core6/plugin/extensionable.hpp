@@ -20,4 +20,15 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "bundle.hpp"
+#ifndef CORE6_EXTENSIONABLE_HPP
+#define CORE6_EXTENSIONABLE_HPP
+
+namespace c6{
+	class Extensionable{
+		public:
+			virtual Extensionable* clone() = 0;
+			virtual ~Extensionable() = default;
+	};
+}
+
+#endif //CORE6_EXTENSIONABLE_HPP

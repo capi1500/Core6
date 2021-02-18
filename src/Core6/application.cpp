@@ -20,8 +20,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "camera.hpp"
+#include "application.hpp"
 
 namespace c6{
-
+	Scene* Application::getScene(){
+		return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
+	}
+	
+	void Application::onSignal(const CoreSignal& signal){
+	
+	}
 }

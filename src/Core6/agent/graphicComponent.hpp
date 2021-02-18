@@ -24,10 +24,16 @@
 #define CORE6_GRAPHICCOMPONENT_HPP
 
 #include <SFML/Graphics.hpp>
+#include <Core6/plugin/extensionable.hpp>
 
 namespace c6{
-	class GraphicComponent : public sf::Drawable, public sf::Transformable{
-	
+	class GraphicComponent : public sf::Drawable, public sf::Transformable, public Extensionable{
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		
+		public:
+			virtual GraphicComponent* clone();
+			virtual ~GraphicComponent() = default;
 	};
 }
 

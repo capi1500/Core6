@@ -30,87 +30,27 @@
 #include "audioComponent.hpp"
 #include "graphicComponent.hpp"
 #include "Core6/utils/gizmo.hpp"
+#include "spawner.hpp"
 
 namespace c6{
-	template <class T>
-	constexpr bool GraphicConcept = std::is_base_of<GraphicComponent, T>::value or std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool AudioConcept = std::is_base_of<AudioComponent, T>::value or std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool LogicConcept = std::is_base_of<LogicComponent, T>::value or std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool InputConcept = std::is_base_of<InputComponent, T>::value or std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool UsesGraphicConcept = GraphicConcept<T> and not std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool UsesAudioConcept = AudioConcept<T> and not std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool UsesLogicConcept = LogicConcept<T> and not std::is_null_pointer_v<T>;
-	
-	template <class T>
-	constexpr bool UsesInputConcept = InputConcept<T> and not std::is_null_pointer_v<T>;
-	
-	template <class Graphic, class Audio, class Input, class Logic>
 	class Agent : public Gizmo{
 		private:
-			Graphic* m_graphic;
-			Audio* m_audio;
-			Input* m_input;
-			Logic* m_logic;
+			GraphicComponent* m_graphic;
+			AudioComponent* m_audio;
+			InputComponent* m_input;
+			LogicComponent* m_logic;
 			
 			/**
 			 * @brief Private constructor, only Scene can construct new agents
-			 * @param graphic - graphic component
-			 * @param audio - audio component
-			 * @param input - input component
-			 * @param logic - logic component
+			 * @param spawner - blueprint holding predefined components
 			 */
-			Agent(Graphic* graphic, Audio* audio, Input* input, Logic* logic){
-				if constexpr (not (GraphicConcept<Graphic> and AudioConcept<Audio> and LogicConcept<Logic> and InputConcept<Input>)){
-					Framework::getMessage()->send(Message("Cannot create new Agent: components not valid (did you forget about inheriting from xyzComponent?)", MessageType::Error));
-				}
-				m_graphic = graphic;
-				m_audio = audio;
-				m_input = input;
-				m_logic = logic;
-				
-				if constexpr (UsesLogicConcept<Logic>){
-					if constexpr (UsesGraphicConcept<Graphic>)
-						m_logic->registerGraphic(m_graphic);
-					if constexpr (UsesAudioConcept<Audio>)
-						m_logic->registerAudio(m_audio);
-				}
-				if constexpr (UsesInputConcept<Input>){
-					if constexpr (UsesLogicConcept<Logic>)
-						m_input->registerLogic(m_logic);
-				}
-			}
+			Agent(Spawner& spawner);
 		public:
-			void update(const sf::Time& time) override{
-				if constexpr (UsesLogicConcept<Logic>){
-					m_logic->update(time);
-				}
-			}
+			void update(const sf::Time& time) override;
 			
-			void draw() override{
-				if constexpr (UsesGraphicConcept<Graphic>){
-					Framework::getRenderer()->get().draw(*m_graphic);
-				}
-			}
+			void draw() override;
 			
-			~Agent(){
-				kill();
-				delete m_graphic;
-				delete m_audio;
-				delete m_input;
-				delete m_logic;
-			}
+			~Agent();
 			
 			friend class Scene;
 	};

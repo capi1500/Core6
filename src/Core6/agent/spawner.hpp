@@ -20,54 +20,47 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_FACTORY_HPP
-#define CORE6_FACTORY_HPP
+#ifndef CORE6_SPAWNER_HPP
+#define CORE6_SPAWNER_HPP
 
-#include <Core6/agent/agent.hpp>
+#include "graphicComponent.hpp"
+#include "audioComponent.hpp"
+#include "inputComponent.hpp"
 
 namespace c6{
 	/**
 	 * @brief helper class holding predefined components. Needed to create new agents via Scene
 	 */
-	template <class Graphic, class Audio, class Input, class Logic>
-	class Factory{
+	class Spawner{
 		private:
-			Graphic m_graphic;
-			Audio m_audio;
-			Input m_input;
-			Logic m_logic;
+			GraphicComponent* m_graphic;
+			AudioComponent* m_audio;
+			InputComponent* m_input;
+			LogicComponent* m_logic;
 		public:
 			/**
 			 * @brief get graphic component
 			 * @return graphic component
 			 */
-			Graphic& getGraphic(){
-				return m_graphic;
-			}
+			GraphicComponent* getGraphic();
 			
 			/**
 			 * @brief get audio component
 			 * @return audip component
 			 */
-			Audio& getAudio(){
-				return m_audio;
-			}
+			AudioComponent* getAudio();
 			
 			/**
 			 * @brief get input component
 			 * @return input component
 			 */
-			Input& getInput(){
-				return m_input;
-			}
+			InputComponent* getInput();
 			
 			/**
 			 * @brief get logic component
 			 * @return logic component
 			 */
-			Logic& getLogic(){
-				return m_logic;
-			}
+			LogicComponent* getLogic();
 			
 			/**
 			 * @brief Constructs new factory using components
@@ -76,9 +69,10 @@ namespace c6{
 			 * @param input - input component
 			 * @param logic - logic component
 			 */
-			Factory(const Graphic& graphic, const Audio& audio, const Input& input, const Logic& logic) : m_graphic(graphic), m_audio(audio), m_input(input), m_logic(logic){
-			}
+			Spawner(GraphicComponent* graphic, AudioComponent* audio, InputComponent* input, LogicComponent* logic);
+			
+			~Spawner();
 	};
 }
 
-#endif //CORE6_FACTORY_HPP
+#endif //CORE6_SPAWNER_HPP

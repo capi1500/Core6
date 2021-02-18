@@ -30,7 +30,7 @@
 #include <SFML/Window/Window.hpp>
 #include "Core6/utils/group.hpp"
 #include <Core6/agent/agent.hpp>
-#include <Core6/agent/factory.hpp>
+#include <Core6/agent/spawner.hpp>
 
 namespace c6{
 	/**
@@ -59,17 +59,9 @@ namespace c6{
 			
 			/**
 			 * @brief Add new agent from factory (blueprint)
-			 * @tparam Graphic - GraphicComponent type of factory
-			 * @tparam Audio - AudioComponent type of factory
-			 * @tparam Input - InputComponent type of factory
-			 * @tparam Logic - LogicComponent type of factory
 			 * @param factory - factory object - new agent's blueprint
-			 * @note most of the times template paramteres are deducted automatically
 			 */
-			template<class Graphic, class Audio, class Input, class Logic>
-			void addAgent(Factory<Graphic, Audio, Input, Logic>& factory){
-				addToBack(new Agent<Graphic, Audio, Input, Logic>(new Graphic(factory.getGraphic()), new Audio(factory.getAudio()), new Input(factory.getInput()), new Logic(factory.getLogic())));
-			}
+			void addAgent(Spawner& factory);
 			
 			/**
 			 * @brief constructor of scene

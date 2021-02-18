@@ -25,11 +25,12 @@
 
 #include <SFML/System/Time.hpp>
 #include <memory>
+#include <Core6/plugin/extensionable.hpp>
 #include "graphicComponent.hpp"
 #include "audioComponent.hpp"
 
 namespace c6{
-	class LogicComponent{
+	class LogicComponent : public Extensionable{
 		protected:
 			GraphicComponent* m_graphic;
 			AudioComponent* m_audio;
@@ -37,7 +38,11 @@ namespace c6{
 			virtual void registerGraphic(GraphicComponent* graphic);
 			virtual void registerAudio(AudioComponent* audio);
 			
-			virtual void update(const sf::Time& time) = 0;
+			virtual void update(const sf::Time& time);
+			
+			virtual LogicComponent* clone();
+			
+			virtual ~LogicComponent() = default;
 	};
 }
 

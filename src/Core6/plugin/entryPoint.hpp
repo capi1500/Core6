@@ -20,16 +20,36 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_BUNDLE_HPP
-#define CORE6_BUNDLE_HPP
+#ifndef CORE6_ENTRYPOINT_HPP
+#define CORE6_ENTRYPOINT_HPP
+
+#include <string>
+#include "extensionable.hpp"
+#include <Core6/utils/storage.hpp>
 
 namespace c6{
-	class Bundle{
+	class EntryPoint{
+		private:
+			Storage<std::string, Extensionable*> m_defaultTemplates;
+			Storage<std::string, Extensionable*> m_templates;
 		public:
-			virtual void onLoad() const;
+			void setDefaultTemplate(const std::string& name, Extensionable* extensionable);
+			void addTemplate(const std::string& name, Extensionable* extensionable);
+			bool tryAddTemplate(const std::string& name, Extensionable* extensionable);
+			bool removeTemplate(const std::string& name);
 			
-			virtual void onUnload() const;
+			template<class T>
+			T* get(const std::string& name){
+				if(m_templates.count(name) == 0){
+					if(m_defaultTemplates.count(name) == 0)
+						return nullptr;
+					return dynamic_cast<T*>(m_defaultTemplates[name])->clone();
+				}
+				return dynamic_cast<T*>(m_templates[name])->clone();
+			}
+			
+			~EntryPoint();
 	};
 }
 
-#endif //CORE6_BUNDLE_HPP
+#endif //CORE6_ENTRYPOINT_HPP

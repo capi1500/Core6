@@ -20,17 +20,41 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "application.hpp"
+#ifndef CORE6_PLUGIN_HPP
+#define CORE6_PLUGIN_HPP
+
+#ifdef WIN32
+#include <windows.h>
+#endif
+#include <string>
+#include "package.hpp"
 
 namespace c6{
-	Scene* Application::getScene(){
-		return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
-	}
-	
-	void Application::onSignal(const CoreSignal& signal){
-		if(signal.type == CoreSignal::LoadBundle)
-			signal.bundle->onLoad();
-		else if(signal.type == CoreSignal::UnloadBundle)
-			signal.bundle->onUnload();
-	}
+	class Plugin{
+		private:
+			#ifdef WIN32
+			HINSTANCE m_lib;
+			#endif
+			Package* m_package;
+		public:
+			bool load(const std::string& path);
+			
+			void unload();
+			
+			template<typename T>
+			T getFunction(const std::string& name){
+				auto out = (T)GetProcAddress(m_lib, name.c_str());
+				if(!out){
+					Framework::getMessage()->send(Message("cannot retrieve function address '" + name + "'", MessageType::Error));
+					return nullptr;
+				}
+				return out;
+			}
+			
+			Plugin();
+			
+			~Plugin();
+	};
 }
+
+#endif //CORE6_PLUGIN_HPP

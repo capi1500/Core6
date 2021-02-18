@@ -20,8 +20,28 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "camera.hpp"
+#ifndef CORE6_APPLICATION_HPP
+#define CORE6_APPLICATION_HPP
+
+#include <Core6/framework.hpp>
+#include <Core6/systems/console.hpp>
+#include <SFML/System/Clock.hpp>
+#include <Core6/state/finiteStateMachine.hpp>
+#include <Core6/scene.hpp>
 
 namespace c6{
-
+	class Application : public Listener<CoreSignal>{
+		protected:
+			Console m_console;
+			sf::Clock m_clock;
+			FiniteStateMachine m_finiteStateMachine;
+			
+			Scene* getScene();
+		public:
+			void onSignal(const CoreSignal& signal) override;
+			
+			virtual void run() = 0;
+	};
 }
+
+#endif //CORE6_APPLICATION_HPP

@@ -20,4 +20,30 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "factory.hpp"
+#ifndef CORE6_PACKAGE_HPP
+#define CORE6_PACKAGE_HPP
+
+#ifdef WIN32
+#define API __declspec(dllexport) __stdcall
+#else
+#define API
+#endif
+
+#include <string>
+#include "extensionable.hpp"
+#include <Core6/utils/storage.hpp>
+
+namespace c6{
+	class Package{
+		private:
+			Storage<std::string, Extensionable*> m_templates;
+		protected:
+			void registerTemplate(const std::string& name, Extensionable* extensionable);
+		public:
+			virtual void onLoad();
+			virtual void onUnLoad();
+			virtual ~Package() = default;
+	};
+}
+
+#endif //CORE6_PACKAGE_HPP

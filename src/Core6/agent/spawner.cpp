@@ -20,8 +20,37 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "camera.hpp"
+#include "spawner.hpp"
 
 namespace c6{
-
+	GraphicComponent* Spawner::getGraphic(){
+		return m_graphic;
+	}
+	
+	AudioComponent* Spawner::getAudio(){
+		return m_audio;
+	}
+	
+	InputComponent* Spawner::getInput(){
+		return m_input;
+	}
+	
+	LogicComponent* Spawner::getLogic(){
+		return m_logic;
+	}
+	
+	Spawner::Spawner(GraphicComponent* graphic, AudioComponent* audio, InputComponent* input, LogicComponent* logic) : m_graphic(graphic), m_audio(audio), m_input(input), m_logic(logic){
+	
+	}
+	
+	Spawner::~Spawner(){
+		delete m_graphic;
+		m_graphic = nullptr;
+		delete m_audio;
+		m_audio = nullptr;
+		delete m_input;
+		m_input = nullptr;
+		delete m_logic;
+		m_logic = nullptr;
+	}
 }

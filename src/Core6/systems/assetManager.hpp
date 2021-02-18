@@ -23,9 +23,25 @@
 #ifndef CORE6_ASSETMANAGER_HPP
 #define CORE6_ASSETMANAGER_HPP
 
+#include <Core6/utils/storage.hpp>
+#include <SFML/Graphics/Shader.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <Core6/threading/concurent.hpp>
+
 namespace c6{
-	class AssetManager{
-	
+	/** @brief class that holds all game resources */
+	class ResourceManager{
+		public:
+			Concurent<Storage<std::string, sf::Texture>> texture;
+			Concurent<Storage<std::string, sf::SoundBuffer>> sound;
+			Concurent<Storage<std::string, sf::Shader>> shader;
+			void addTexture(const std::string& filename);
+			void removeTexture(const std::string& filename);
+			void addSound(const std::string& filename);
+			void removeSound(const std::string& filename);
+			void addShader(const std::string& filename, const sf::Shader::Type type);
+			void removeShader(const std::string& filename);
 	};
 }
 
