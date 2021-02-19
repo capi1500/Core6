@@ -27,7 +27,7 @@
 namespace c6{
 	Console::Console(){
 		Framework::getMessage()->add(this);
-		m_info = m_debug = m_error = false;
+		m_info = m_debug = m_error = m_loader = false;
 	}
 	
 	Console::~Console(){
@@ -45,6 +45,9 @@ namespace c6{
 			case MessageType::Error:
 				m_error = true;
 				break;
+			case MessageType::Loading:
+				m_loader = true;
+				break;
 		}
 	}
 	
@@ -55,5 +58,7 @@ namespace c6{
 			std::clog << signal.write() << "\n";
 		else if(signal.getType() == MessageType::Info and m_info)
 			std::cout << signal.write() << "\n";
+		else if(signal.getType() == MessageType::Loading and m_loader)
+			std::clog << signal.write() << "\n";
 	}
 }

@@ -30,7 +30,7 @@
 #include <Core6/systems/soundBoard.hpp>
 #include <Core6/signal/core_signal/coreSignal.hpp>
 #include <Core6/systems/loader.hpp>
-#include <Core6/systems/assetManager.hpp>
+#include <Core6/systems/resourceManager.hpp>
 #include <Core6/plugin/entryPoint.hpp>
 
 namespace c6{

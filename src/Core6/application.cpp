@@ -30,4 +30,21 @@ namespace c6{
 	void Application::onSignal(const CoreSignal& signal){
 	
 	}
+	
+	void Application::loadPlugins(const Path& path){
+		auto loadPlugin = [&](const std::string name){
+			m_plugins.push_back(Plugin());
+			m_plugins.back().load(name);
+		};
+		path.execute(loadPlugin);
+	}
+	
+	Application::~Application(){
+		Scene* scene = getScene();
+		while(scene != nullptr){
+			scene->destroy();
+			scene = getScene();
+		}
+		m_plugins.clear();
+	}
 }

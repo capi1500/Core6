@@ -17,4 +17,8 @@ namespace c6{
 	
 	Path::Path(const std::string& path) : m_path(path){
 	}
+	
+	const std::string Path::getPath() const{
+		return m_path.string();
+	}
 }

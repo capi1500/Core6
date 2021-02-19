@@ -35,6 +35,9 @@ namespace c6{
 			case MessageType::Error:
 				prefix = "ERROR: ";
 				break;
+			case MessageType::Loading:
+				prefix = "LOADER: ";
+				break;
 		}
 		m_message = prefix + message;
 	}

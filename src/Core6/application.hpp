@@ -28,6 +28,7 @@
 #include <SFML/System/Clock.hpp>
 #include <Core6/state/finiteStateMachine.hpp>
 #include <Core6/scene.hpp>
+#include <Core6/plugin/plugin.hpp>
 
 namespace c6{
 	class Application : public Listener<CoreSignal>{
@@ -35,12 +36,16 @@ namespace c6{
 			Console m_console;
 			sf::Clock m_clock;
 			FiniteStateMachine m_finiteStateMachine;
+			std::vector<Plugin> m_plugins;
 			
 			Scene* getScene();
+			void loadPlugins(const Path& path);
 		public:
 			void onSignal(const CoreSignal& signal) override;
 			
 			virtual void run() = 0;
+			
+			virtual ~Application();
 	};
 }
 

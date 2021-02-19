@@ -31,6 +31,7 @@ namespace c6{
 			bool m_info;
 			bool m_debug;
 			bool m_error;
+			bool m_loader;
 		public:
 			void useMessageType(MessageType type);
 			

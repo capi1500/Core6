@@ -29,7 +29,8 @@ namespace c6{
 	enum class MessageType{
 		Info,
 		Debug,
-		Error
+		Error,
+		Loading
 	};
 	class Message{
 		private:

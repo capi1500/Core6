@@ -78,6 +78,12 @@ namespace c6{
 			}
 			
 			/**
+			 * @bried get path
+			 * @return path as string
+			 */
+			const std::string getPath() const;
+			
+			/**
 			 * @brief Creates path from string
 			 * @param path - path in string
 			 */
