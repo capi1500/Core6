@@ -23,20 +23,12 @@
 #include "framework.hpp"
 
 namespace c6{
-	Loader* Framework::m_loader = nullptr;
 	ResourceManager* Framework::m_resourceManager = nullptr;
 	InputHandler* Framework::m_input = nullptr;
 	Renderer* Framework::m_renderer = nullptr;
 	SoundBoard* Framework::m_audioManager = nullptr;
 	Signal<Message>* Framework::m_message = nullptr;
-	Signal<CoreSignal>* Framework::m_coreSignal = nullptr;
 	EntryPoint* Framework::m_entryPoint = nullptr;
-	
-	Loader* Framework::getLoader(){
-		if(m_loader == nullptr)
-			m_loader = new Loader;
-		return m_loader;
-	}
 	
 	InputHandler* Framework::getInput(){
 		if(m_input == nullptr)
@@ -62,12 +54,6 @@ namespace c6{
 		return m_message;
 	}
 	
-	Signal<CoreSignal>* Framework::getCoreSignal(){
-		if(m_coreSignal == nullptr)
-			m_coreSignal = new Signal<CoreSignal>;
-		return m_coreSignal;
-	}
-	
 	ResourceManager* Framework::getResourceManager(){
 		if(m_resourceManager == nullptr)
 			m_resourceManager = new ResourceManager;
@@ -78,15 +64,6 @@ namespace c6{
 		if(m_entryPoint == nullptr)
 			m_entryPoint = new EntryPoint;
 		return m_entryPoint;
-	}
-	
-	bool Framework::registerLoader(Loader* loader){
-		if(m_loader == nullptr){
-			m_loader = loader;
-			return false;
-		}
-		m_loader = loader;
-		return true;
 	}
 	
 	bool Framework::registerResourceManager(ResourceManager* assetManager){
@@ -125,15 +102,6 @@ namespace c6{
 		return true;
 	}
 	
-	bool Framework::registerCoreSignal(Signal<CoreSignal>* coreSignal){
-		if(m_coreSignal == nullptr){
-			m_coreSignal = coreSignal;
-			return false;
-		}
-		m_coreSignal = coreSignal;
-		return true;
-	}
-	
 	bool Framework::registerMessage(Signal<Message>* message){
 		if(m_message == nullptr){
 			m_message = message;
@@ -153,8 +121,6 @@ namespace c6{
 	}
 	
 	Framework::~Framework(){
-		if(m_loader != nullptr)
-			delete m_loader;
 		if(m_resourceManager != nullptr)
 			delete m_resourceManager;
 		if(m_input != nullptr)
@@ -163,8 +129,6 @@ namespace c6{
 			delete m_renderer;
 		if(m_audioManager != nullptr)
 			delete m_audioManager;
-		if(m_coreSignal != nullptr)
-			delete m_coreSignal;
 		if(m_message != nullptr)
 			delete m_message;
 		if(m_entryPoint != nullptr)

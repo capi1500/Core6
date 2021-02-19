@@ -31,19 +31,21 @@
 #include <Core6/plugin/plugin.hpp>
 
 namespace c6{
-	class Application : public Listener<CoreSignal>{
+	class Application : public Listener<sf::Event>{
 		protected:
 			Console m_console;
 			sf::Clock m_clock;
 			FiniteStateMachine m_finiteStateMachine;
 			std::vector<Plugin> m_plugins;
+			bool m_active;
 			
 			Scene* getScene();
 			void loadPlugins(const Path& path);
 		public:
-			void onSignal(const CoreSignal& signal) override;
+			void onSignal(const sf::Event& signal) override;
 			
 			virtual void run() = 0;
+			virtual void init();
 			
 			virtual ~Application();
 	};

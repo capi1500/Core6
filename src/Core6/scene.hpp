@@ -36,7 +36,7 @@ namespace c6{
 	/**
 	 * @brief Class managing storing, updating and drawing Agents
 	 */
-	class Scene : public Group, public FiniteState, public Listener<sf::Event>, public Listener<CoreSignal>{
+	class Scene : public Group, public FiniteState, public Listener<sf::Event>{
 		private:
 			Camera m_camera;
 		public:
@@ -45,12 +45,6 @@ namespace c6{
 			 * @param signal - sf::Event type signal
 			 */
 			void onSignal(const sf::Event& signal) override;
-			
-			/**
-			 * @brief handling CoreSignal events
-			 * @param signal - CoreSignal type signal
-			 */
-			void onSignal(const CoreSignal& signal) override;
 			
 			/**
 			 * @brief draw all stored Agents

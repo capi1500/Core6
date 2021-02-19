@@ -27,10 +27,6 @@ namespace c6{
 		return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
 	}
 	
-	void Application::onSignal(const CoreSignal& signal){
-	
-	}
-	
 	void Application::loadPlugins(const Path& path){
 		auto loadPlugin = [&](const std::string name){
 			m_plugins.push_back(Plugin());
@@ -46,5 +42,15 @@ namespace c6{
 			scene = getScene();
 		}
 		m_plugins.clear();
+	}
+	
+	void Application::onSignal(const sf::Event& signal){
+		if(signal.type == sf::Event::Closed)
+			m_active = false;
+	}
+	
+	void Application::init(){
+		m_active = true;
+		Framework::getInput()->add(this);
 	}
 }

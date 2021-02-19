@@ -26,14 +26,6 @@
 
 namespace c6{
 	void Scene::onSignal(const sf::Event& signal){
-		if(signal.type == sf::Event::Closed){
-			CoreSignal s;
-			s.type = CoreSignal::Close;
-			Framework::getCoreSignal()->send(s);
-		}
-	}
-	
-	void Scene::onSignal(const CoreSignal& signal){
 	
 	}
 	

@@ -28,8 +28,6 @@
 #include <Core6/signal/message.hpp>
 #include <Core6/systems/renderer.hpp>
 #include <Core6/systems/soundBoard.hpp>
-#include <Core6/signal/core_signal/coreSignal.hpp>
-#include <Core6/systems/loader.hpp>
 #include <Core6/systems/resourceManager.hpp>
 #include <Core6/plugin/entryPoint.hpp>
 
@@ -42,24 +40,15 @@ namespace c6{
 	 */
 	class Framework : Singleton<Framework>{
 		private:
-			static Loader* m_loader;
 			static ResourceManager* m_resourceManager;
 			static InputHandler* m_input;
 			static Renderer* m_renderer;
 			static SoundBoard* m_audioManager;
-			static Signal<CoreSignal>* m_coreSignal;
 			static Signal<Message>* m_message;
 			static EntryPoint* m_entryPoint;
 		public:
 			Framework(token t);
 			virtual ~Framework();
-			/**
-			 * @brief Function accessing Loader
-			 * <br><br>
-			 * If loader is not initialized, it is created as default Loader object
-			 * @return Pointer to input service
-			 */
-			static Loader* getLoader();
 			
 			/**
 			 * @brief Function accessing ResourceManager
@@ -94,14 +83,6 @@ namespace c6{
 			static SoundBoard* getAudioManager();
 			
 			/**
-			 * @brief Function accessing Signal<CoreSignal>
-			 * <br><br>
-			 * If coreSignal is not initialized, it is created as default Signal<CoreSignal> object
-			 * @return Pointer to coreSignal service
-			 */
-			static Signal<CoreSignal>* getCoreSignal();
-			
-			/**
 			 * @brief Function accessing Signal<Message>
 			 * <br><br>
 			 * If message is not initialized, it is created as default Signal<Message> object
@@ -116,15 +97,6 @@ namespace c6{
 			 * @return Pointer to entryPoint service
 			 */
 			static EntryPoint* getEntryPoint();
-			
-			/**
-			 * @brief Registers new loader service
-			 * @param loader - new loader service
-			 * @return
-			 * [true] if previous service was overwritten
-			 * [false] otherwise
-			 */
-			static bool registerLoader(Loader* loader);
 			
 			/**
 			 * @brief Registers new assetManager service
@@ -161,15 +133,6 @@ namespace c6{
 			 * false otherwise
 			 */
 			static bool registerAudioManager(SoundBoard* audioManager);
-			
-			/**
-			 * @brief Registers new coreSignal service
-			 * @param coreSignal - new coreSignal service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerCoreSignal(Signal<CoreSignal>* coreSignal);
 			
 			/**
 			 * @brief Registers new message service
