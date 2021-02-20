@@ -33,4 +33,8 @@ namespace c6{
 	InputComponent* InputComponent::clone(){
 		return new InputComponent(*this);
 	}
+	
+	std::string InputComponent::tag(){
+		return "InputComponent";
+	}
 }

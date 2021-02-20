@@ -26,4 +26,8 @@ namespace c6{
 	AudioComponent* AudioComponent::clone(){
 		return new AudioComponent(*this);
 	}
+	
+	std::string AudioComponent::tag(){
+		return "AudioComponent";
+	}
 }

@@ -20,4 +20,12 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <string>
+#include <Core6/framework.hpp>
 #include "extensionable.hpp"
+
+namespace c6{
+	Extensionable* Extensionable::create(Extensionable* extensionable){
+		return Framework::getEntryPoint()->get<Extensionable>(extensionable->tag());
+	}
+}

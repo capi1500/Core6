@@ -42,6 +42,8 @@ namespace c6{
 			
 			virtual LogicComponent* clone();
 			
+			std::string tag() override;
+			
 			virtual ~LogicComponent() = default;
 	};
 }

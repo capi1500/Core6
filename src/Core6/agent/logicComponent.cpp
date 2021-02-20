@@ -38,4 +38,8 @@ namespace c6{
 	LogicComponent* LogicComponent::clone(){
 		return new LogicComponent(*this);
 	}
+	
+	std::string LogicComponent::tag(){
+		return "LogicComponent";
+	}
 }

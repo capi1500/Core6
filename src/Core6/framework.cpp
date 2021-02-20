@@ -26,7 +26,7 @@ namespace c6{
 	ResourceManager* Framework::m_resourceManager = nullptr;
 	InputHandler* Framework::m_input = nullptr;
 	Renderer* Framework::m_renderer = nullptr;
-	SoundBoard* Framework::m_audioManager = nullptr;
+	Storage<std::string, sf::Music>* Framework::m_musicPlayer = nullptr;
 	Signal<Message>* Framework::m_message = nullptr;
 	EntryPoint* Framework::m_entryPoint = nullptr;
 	
@@ -42,10 +42,10 @@ namespace c6{
 		return m_renderer;
 	}
 	
-	SoundBoard* Framework::getAudioManager(){
-		if(m_audioManager == nullptr)
-			m_audioManager = new SoundBoard;
-		return m_audioManager;
+	Storage<std::string, sf::Music>* Framework::getMusicPlayer(){
+		if(m_musicPlayer == nullptr)
+			m_musicPlayer = new Storage<std::string, sf::Music>;
+		return m_musicPlayer;
 	}
 	
 	Signal<Message>* Framework::getMessage(){
@@ -93,12 +93,12 @@ namespace c6{
 		return true;
 	}
 	
-	bool Framework::registerAudioManager(SoundBoard* audioManager){
-		if(m_audioManager == nullptr){
-			m_audioManager = audioManager;
+	bool Framework::registerMusicPlayer(Storage<std::string, sf::Music>* musicPlater){
+		if(m_musicPlayer == nullptr){
+			m_musicPlayer = musicPlater;
 			return false;
 		}
-		m_audioManager = audioManager;
+		m_musicPlayer = musicPlater;
 		return true;
 	}
 	
@@ -127,8 +127,8 @@ namespace c6{
 			delete m_input;
 		if(m_renderer != nullptr)
 			delete m_renderer;
-		if(m_audioManager != nullptr)
-			delete m_audioManager;
+		if(m_musicPlayer != nullptr)
+			delete m_musicPlayer;
 		if(m_message != nullptr)
 			delete m_message;
 		if(m_entryPoint != nullptr)

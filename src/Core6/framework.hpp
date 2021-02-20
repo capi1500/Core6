@@ -27,15 +27,15 @@
 #include <Core6/systems/inputHandler.hpp>
 #include <Core6/signal/message.hpp>
 #include <Core6/systems/renderer.hpp>
-#include <Core6/systems/soundBoard.hpp>
 #include <Core6/systems/resourceManager.hpp>
 #include <Core6/plugin/entryPoint.hpp>
+#include <SFML/Audio/Music.hpp>
 
 namespace c6{
 	/**
 	 * @brief Global service provider
 	 * <br><br>
-	 * Provides Loader, ResourceManager, InputHandler, Renderer, SoundBoard, Signal<CoreSignal> and Signal<Message>. <br>
+	 * Provides Loader, ResourceManager, InputHandler, Renderer, Storage<std::string, sf::Music>, Signal<CoreSignal> and Signal<Message>. <br>
 	 * All services are initialized with nullptr. To prevent accessing uninitialized memory, on first usage, if not initialized before, service is created with default service objects.
 	 */
 	class Framework : Singleton<Framework>{
@@ -43,7 +43,7 @@ namespace c6{
 			static ResourceManager* m_resourceManager;
 			static InputHandler* m_input;
 			static Renderer* m_renderer;
-			static SoundBoard* m_audioManager;
+			static Storage<std::string, sf::Music>* m_musicPlayer;
 			static Signal<Message>* m_message;
 			static EntryPoint* m_entryPoint;
 		public:
@@ -75,12 +75,12 @@ namespace c6{
 			static Renderer* getRenderer();
 			
 			/**
-			 * @brief Function accessing SoundBoard
+			 * @brief Function accessing Storage<std::string, sf::Music>
 			 * <br><br>
-			 * If audioManager is not initialized, it is created as default SoundBoard object
-			 * @return Pointer to audioManager service
+			 * If musicPlater is not initialized, it is created as default Storage<std::string, sf::Music> object
+			 * @return Pointer to musicPlater service
 			 */
-			static SoundBoard* getAudioManager();
+			static Storage<std::string, sf::Music>* getMusicPlayer();
 			
 			/**
 			 * @brief Function accessing Signal<Message>
@@ -126,13 +126,13 @@ namespace c6{
 			static bool registerRenderer(Renderer* renderer);
 			
 			/**
-			 * @brief Registers new audioManager service
-			 * @param audioManager - new audioManager service
+			 * @brief Registers new musicPlater service
+			 * @param musicPlater - new musicPlater service
 			 * @return
 			 * true if previous service was overwritten<br>
 			 * false otherwise
 			 */
-			static bool registerAudioManager(SoundBoard* audioManager);
+			static bool registerMusicPlayer(Storage<std::string, sf::Music>* musicPlater);
 			
 			/**
 			 * @brief Registers new message service

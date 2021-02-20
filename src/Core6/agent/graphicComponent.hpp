@@ -34,6 +34,8 @@ namespace c6{
 		public:
 			virtual GraphicComponent* clone();
 			virtual ~GraphicComponent() = default;
+			
+			std::string tag() override;
 	};
 }
 

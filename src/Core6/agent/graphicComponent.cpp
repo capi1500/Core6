@@ -30,4 +30,8 @@ namespace c6{
 	void GraphicComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	
 	}
+	
+	std::string GraphicComponent::tag(){
+		return "GraphicComponent";
+	}
 }

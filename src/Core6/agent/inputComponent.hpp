@@ -35,6 +35,9 @@ namespace c6{
 			virtual void registerLogic(LogicComponent* logic);
 			void onSignal(const sf::Event& signal) override;
 			virtual InputComponent* clone();
+			
+			std::string tag() override;
+			
 			virtual ~InputComponent() = default;
 	};
 }

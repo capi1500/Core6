@@ -29,6 +29,9 @@ namespace c6{
 	class AudioComponent : public Extensionable{
 		public:
 			virtual AudioComponent* clone();
+			
+			std::string tag() override;
+			
 			virtual ~AudioComponent() = default;
 	};
 }
