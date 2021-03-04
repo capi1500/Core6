@@ -25,9 +25,6 @@
 #include "game.hpp"
 
 void Game::run(){
-	c6::Framework::getResourceManager()->loadTextures(std::string("../assets/textures"));
-	c6::Framework::getResourceManager()->loadSounds(std::string("../assets/sounds"));
-	
 	sf::Time time;
 	
 	c6::Scene* scene;
@@ -50,13 +47,17 @@ void Game::init(){
 	c6::Framework::getInput()->registerWindow(&c6::Framework::getRenderer()->get());
 	c6::Framework::getRenderer()->unlock();
 	
+	c6::Framework::getResourceManager()->loadFonts(std::string("../assets/fonts"));
+	c6::Framework::getResourceManager()->loadTextures(std::string("../assets/textures"));
+	c6::Framework::getResourceManager()->loadSounds(std::string("../assets/sounds"));
+	
 	//m_console.useMessageType(c6::MessageType::Debug);
 	m_console.useMessageType(c6::MessageType::Error);
 	m_console.useMessageType(c6::MessageType::Info);
 	m_console.useMessageType(c6::MessageType::Loading);
 	c6::Framework::getMessage()->add(&m_console);
 	
-	c6::Scene* scene = new c6::Scene;
+	c6::Scene* scene = new c6::Scene(m_finiteStateMachine);
 	
 	c6::Framework::getEntryPoint()->setDefaultTemplate("graphic", new Graphic);
 	
@@ -67,6 +68,6 @@ void Game::init(){
 	factory.getGraphic()->move(200, 200);
 	scene->addAgent(factory);
 	
-	m_finiteStateMachine.addState(scene);
+	m_finiteStateMachine.add(scene);
 	Application::init();
 }

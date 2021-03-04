@@ -22,7 +22,7 @@
 
 #include "game.hpp"
 
-// TODO finish commenting code (systems directory and up)
+// TODO finish commenting code
 
 int main(){
 	Game game;

@@ -31,8 +31,16 @@ namespace c6{
 		m_audio = audio;
 	}
 	
-	void LogicComponent::update(const sf::Time& time){
+	GraphicComponent* LogicComponent::getGraphic(){
+		return m_graphic;
+	}
 	
+	AudioComponent* LogicComponent::getAudio(){
+		return m_audio;
+	}
+	
+	void LogicComponent::update(const sf::Time& time){
+		//m_behaviorStateMachine.getCurrentState()->update(time);
 	}
 	
 	LogicComponent* LogicComponent::clone(){

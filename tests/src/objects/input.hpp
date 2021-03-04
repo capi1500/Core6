@@ -29,23 +29,20 @@
 #include "logic.hpp"
 
 class Input : public c6::InputComponent{
-	private:
-		Logic* m_logic1;
+	protected:
+		Logic* getLogic() override{
+			return static_cast<Logic*>(m_logic);
+		}
 	public:
 		void onSignal(const sf::Event& signal) override{
 			if(signal.type == sf::Event::KeyPressed){
 				if(signal.key.code == sf::Keyboard::Num1)
-					m_logic1->setColor(1);
+					getLogic()->setColor(1);
 				else if(signal.key.code == sf::Keyboard::Num2)
-					m_logic1->setColor(2);
+					getLogic()->setColor(2);
 				else if(signal.key.code == sf::Keyboard::Num3)
-					m_logic1->setColor(3);
+					getLogic()->setColor(3);
 			}
-		}
-		
-		void registerLogic(c6::LogicComponent* logic) override{
-			InputComponent::registerLogic(logic);
-			m_logic1 = dynamic_cast<Logic*>(logic);
 		}
 		
 		Input* clone() override{

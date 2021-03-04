@@ -25,10 +25,6 @@
 #include "framework.hpp"
 
 namespace c6{
-	void Scene::onSignal(const sf::Event& signal){
-	
-	}
-	
 	void Scene::draw(){
 		Framework::getRenderer()->lock();
 		Framework::getRenderer()->get().setView(m_camera);
@@ -38,11 +34,22 @@ namespace c6{
 		Framework::getRenderer()->unlock();
 	}
 	
-	Scene::Scene(){
+	Scene::Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine){
 		c6::Framework::getInput()->add(this);
 	}
 	
-	void Scene::addAgent(Spawner& factory){
-		addToBack(new Agent(factory));
+	Scene::Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f){
+	
+	}
+	
+	void Scene::addAgent(Spawner& factory, unsigned int layer){
+		if(layer >= count())
+			resize(layer + 1);
+		dynamic_cast<Group*>(getGizmo(layer))->addToBack(new Agent(factory));
+	}
+	
+	void Scene::resize(size_t size){
+		while(size >= Group::count())
+			addToBack(new Group);
 	}
 }

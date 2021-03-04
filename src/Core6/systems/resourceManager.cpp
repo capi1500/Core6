@@ -37,6 +37,19 @@ namespace c6{
 		m_texture.unlock();
 	}
 	
+	//#pragma GCC diagnostic ignored
+	const sf::Texture& ResourceManager::getTexture(const std::string& name){
+		while(true){
+			m_texture.lock();
+			if(m_texture().count(name) != 0){
+				const sf::Texture& out = m_texture()[name];
+				m_texture.unlock();
+				return out;
+			}
+			m_texture.unlock();
+		}
+	}
+	
 	void ResourceManager::addSound(const std::string& name){
 		m_sound.lock();
 		m_sound.get()[name].loadFromFile(name);
@@ -49,6 +62,18 @@ namespace c6{
 		m_sound.unlock();
 	}
 	
+	const sf::SoundBuffer& ResourceManager::getSound(const std::string& name){
+		while(true){
+			m_sound.lock();
+			if(m_sound().count(name) != 0){
+				const sf::SoundBuffer& out = m_sound()[name];
+				m_sound.unlock();
+				return out;
+			}
+			m_sound.unlock();
+		}
+	}
+	
 	void ResourceManager::addShader(const std::string& name, const sf::Shader::Type type){
 		m_shader.lock();
 		m_shader.get()[name].loadFromFile(name, type);
@@ -59,6 +84,42 @@ namespace c6{
 		m_shader.lock();
 		m_shader.get().erase(name);
 		m_shader.unlock();
+	}
+	
+	const sf::Shader& ResourceManager::getShader(const std::string& name){
+		while(true){
+			m_shader.lock();
+			if(m_shader().count(name) != 0){
+				const sf::Shader& out = m_shader()[name];
+				m_shader.unlock();
+				return out;
+			}
+			m_shader.unlock();
+		}
+	}
+	
+	void ResourceManager::addFont(const std::string& name){
+		m_fonts.lock();
+		m_fonts.get()[name].loadFromFile(name);
+		m_fonts.unlock();
+	}
+	
+	void ResourceManager::removeFont(const std::string& name){
+		m_fonts.lock();
+		m_fonts.get().erase(name);
+		m_fonts.unlock();
+	}
+	
+	const sf::Font& ResourceManager::getFont(const std::string& name){
+		while(true){
+			m_fonts.lock();
+			if(m_fonts().count(name) != 0){
+				const sf::Font& out = m_fonts()[name];
+				m_fonts.unlock();
+				return out;
+			}
+			m_fonts.unlock();
+		}
 	}
 	
 	void ResourceManager::texturesFromPath(const Path& path){
@@ -97,6 +158,15 @@ namespace c6{
 		}, true, ".geom");
 	}
 	
+	void ResourceManager::fontsFromPath(const Path& path){
+		for(auto ext : {"ttf", "otf", "cff", "pfb", "pfm", "afm", "aat", "sil", "fon", "bdf", "pfr", }){
+			path.execute([&](const std::string& path){
+				//Framework::getMessage()->send(Message("Loading sound '" + path + "'", MessageType::Loading));
+				addFont(path);
+			}, true, std::string(".") + ext);
+		}
+	}
+	
 	void ResourceManager::loadTextures(const Path& path){
 		m_queue.lock();
 		m_queue.get().push({path, Texture});
@@ -112,6 +182,12 @@ namespace c6{
 	void ResourceManager::loadShaders(const Path& path){
 		m_queue.lock();
 		m_queue.get().push({path, Shader});
+		m_queue.unlock();
+	}
+	
+	void ResourceManager::loadFonts(const Path& path){
+		m_queue.lock();
+		m_queue.get().push({path, Font});
 		m_queue.unlock();
 	}
 	
@@ -137,6 +213,8 @@ namespace c6{
 					soundsFromPath(p);
 				else if(t == Shader)
 					shadersFromPath(p);
+				else if(t == Font)
+					fontsFromPath(p);
 			}
 			else
 				m_queue.unlock();

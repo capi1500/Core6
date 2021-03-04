@@ -24,14 +24,20 @@
 #define CORE6_FINITESTATE_HPP
 
 #include <Core6/utils/gizmo.hpp>
+#include <Core6/signal/signal.hpp>
 
 namespace c6{
+	class FiniteStateMachine;
+	
 	class FiniteState : virtual public Gizmo{
+		protected:
+			FiniteStateMachine& m_finiteStateMachine;
 		public:
-			FiniteState();
-			virtual ~FiniteState() = default;
+			FiniteState(FiniteStateMachine& finiteStateMachine);
 			
-			void setIsActive(bool active);
+			void setIsActive(bool isActive);
+			
+			virtual ~FiniteState() = default;
 	};
 }
 

@@ -20,29 +20,37 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "path.hpp"
+#ifndef CORE6_FINITESTATEEVENT_HPP
+#define CORE6_FINITESTATEEVENT_HPP
+
+#include "finiteState.hpp"
 
 namespace c6{
-	bool Path::isFile(const std::string& ext) const{
-		if(ext != "" and m_path.extension() != ext)
-			return false;
-		return fs::is_regular_file(m_path);
-	}
-	
-	bool Path::isDirectory() const{
-		return fs::is_directory(m_path);
-	}
-	
-	Path::Path(const std::string& path) : m_path(path){
-	}
-	
-	std::string Path::toString(fs::path p) const{
-		std::string out = p.string();
-		std::replace(out.begin(), out.end(), '\\', '/');
-		return out;
-	}
-	
-	const std::string Path::getPath() const{
-		return toString(m_path);
-	}
+	class FiniteStateEvent{
+		public:
+			enum Type{
+				Add,
+				Pop,
+				Replace,
+				Clear
+			};
+			
+			Type type;
+			
+			struct AddEvent{
+				FiniteState* what;
+			};
+			
+			struct PopEvent{
+				unsigned count;
+			};
+			
+			union{
+				AddEvent add;
+				AddEvent replace;
+				PopEvent pop;
+			};
+	};
 }
+
+#endif //CORE6_FINITESTATEEVENT_HPP

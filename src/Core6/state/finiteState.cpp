@@ -21,13 +21,14 @@
 */
 
 #include "finiteState.hpp"
+#include "finiteStateEvent.hpp"
 
 namespace c6{
-	FiniteState::FiniteState() : Gizmo(){
+	FiniteState::FiniteState(FiniteStateMachine& finiteStateMachine) : m_finiteStateMachine(finiteStateMachine){
 		m_active = false;
 	}
 	
-	void FiniteState::setIsActive(bool active){
-		m_active = active;
+	void FiniteState::setIsActive(bool isActive){
+		m_active = isActive;
 	}
 }

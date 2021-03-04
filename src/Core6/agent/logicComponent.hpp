@@ -26,6 +26,7 @@
 #include <SFML/System/Time.hpp>
 #include <memory>
 #include <Core6/plugin/extensionable.hpp>
+#include <Core6/state/finiteStateMachine.hpp>
 #include "graphicComponent.hpp"
 #include "audioComponent.hpp"
 
@@ -34,9 +35,13 @@ namespace c6{
 		protected:
 			GraphicComponent* m_graphic;
 			AudioComponent* m_audio;
+			//FiniteStateMachine m_behaviorStateMachine;
+			
+			virtual GraphicComponent* getGraphic();
+			virtual AudioComponent* getAudio();
 		public:
-			virtual void registerGraphic(GraphicComponent* graphic);
-			virtual void registerAudio(AudioComponent* audio);
+			void registerGraphic(GraphicComponent* graphic);
+			void registerAudio(AudioComponent* audio);
 			
 			virtual void update(const sf::Time& time);
 			

@@ -25,17 +25,25 @@
 
 #include <stack>
 #include "finiteState.hpp"
+#include "finiteStateEvent.hpp"
+#include <Core6/signal/listener.hpp>
 
 namespace c6{
-	class FiniteStateMachine{
+	class FiniteStateMachine : public Listener<FiniteStateEvent>, public Signal<FiniteStateEvent>{
 		private:
-			void update();
-		protected:
-			std::stack<std::unique_ptr<FiniteState>> m_pushdownAutomaton;
+			std::stack<FiniteState*> m_pushdownAutomaton;
 		public:
+			void onSignal(const FiniteStateEvent& signal) override;
+			
 			FiniteState* getCurrentState();
 			
-			void addState(FiniteState* state);
+			void add(FiniteState* newState);
+			void pop(int count = 1);
+			void replace(FiniteState* newState);
+			void clear();
+			
+			FiniteStateMachine();
+			~FiniteStateMachine();
 	};
 }
 

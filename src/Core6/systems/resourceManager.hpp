@@ -40,11 +40,13 @@ namespace c6{
 			Concurent<Storage<std::string, sf::Texture>> m_texture;
 			Concurent<Storage<std::string, sf::SoundBuffer>> m_sound;
 			Concurent<Storage<std::string, sf::Shader>> m_shader;
+			Concurent<Storage<std::string, sf::Font>> m_fonts;
 			
 			enum Type{
 				Texture,
 				Sound,
-				Shader
+				Shader,
+				Font
 			};
 			std::thread m_thread;
 			Concurent<bool> m_working;
@@ -54,20 +56,25 @@ namespace c6{
 			void texturesFromPath(const Path& path);
 			void soundsFromPath(const Path& path);
 			void shadersFromPath(const Path& path);
+			void fontsFromPath(const Path& path);
 		public:
 			void addTexture(const std::string& name);
 			void removeTexture(const std::string& name);
 			const sf::Texture& getTexture(const std::string& name);
 			void addSound(const std::string& name);
 			void removeSound(const std::string& name);
-			const sf::SoundBuffer& getSoundbuffer(const std::string& name);
+			const sf::SoundBuffer& getSound(const std::string& name);
 			void addShader(const std::string& name, const sf::Shader::Type type);
 			void removeShader(const std::string& name);
 			const sf::Shader& getShader(const std::string& name);
+			void addFont(const std::string& name);
+			void removeFont(const std::string& name);
+			const sf::Font& getFont(const std::string& name);
 			
 			void loadTextures(const Path& path);
 			void loadSounds(const Path& path);
 			void loadShaders(const Path& path);
+			void loadFonts(const Path& path);
 			
 			ResourceManager();
 			virtual ~ResourceManager();

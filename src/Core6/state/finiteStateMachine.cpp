@@ -23,29 +23,85 @@
 #include <Core6/signal/message.hpp>
 #include "finiteStateMachine.hpp"
 #include "Core6/framework.hpp"
+#include <Core6/signal/signal.hpp>
 
 namespace c6{
-	void FiniteStateMachine::update(){
-		while((not m_pushdownAutomaton.empty()) and m_pushdownAutomaton.top()->isExists() == false){
-			m_pushdownAutomaton.top().reset();
-			m_pushdownAutomaton.pop();
-		}
-	}
-	
 	FiniteState* FiniteStateMachine::getCurrentState(){
-		update();
+		processEvents();
 		if(m_pushdownAutomaton.empty()){
 			Framework::getMessage()->send(Message("No active FiniteStates in FiniteStateMachine", MessageType::Error));
 			return nullptr;
 		}
-		m_pushdownAutomaton.top()->setIsActive(true);
-		return m_pushdownAutomaton.top().get();
+		return m_pushdownAutomaton.top();
 	}
 	
-	void FiniteStateMachine::addState(FiniteState* state){
-		if(not m_pushdownAutomaton.empty())
-			getCurrentState()->setIsActive(false);
-		state->setIsActive(true);
-		m_pushdownAutomaton.push(std::unique_ptr<FiniteState>(state));
+	void FiniteStateMachine::add(FiniteState* newState){
+		FiniteStateEvent event;
+		event.type = FiniteStateEvent::Add;
+		event.add.what = newState;
+		send(event);
+	}
+	
+	void FiniteStateMachine::pop(int count){
+		FiniteStateEvent event;
+		event.type = FiniteStateEvent::Pop;
+		event.pop.count = count;
+		send(event);
+	}
+	
+	void FiniteStateMachine::replace(FiniteState* newState){
+		FiniteStateEvent event;
+		event.type = FiniteStateEvent::Replace;
+		event.replace.what = newState;
+		send(event);
+	}
+	
+	void FiniteStateMachine::clear(){
+		FiniteStateEvent event;
+		event.type = FiniteStateEvent::Clear;
+		send(event);
+	}
+	
+	FiniteStateMachine::FiniteStateMachine(){
+		Signal<FiniteStateEvent>::add(this);
+	}
+	
+	FiniteStateMachine::~FiniteStateMachine(){
+		Signal<FiniteStateEvent>::remove(this);
+	}
+	
+	void FiniteStateMachine::onSignal(const FiniteStateEvent& signal){
+		if(signal.type == FiniteStateEvent::Add){
+			if(not m_pushdownAutomaton.empty())
+				m_pushdownAutomaton.top()->setIsActive(false);
+			m_pushdownAutomaton.push(signal.add.what);
+			m_pushdownAutomaton.top()->setIsActive(true);
+		}
+		else if(signal.type == FiniteStateEvent::Pop){
+			for(unsigned i = 0; i < signal.pop.count; i++){
+				if(m_pushdownAutomaton.empty()){
+					Framework::getMessage()->send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
+					return;
+				}
+				delete m_pushdownAutomaton.top();
+				m_pushdownAutomaton.pop();
+			}
+		}
+		else if(signal.type == FiniteStateEvent::Replace){
+			if(m_pushdownAutomaton.empty()){
+				Framework::getMessage()->send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
+				return;
+			}
+			delete m_pushdownAutomaton.top();
+			m_pushdownAutomaton.pop();
+			m_pushdownAutomaton.push(signal.replace.what);
+			m_pushdownAutomaton.top()->setIsActive(true);
+		}
+		else if(signal.type == FiniteStateEvent::Clear){
+			while(not m_pushdownAutomaton.empty()){
+				delete m_pushdownAutomaton.top();
+				m_pushdownAutomaton.pop();
+			}
+		}
 	}
 }

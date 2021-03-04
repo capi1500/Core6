@@ -23,6 +23,17 @@
 #include "agent.hpp"
 
 namespace c6{
+	Agent::Agent(Spawner* spawner){
+		m_graphic = spawner->getGraphic()->clone();
+		m_audio = spawner->getAudio()->clone();
+		m_input = spawner->getInput()->clone();
+		m_logic = spawner->getLogic()->clone();
+		
+		m_logic->registerGraphic(m_graphic);
+		m_logic->registerAudio(m_audio);
+		m_input->registerLogic(m_logic);
+	}
+	
 	Agent::Agent(Spawner& spawner){
 		m_graphic = spawner.getGraphic()->clone();
 		m_audio = spawner.getAudio()->clone();

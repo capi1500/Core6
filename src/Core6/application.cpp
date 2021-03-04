@@ -36,11 +36,8 @@ namespace c6{
 	}
 	
 	Application::~Application(){
-		Scene* scene = getScene();
-		while(scene != nullptr){
-			scene->destroy();
-			scene = getScene();
-		}
+		m_finiteStateMachine.clear();
+		m_finiteStateMachine.processEvents();
 		m_plugins.clear();
 	}
 	

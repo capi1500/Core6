@@ -141,10 +141,23 @@ namespace c6{
 			size_t countDead();
 			
 			/**
+			 * @brief get number of gizmos
+			 * @return total number of gizmos
+			 */
+			size_t count();
+			
+			/**
 			 * @brief get random gizmo
 			 * @return a random gizmo from group
 			 */
 			Gizmo* getRandom();
+			
+			/**
+			 * @brief get gimzo using index
+			 * @param at - index
+			 * @return gizmo from index [at]
+			 */
+			Gizmo* getGizmo(size_t at);
 	};
 }
 

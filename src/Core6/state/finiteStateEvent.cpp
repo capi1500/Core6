@@ -20,29 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "path.hpp"
-
-namespace c6{
-	bool Path::isFile(const std::string& ext) const{
-		if(ext != "" and m_path.extension() != ext)
-			return false;
-		return fs::is_regular_file(m_path);
-	}
-	
-	bool Path::isDirectory() const{
-		return fs::is_directory(m_path);
-	}
-	
-	Path::Path(const std::string& path) : m_path(path){
-	}
-	
-	std::string Path::toString(fs::path p) const{
-		std::string out = p.string();
-		std::replace(out.begin(), out.end(), '\\', '/');
-		return out;
-	}
-	
-	const std::string Path::getPath() const{
-		return toString(m_path);
-	}
-}
+#include "finiteStateEvent.hpp"

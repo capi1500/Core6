@@ -23,6 +23,10 @@
 #include "inputComponent.hpp"
 
 namespace c6{
+	LogicComponent* InputComponent::getLogic(){
+		return m_logic;
+	}
+	
 	void InputComponent::registerLogic(LogicComponent* logic){
 		m_logic = logic;
 	}

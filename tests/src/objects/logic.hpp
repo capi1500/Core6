@@ -29,10 +29,13 @@
 
 class Logic : public c6::LogicComponent{
 	protected:
-		Graphic* m_graphic1;
-		
 		int m_color;
 		int m_speed;
+		
+		Graphic* getGraphic() override{
+			return static_cast<Graphic*>(m_graphic);
+		}
+	
 	public:
 		int getColor() const{
 			return m_color;
@@ -44,27 +47,22 @@ class Logic : public c6::LogicComponent{
 		
 		void update(const sf::Time& time) override{
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-				m_graphic1->move(-m_speed * time.asSeconds(), 0);
+				getGraphic()->move(-m_speed * time.asSeconds(), 0);
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-				m_graphic1->move(0, m_speed * time.asSeconds());
+				getGraphic()->move(0, m_speed * time.asSeconds());
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-				m_graphic1->move(m_speed * time.asSeconds(), 0);
+				getGraphic()->move(m_speed * time.asSeconds(), 0);
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-				m_graphic1->move(0, -m_speed * time.asSeconds());
+				getGraphic()->move(0, -m_speed * time.asSeconds());
 			if(m_color != -1){
 				if(m_color == 1)
-					m_graphic1->getRect().setFillColor(sf::Color::Red);
+					getGraphic()->getRect().setFillColor(sf::Color::Red);
 				else if(m_color == 2)
-					m_graphic1->getRect().setFillColor(sf::Color::Green);
+					getGraphic()->getRect().setFillColor(sf::Color::Green);
 				else if(m_color == 3)
-					m_graphic1->getRect().setFillColor(sf::Color::Blue);
+					getGraphic()->getRect().setFillColor(sf::Color::Blue);
 				m_color = -1;
 			}
-		}
-		
-		void registerGraphic(c6::GraphicComponent* graphic) override{
-			LogicComponent::registerGraphic(graphic);
-			m_graphic1 = static_cast<Graphic*>(graphic);
 		}
 		
 		Logic* clone() override{

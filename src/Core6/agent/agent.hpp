@@ -34,11 +34,17 @@
 
 namespace c6{
 	class Agent : public Gizmo{
-		private:
+		protected:
 			GraphicComponent* m_graphic;
 			AudioComponent* m_audio;
 			InputComponent* m_input;
 			LogicComponent* m_logic;
+			
+			/**
+			 * @brief Private constructor, only Scene can construct new agents
+			 * @param spawner - blueprint holding predefined components
+			 */
+			Agent(Spawner* spawner);
 			
 			/**
 			 * @brief Private constructor, only Scene can construct new agents

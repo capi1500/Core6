@@ -39,13 +39,9 @@ namespace c6{
 	class Scene : public Group, public FiniteState, public Listener<sf::Event>{
 		private:
 			Camera m_camera;
-		public:
-			/**
-			 * @brief handling sf::Event events
-			 * @param signal - sf::Event type signal
-			 */
-			void onSignal(const sf::Event& signal) override;
 			
+			void resize(size_t size);
+		public:
 			/**
 			 * @brief draw all stored Agents
 			 */
@@ -55,12 +51,17 @@ namespace c6{
 			 * @brief Add new agent from factory (blueprint)
 			 * @param factory - factory object - new agent's blueprint
 			 */
-			void addAgent(Spawner& factory);
+			void addAgent(Spawner& factory, unsigned layer = 0);
 			
 			/**
 			 * @brief constructor of scene
 			 */
-			Scene();
+			Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f);
+			
+			/**
+			 * @brief constructor of scene
+			 */
+			Scene(FiniteStateMachine& finiteStateMachine);
 	};
 }
 

@@ -31,8 +31,9 @@ namespace c6{
 	class InputComponent : public Listener<sf::Event>, public Extensionable{
 		protected:
 			LogicComponent* m_logic;
+			virtual LogicComponent* getLogic();
 		public:
-			virtual void registerLogic(LogicComponent* logic);
+			void registerLogic(LogicComponent* logic);
 			void onSignal(const sf::Event& signal) override;
 			virtual InputComponent* clone();
 			

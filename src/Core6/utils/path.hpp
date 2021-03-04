@@ -34,6 +34,8 @@ namespace c6{
 	class Path{
 		private:
 			fs::path m_path;
+			
+			std::string toString(fs::path p) const;
 		public:
 			/**
 			 * @brief Check wheter path is a file
@@ -62,18 +64,18 @@ namespace c6{
 						if(recursive){
 							for(auto& p : fs::recursive_directory_iterator(m_path)){
 								if(Path(p.path().string()).isFile(ext))
-									f(p.path().string());
+									f(toString(p.path()));
 							}
 						}
 						else{
 							for(auto& p : fs::directory_iterator(m_path)){
 								if(Path(p.path().string()).isFile(ext))
-									f(p.path().string());
+									f(toString(p.path()));
 							}
 						}
 					}
 					if(isFile(ext))
-						f(m_path.string());
+						f(getPath());
 				}
 			}
 			
