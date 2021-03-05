@@ -25,32 +25,10 @@
 
 #include <type_traits>
 #include <Core6/framework.hpp>
-#include "inputComponent.hpp"
-#include "logicComponent.hpp"
-#include "audioComponent.hpp"
-#include "graphicComponent.hpp"
 #include "Core6/utils/gizmo.hpp"
-#include "spawner.hpp"
 
 namespace c6{
 	class Agent : public Gizmo{
-		protected:
-			GraphicComponent* m_graphic;
-			AudioComponent* m_audio;
-			InputComponent* m_input;
-			LogicComponent* m_logic;
-			
-			/**
-			 * @brief Private constructor, only Scene can construct new agents
-			 * @param spawner - blueprint holding predefined components
-			 */
-			Agent(Spawner* spawner);
-			
-			/**
-			 * @brief Private constructor, only Scene can construct new agents
-			 * @param spawner - blueprint holding predefined components
-			 */
-			Agent(Spawner& spawner);
 		public:
 			void update(const sf::Time& time) override;
 			

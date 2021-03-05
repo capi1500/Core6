@@ -34,8 +34,9 @@ namespace c6{
 			const F m_f;
 		public:
 			virtual void onSignal(const T& signal){
-				if(m_f != nullptr)
+				if(m_f != nullptr){
 					m_f(signal);
+				}
 			}
 			
 			Listener() : m_f(nullptr) {}

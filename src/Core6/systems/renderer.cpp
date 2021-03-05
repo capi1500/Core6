@@ -23,7 +23,5 @@
 #include "renderer.hpp"
 
 namespace c6{
-	void Renderer::draw(GraphicComponent* graphicComponent){
-		get().draw(*graphicComponent);
-	}
+
 }

@@ -32,6 +32,7 @@
 #include <condition_variable>
 #include <queue>
 #include <Core6/utils/path.hpp>
+#include <SFML/Graphics/Font.hpp>
 
 namespace c6{
 	/** @brief class that holds all game resources */

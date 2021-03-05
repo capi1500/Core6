@@ -24,20 +24,10 @@
 #define PLUGIN_PLUGIN_HPP
 
 #include <Core6/plugin/package.hpp>
-#include <src/objects/graphic.hpp>
 
-class GreenBoxPlugin : public c6::Package{
+class Plugin : public c6::Package{
 	public:
-		GreenBoxPlugin();
-};
-
-class GreenBox : public Graphic{
-	public:
-		GreenBox* clone() override;
-		
-		GreenBox();
-		
-		virtual ~GreenBox() = default;
+		Plugin();
 };
 
 extern "C" {

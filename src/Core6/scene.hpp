@@ -30,7 +30,6 @@
 #include <SFML/Window/Window.hpp>
 #include "Core6/utils/group.hpp"
 #include <Core6/agent/agent.hpp>
-#include <Core6/agent/spawner.hpp>
 
 namespace c6{
 	/**
@@ -47,11 +46,7 @@ namespace c6{
 			 */
 			void draw() override;
 			
-			/**
-			 * @brief Add new agent from factory (blueprint)
-			 * @param factory - factory object - new agent's blueprint
-			 */
-			void addAgent(Spawner& factory, unsigned layer = 0);
+			void onSignal(const sf::Event& signal) override;
 			
 			/**
 			 * @brief constructor of scene
@@ -62,6 +57,8 @@ namespace c6{
 			 * @brief constructor of scene
 			 */
 			Scene(FiniteStateMachine& finiteStateMachine);
+			
+			~Scene();
 	};
 }
 

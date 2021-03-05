@@ -22,21 +22,12 @@
 
 #include "plugin.hpp"
 
-GreenBox* GreenBox::clone(){
-	return new GreenBox(*this);
-}
-
-GreenBox::GreenBox() : Graphic({200, 200}){
-	m_rect.setSize({200, 200});
-	m_rect.setFillColor(sf::Color::Green);
-}
-
 extern "C" {
 c6::Package* API create(){
-	return new GreenBoxPlugin;
+	return new Plugin;
 }
 }
 
-GreenBoxPlugin::GreenBoxPlugin(){
-	registerTemplate("graphic", new GreenBox);
+Plugin::Plugin(){
+
 }

@@ -24,11 +24,11 @@
 #define CORE6_GAME_HPP
 
 #include <Core6/application.hpp>
-#include <thread>
-#include <Core6/utils/storage.hpp>
-#include <Core6/plugin/plugin.hpp>
 
 class Game : public c6::Application{
+	private:
+		c6::Scene* scene1();
+		c6::Scene* scene2();
 	public:
 		void run() override;
 		void init() override;

@@ -34,22 +34,25 @@ namespace c6{
 		Framework::getRenderer()->unlock();
 	}
 	
-	Scene::Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine){
+	Scene::Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine), Listener<sf::Event>(){
 		c6::Framework::getInput()->add(this);
 	}
 	
 	Scene::Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f){
-	
-	}
-	
-	void Scene::addAgent(Spawner& factory, unsigned int layer){
-		if(layer >= count())
-			resize(layer + 1);
-		dynamic_cast<Group*>(getGizmo(layer))->addToBack(new Agent(factory));
+		c6::Framework::getInput()->add(this);
 	}
 	
 	void Scene::resize(size_t size){
 		while(size >= Group::count())
 			addToBack(new Group);
+	}
+	
+	Scene::~Scene(){
+		c6::Framework::getInput()->remove(this);
+	}
+	
+	void Scene::onSignal(const sf::Event& signal){
+		if(isActive())
+			Listener::onSignal(signal);
 	}
 }

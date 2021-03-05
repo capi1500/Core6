@@ -29,15 +29,13 @@
 #include "Core6/camera.hpp"
 #include <iostream>
 #include <Core6/threading/concurent.hpp>
-#include <Core6/agent/graphicComponent.hpp>
 
 namespace c6{
 	/**
 	 * @brief System handling rendering, extends sf::RenderWindow
 	 */
 	class Renderer : public Concurent<sf::RenderWindow>{
-		public:
-			void draw(GraphicComponent* graphicComponent);
+	
 	};
 }
 

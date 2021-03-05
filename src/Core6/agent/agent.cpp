@@ -23,45 +23,15 @@
 #include "agent.hpp"
 
 namespace c6{
-	Agent::Agent(Spawner* spawner){
-		m_graphic = spawner->getGraphic()->clone();
-		m_audio = spawner->getAudio()->clone();
-		m_input = spawner->getInput()->clone();
-		m_logic = spawner->getLogic()->clone();
-		
-		m_logic->registerGraphic(m_graphic);
-		m_logic->registerAudio(m_audio);
-		m_input->registerLogic(m_logic);
-	}
-	
-	Agent::Agent(Spawner& spawner){
-		m_graphic = spawner.getGraphic()->clone();
-		m_audio = spawner.getAudio()->clone();
-		m_input = spawner.getInput()->clone();
-		m_logic = spawner.getLogic()->clone();
-		
-		m_logic->registerGraphic(m_graphic);
-		m_logic->registerAudio(m_audio);
-		m_input->registerLogic(m_logic);
-	}
-	
 	void Agent::update(const sf::Time& time){
-		m_logic->update(time);
+	
 	}
 	
 	void Agent::draw(){
-		Framework::getRenderer()->draw(m_graphic);
+	
 	}
 	
 	Agent::~Agent(){
 		kill();
-		delete m_graphic;
-		m_graphic = nullptr;
-		delete m_audio;
-		m_audio = nullptr;
-		delete m_input;
-		m_input = nullptr;
-		delete m_logic;
-		m_logic = nullptr;
 	}
 }

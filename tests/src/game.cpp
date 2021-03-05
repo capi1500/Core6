@@ -20,8 +20,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <src/objects/logic.hpp>
-#include <src/objects/input.hpp>
 #include "game.hpp"
 
 void Game::run(){
@@ -41,6 +39,32 @@ void Game::run(){
 	}
 }
 
+c6::Scene* Game::scene1(){
+	c6::Scene* scene = new c6::Scene(m_finiteStateMachine, [&](const sf::Event& event){
+		if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Num2){
+			m_finiteStateMachine.add(scene2());
+		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Backspace){
+			m_finiteStateMachine.pop();
+		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Numpad2){
+			m_finiteStateMachine.replace(scene2());
+		}
+	});
+	return scene;
+}
+
+c6::Scene* Game::scene2(){
+	c6::Scene* scene = new c6::Scene(m_finiteStateMachine, [&](const sf::Event& event){
+		if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Num1){
+			m_finiteStateMachine.add(scene1());
+		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Backspace){
+			m_finiteStateMachine.pop();
+		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Numpad1){
+			m_finiteStateMachine.replace(scene1());
+		}
+	});
+	return scene;
+}
+
 void Game::init(){
 	c6::Framework::getRenderer()->lock();
 	c6::Framework::getRenderer()->get().create(sf::VideoMode(500, 500), "Plugins test");
@@ -57,17 +81,8 @@ void Game::init(){
 	m_console.useMessageType(c6::MessageType::Loading);
 	c6::Framework::getMessage()->add(&m_console);
 	
-	c6::Scene* scene = new c6::Scene(m_finiteStateMachine);
+	//loadPlugins(std::string("../mods/"));
 	
-	c6::Framework::getEntryPoint()->setDefaultTemplate("graphic", new Graphic);
-	
-	loadPlugins(std::string("../mods/"));
-	
-	c6::Spawner factory(c6::Framework::getEntryPoint()->get<Graphic>("graphic"), new c6::AudioComponent, new Input, new Logic);
-	scene->addAgent(factory);
-	factory.getGraphic()->move(200, 200);
-	scene->addAgent(factory);
-	
-	m_finiteStateMachine.add(scene);
+	m_finiteStateMachine.add(scene1());
 	Application::init();
 }

@@ -85,6 +85,8 @@ namespace c6{
 				}
 				delete m_pushdownAutomaton.top();
 				m_pushdownAutomaton.pop();
+				if(not m_pushdownAutomaton.empty())
+					m_pushdownAutomaton.top()->setIsActive(true);
 			}
 		}
 		else if(signal.type == FiniteStateEvent::Replace){
