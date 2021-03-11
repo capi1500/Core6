@@ -35,7 +35,7 @@ namespace c6{
 	class Group : virtual public Gizmo{
 		protected:
 			bool m_order;
-			std::vector<std::unique_ptr<Gizmo>> m_members;
+			std::vector<Gizmo*> m_members;
 		public:
 			/**
 			 * @brief Create new group
@@ -70,7 +70,7 @@ namespace c6{
 			 * @param f - function to execute on gizmos (that exist and are active), see template parameter F for more informations
 			 */
 			template<class F>
-			void execute(F f){
+			void execute(F&& f){
 				for(auto g : m_members){
 					if(g != nullptr and g->isExists() and g->isActive())
 						f(g);

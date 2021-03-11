@@ -20,5 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "agent.hpp"
-#include "agentGroup.hpp"
+#include "ecsConfig.hpp"

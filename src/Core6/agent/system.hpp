@@ -20,5 +20,37 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "agent.hpp"
-#include "agentGroup.hpp"
+#ifndef CORE6_SYSTEM_HPP
+#define CORE6_SYSTEM_HPP
+
+#include <functional>
+#include <MPL/MPL.hpp>
+
+namespace c6{
+	namespace helper{
+		template<typename>
+		struct SystemUnwrapper;
+		
+		template<typename ...Args>
+		struct SystemUnwrapper<MPL::TypeList<Args...>>{
+			using type = std::function<void(Args...)>;
+		};
+	}
+	
+	template<typename TConfig, typename TSignature>
+	class System{
+			using Config = TConfig;
+			using Signature = TSignature;
+			using Key = typename Config::Key;
+			using ThisType = System<Config, Signature>;
+			
+		public:
+			using FunctionType = typename helper::SystemUnwrapper<Signature>::type;
+			
+			FunctionType function;
+			
+			System(const FunctionType& function) : function(function){}
+	};
+}
+
+#endif //CORE6_SYSTEM_HPP

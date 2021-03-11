@@ -29,7 +29,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
 #include "Core6/utils/group.hpp"
-#include <Core6/agent/agent.hpp>
 
 namespace c6{
 	/**

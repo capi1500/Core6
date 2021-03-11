@@ -33,7 +33,7 @@ namespace c6{
 		for(auto& g : m_members){
 			if(g != nullptr){
 				g->destroy();
-				g.reset();
+				delete g;
 			}
 		}
 		m_members.clear();
@@ -49,7 +49,7 @@ namespace c6{
 	
 	void Group::update(const sf::Time& time){
 		for(auto& g : m_members){
-			if(g.get() != nullptr and g->isExists() and g->isActive()){
+			if(g != nullptr and g->isExists() and g->isActive()){
 				g->update(time);
 			}
 		}
@@ -57,14 +57,14 @@ namespace c6{
 	
 	void Group::draw(){
 		for(auto& g : m_members){
-			if(g.get() != nullptr and g->isExists() and g->isVisible())
+			if(g != nullptr and g->isExists() and g->isVisible())
 				g->draw();
 		}
 	}
 	
 	size_t Group::indexOf(Gizmo* g){
 		for(size_t i = 0; i < m_members.size(); i++){
-			if(m_members[i].get() == g)
+			if(m_members[i] == g)
 				return i;
 		}
 		return m_members.size();
@@ -80,7 +80,7 @@ namespace c6{
 			addToBack(g);
 		else{
 			g->setParent(this);
-			m_members[i] = std::unique_ptr<Gizmo>(g);
+			m_members[i] = g;
 		}
 	}
 	
@@ -90,14 +90,15 @@ namespace c6{
 		if(g->getParent() != nullptr)
 			g->getParent()->remove(g);
 		g->setParent(this);
-		m_members.push_back(std::unique_ptr<Gizmo>(g));
+		m_members.push_back(g);
 	}
 	
 	void Group::erase(Gizmo* g){
 		if(g->getParent() != this)
 			return;
 		size_t i = indexOf(g);
-		m_members[i].reset();
+		delete m_members[i];
+		m_members[i] = nullptr;
 		g->setParent(nullptr);
 	}
 	
@@ -106,10 +107,10 @@ namespace c6{
 		if(i != m_members.size()){
 			if(m_order){
 				m_members.erase(m_members.begin() + i);
-				m_members[i] = nullptr;
 			}
 			else{
 				std::swap(m_members[i], m_members.back());
+				delete m_members.back();
 				m_members.pop_back();
 			}
 			g->setParent(nullptr);
@@ -119,7 +120,8 @@ namespace c6{
 	void Group::replace(Gizmo* o, Gizmo* n){
 		size_t i = indexOf(o);
 		if(i != m_members.size()){
-			m_members[i].reset(n);
+			delete m_members[i];
+			m_members[i] = nullptr;
 			o->setParent(nullptr);
 			n->setParent(this);
 		}
@@ -152,7 +154,7 @@ namespace c6{
 			Framework::getMessage()->send(Message("Cannot get random gizmo from group: empty group", MessageType::Error));
 			return nullptr;
 		}
-		return m_members[rand(0ull, m_members.size() - 1)].get();
+		return m_members[rand(0ull, m_members.size() - 1)];
 	}
 	
 	Gizmo* Group::getGizmo(size_t at){
@@ -160,6 +162,6 @@ namespace c6{
 			Framework::getMessage()->send(Message("Cannot get gizmo from group: index bigger than group's size", MessageType::Error));
 			return nullptr;
 		}
-		return m_members[at].get();
+		return m_members[at];
 	}
 }

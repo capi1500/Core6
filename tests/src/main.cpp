@@ -21,11 +21,89 @@
 */
 
 #include "game.hpp"
+#include <Core6/agent/ecsConfig.hpp>
+#include <Core6/agent/agentGroup.hpp>
 
 // TODO finish commenting code
 
-int main(){
+namespace tests{
+	struct C0{
+	};
+	struct C1{
+		bool x;
+		C1() = default;
+		C1(bool a) : x(a) {}
+	};
+	struct C2{
+		char x;
+		C2() = default;
+		C2(char a) : x(a) {}
+	};
+	struct C3{
+		int x;
+		C3() = default;
+		C3(int a) : x(a) {}
+	};
+	struct C4{
+		double x;
+		C4() = default;
+		C4(double a) : x(a) {}
+	};
+	using MyComponentList = c6::ComponentList<C0, C1, C2, C3, C4>;
+	
+	struct T0{};
+	struct T1{};
+	struct T2{};
+	using MyTagList = c6::TagList<T0, T1, T2>;
+	
+	using S0 = c6::Signature<>;
+	using S1 = c6::Signature<C0, C1>;
+	using S2 = c6::Signature<C0, C4, T0>;
+	using S3 = c6::Signature<C1, T0, C3, T2>;
+	using MySignatureList = c6::SignatureList<S0, S1, S2, S3>;
+	
+	using MyConfig = c6::ECSConfig<MyComponentList, MyTagList, MySignatureList>;
+	using MyManager = c6::AgentGroup<MyConfig>;
+	using Agent = c6::Agent<MyConfig>;
+	
+	using System0 = c6::System<MyConfig, S0>;
+	using System1 = c6::System<MyConfig, S1>;
+	using System2 = c6::System<MyConfig, S2>;
+	using System3 = c6::System<MyConfig, S3>;
+	
+	void runtimeTests(){
+		MyManager mgr;
+		Agent& a = mgr.newAgent();
+		a.addTag<T0>();
+		a.addComponent<C0>();
+		a.addComponent<C1>(true);
+		
+		System0 system0([](){
+			std::cout << "hello from 0\n";
+		});
+		
+		System1 system1([](C0 c0, C1 c1){
+			std::cout << "hello from 1\n";
+			std::cout << "c1.x is = " << c1.x << "\n";
+		});
+		
+		if(a.matchesSignature<S0>())
+			a.applySystem(system0);
+		if(a.matchesSignature<S1>())
+			a.applySystem(system1);
+		
+		mgr.executeSystem<S0>(system0);
+		mgr.executeSystem<S1>(system1);
+		
+		mgr.destroy();
+	}
+}
+
+int main(){/*
 	Game game;
 	game.init();
-	game.run();
+	game.run();*/
+	tests::runtimeTests();
+	std::cout << "Tests passed!" << std::endl;
 }
+
