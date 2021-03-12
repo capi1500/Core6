@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -28,36 +28,60 @@
 #include <Core6/signal/listener.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
-#include "Core6/utils/group.hpp"
+#include <Core6/agent/agentGroup.hpp>
+#include "framework.hpp"
+#include <Core6/agent/components.hpp>
 
 namespace c6{
 	/**
 	 * @brief Class managing storing, updating and drawing Agents
 	 */
-	class Scene : public Group, public FiniteState, public Listener<sf::Event>{
+	template<typename TConfig>
+	class Scene : public AgentGroup<TConfig>, public FiniteState, public Listener<sf::Event>{
+		using Config = TConfig;
 		private:
 			Camera m_camera;
 			
-			void resize(size_t size);
+			void resize(size_t size){
+				while(size >= Group::count())
+					this->template addToBack(new Group);
+			};
 		public:
 			/**
 			 * @brief draw all stored Agents
 			 */
-			void draw() override;
+			void draw() override{
+				Framework::getRenderer()->lock();
+				Framework::getRenderer()->get().setView(m_camera);
+				Framework::getRenderer()->get().clear();
+				this->template executeSystem(ecs::system::draw<Config>, Framework::getRenderer()->get());
+				Framework::getRenderer()->get().display();
+				Framework::getRenderer()->unlock();
+			};
 			
-			void onSignal(const sf::Event& signal) override;
+			void onSignal(const sf::Event& signal) override{
+				if(isActive()){
+					Listener::onSignal(signal);
+				}
+			};
 			
 			/**
 			 * @brief constructor of scene
 			 */
-			Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f);
+			Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f){
+				Framework::getInput()->add(this);
+			};
 			
 			/**
 			 * @brief constructor of scene
 			 */
-			Scene(FiniteStateMachine& finiteStateMachine);
+			Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine), Listener<sf::Event>(){
+				Framework::getInput()->add(this);
+			}
 			
-			~Scene();
+			~Scene(){
+				Framework::getInput()->remove(this);
+			};
 	};
 }
 

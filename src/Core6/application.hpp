@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -39,7 +39,11 @@ namespace c6{
 			std::vector<Plugin> m_plugins;
 			bool m_active;
 			
-			Scene* getScene();
+			template<typename Config>
+			Scene<Config>* getScene(){
+				return dynamic_cast<Scene<Config>*>(m_finiteStateMachine.getCurrentState());
+			}
+			
 			void loadPlugins(const Path& path);
 		public:
 			void onSignal(const sf::Event& signal) override;

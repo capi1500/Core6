@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -24,10 +24,12 @@
 #define CORE6_AGENTGROUP_HPP
 
 #include <Core6/utils/group.hpp>
+#include <iostream>
 #include "ecs/componentStorage.hpp"
 #include "ecs/signatureStorage.hpp"
 #include "agent.hpp"
 #include "system.hpp"
+#include "factory.hpp"
 
 namespace c6{
 	template <typename TConfig>
@@ -50,7 +52,7 @@ namespace c6{
 					}
 				}
 			}
-			
+			/*
 			template<typename T, typename ...TArgs>
 			void executeSystem(const System<Config, T, TArgs...>& system, TArgs... args){
 				for(size_t i = 0; i < count(); i++){
@@ -58,14 +60,23 @@ namespace c6{
 						static_cast<Agent*>(m_members[i])->template applySystem(system, std::forward<TArgs>(args)...);
 					}
 				}
-			}
+			}*/
 			
-			Agent& newAgent(){
+			template<typename ...TArgs>
+			void newAgent(Factory<Config, TArgs...>& factory, TArgs... args){
 				Agent* a = new Agent(token(), count());
 				m_componentStorage.grow(count() + 1);
 				addToBack(a);
-				return *a;
+				factory.init(*a, std::forward<TArgs>(args)...);
 			}
+			/*
+			template<typename ...TArgs>
+			void newAgent(Factory<Config>& factory, TArgs... args){
+				Agent* a = new Agent(token(), count());
+				m_componentStorage.grow(count() + 1);
+				addToBack(a);
+				factory.init(*a, std::forward<TArgs>(args)...);
+			}*/
 			
 			friend Agent;
 	};

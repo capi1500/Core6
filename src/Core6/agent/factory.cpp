@@ -20,8 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "renderer.hpp"
-
-namespace c6{
-
-}
+#include "factory.hpp"

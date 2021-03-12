@@ -20,8 +20,26 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "renderer.hpp"
+#ifndef CORE6_FACTORY_HPP
+#define CORE6_FACTORY_HPP
+
+#include <functional>
+#include "agent.hpp"
 
 namespace c6{
-
+	template<typename TConfig, typename ...TArgs>
+	class Factory{
+			using Config = TConfig;
+			using Agent = Agent<Config>;
+			using AgentGroup = AgentGroup<Config>;
+			using FunctionType = std::function<void(Agent&, TArgs...)>;
+		private:
+			FunctionType init;
+		public:
+			Factory(const FunctionType& spawn) : init(spawn) {};
+			
+			friend AgentGroup;
+	};
 }
+
+#endif //CORE6_FACTORY_HPP

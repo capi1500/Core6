@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -141,7 +141,7 @@ namespace c6{
 					expandSignatureCall<T>(system.function, std::forward<TArgs>(args)...);
 			}
 			
-			Agent(typename AgentGroup::token, size_t id) : m_id(id) {};
+			Agent(typename AgentGroup::token, size_t id) : m_id(id){}
 	};
 }
 

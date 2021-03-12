@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -27,29 +27,31 @@
 #include <Core6/agent/ecsConfig.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <Core6/agent/agentGroup.hpp>
-#include <Core6/agent/components/components.hpp>
+#include <Core6/agent/components.hpp>
 
 using Drawable = c6::ecs::component::Drawable;
+using Transformable = c6::ecs::component::Transformable;
 using CompList = c6::ecs::component::StdComponents;
 
-struct Movable{};
 struct Rect{};
-using TagList = MPL::Concat<c6::TagList<Movable, Rect>, c6::ecs::tag::StdTags>;
+using TagList = MPL::Concat<c6::TagList<Rect>, c6::ecs::tag::StdTags>;
 
-using MovableRectSig = c6::Signature<Drawable, Rect, Movable>;
+using MovableRectSig = c6::Signature<Drawable, Rect, Transformable>;
 using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig>, c6::ecs::signature::StrSignatures>;
 
 using Config = c6::ECSConfig<CompList, TagList, SignatureList>;
 using Manager = c6::AgentGroup<Config>;
 using Agent = c6::Agent<Config>;
+template<typename ...TArgs>
+using Factory = c6::Factory<Config, TArgs...>;
 
-using Move = c6::System<Config, MovableRectSig, sf::Time>;
+using Move = c6::System<Config, MovableRectSig, const sf::Time&>;
+auto draw = c6::ecs::system::draw<Config>;
 
 class Game : public c6::Application{
 	private:
-		c6::Scene* scene1();
-		c6::Scene* scene2();
-		Manager mgr;
+		c6::Scene<Config>* scene1();
+		c6::Scene<Config>* scene2();
 	public:
 		void run() override;
 		void init() override;

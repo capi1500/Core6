@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -23,36 +23,8 @@
 #include <iostream>
 #include "scene.hpp"
 #include "framework.hpp"
+#include <Core6/agent/components.hpp>
 
 namespace c6{
-	void Scene::draw(){
-		Framework::getRenderer()->lock();
-		Framework::getRenderer()->get().setView(m_camera);
-		Framework::getRenderer()->get().clear();
-		Group::draw();
-		Framework::getRenderer()->get().display();
-		Framework::getRenderer()->unlock();
-	}
-	
-	Scene::Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine), Listener<sf::Event>(){
-		c6::Framework::getInput()->add(this);
-	}
-	
-	Scene::Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f){
-		c6::Framework::getInput()->add(this);
-	}
-	
-	void Scene::resize(size_t size){
-		while(size >= Group::count())
-			addToBack(new Group);
-	}
-	
-	Scene::~Scene(){
-		c6::Framework::getInput()->remove(this);
-	}
-	
-	void Scene::onSignal(const sf::Event& signal){
-		if(isActive())
-			Listener::onSignal(signal);
-	}
+
 }

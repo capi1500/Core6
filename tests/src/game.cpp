@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -23,10 +23,10 @@
 #include "game.hpp"
 
 void Game::run(){
-	c6::Scene* scene;
+	c6::Scene<Config>* scene;
 	sf::Time time;
 	
-	Move move([](sf::Time time, Drawable& r){
+	Move move([](const sf::Time& time, Drawable& r, [[maybe_unused]]Transformable& t){
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			static_cast<sf::RectangleShape*>(r)->move(0, -200 * time.asSeconds());
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -39,25 +39,20 @@ void Game::run(){
 	
 	while(m_active){
 		time = m_clock.restart();
-		scene = getScene();
+		scene = getScene<Config>();
 		
 		c6::Framework::getInput()->handleInput();
 		c6::Framework::getMessage()->processEvents();
 		
-		//scene->update(time);
-		mgr.executeSystem(move, time);
+		scene->update(time);
+		scene->executeSystem(move, const_cast<const sf::Time&>(time));
 		
-		c6::Framework::getRenderer()->lock();
-		c6::Framework::getRenderer()->get().clear();
-		mgr.executeSystem(c6::ecs::system::draw<Config>, c6::Framework::getRenderer()->get());
-		c6::Framework::getRenderer()->get().display();
-		c6::Framework::getRenderer()->unlock();
-		//scene->draw();
+		scene->draw();
 	}
 }
 
-c6::Scene* Game::scene1(){
-	c6::Scene* scene = new c6::Scene(m_finiteStateMachine, [&](const sf::Event& event){
+c6::Scene<Config>* Game::scene1(){
+	c6::Scene<Config>* scene = new c6::Scene<Config>(m_finiteStateMachine, [&](const sf::Event& event){
 		if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Num2){
 			m_finiteStateMachine.add(scene2());
 		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Backspace){
@@ -66,11 +61,24 @@ c6::Scene* Game::scene1(){
 			m_finiteStateMachine.replace(scene2());
 		}
 	});
+	
+	Factory<int, int, sf::Color> f([](Agent& a, int x, int y, sf::Color color){
+		sf::RectangleShape* r = new sf::RectangleShape({100, 100});
+		r->setFillColor(color);
+		r->setPosition(x, y);
+		a.addComponent<Drawable>(r);
+		a.addComponent<Transformable>(r);
+		a.addTag<Rect>();
+	});
+	
+	scene->newAgent(f, 100, 100, sf::Color::Red);
+	scene->newAgent(f, 0, 0, sf::Color::Green);
+	
 	return scene;
 }
 
-c6::Scene* Game::scene2(){
-	c6::Scene* scene = new c6::Scene(m_finiteStateMachine, [&](const sf::Event& event){
+c6::Scene<Config>* Game::scene2(){
+	c6::Scene<Config>* scene = new c6::Scene<Config>(m_finiteStateMachine, [&](const sf::Event& event){
 		if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Num1){
 			m_finiteStateMachine.add(scene1());
 		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Backspace){
@@ -99,20 +107,6 @@ void Game::init(){
 	c6::Framework::getMessage()->add(&m_console);
 	
 	//loadPlugins(std::string("../mods/"));
-	
-	Agent& a1 = mgr.newAgent();
-	Agent& a2 = mgr.newAgent();
-	
-	sf::RectangleShape* r1 = new sf::RectangleShape({100, 100}), *r2 = new sf::RectangleShape({200, 200});
-	r1->setFillColor(sf::Color::Red);
-	r2->setFillColor(sf::Color::Green);
-	
-	a1.addComponent<Drawable>(r1);
-	a1.addTag<Movable>();
-	a1.addTag<Rect>();
-	
-	a2.addComponent<Drawable>(r2);
-	a2.addTag<Rect>();
 	
 	m_finiteStateMachine.add(scene1());
 	Application::init();

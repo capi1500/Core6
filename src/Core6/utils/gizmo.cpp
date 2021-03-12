@@ -1,6 +1,6 @@
 /**
  * Core6
- * Copyright (C) 2020 Kacper Chętkowski (kacper.chetkowski@gmail.com)
+ * Copyright (C) 2020-2021 Kacper Chętkowski (kacper.chetkowski@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the use of this software.
@@ -62,7 +62,7 @@ namespace c6{
 			m_parent->remove(this);
 	}
 	
-	void Gizmo::update(const sf::Time& time){
+	void Gizmo::update([[maybe_unused]] const sf::Time& time){
 	}
 	
 	void Gizmo::draw(){
