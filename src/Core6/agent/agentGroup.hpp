@@ -42,11 +42,20 @@ namespace c6{
 			
 			struct token{};
 		public:
-			template<typename T>
-			void executeSystem(const System<Config, T>& system){
+			template<typename T, typename ...TArgs>
+			void executeSystem(const System<Config, T, TArgs...>& system, TArgs&&... args){
 				for(size_t i = 0; i < count(); i++){
 					if(m_members[i] != nullptr and m_members[i]->isExists()){
-						static_cast<Agent*>(m_members[i])->template applySystem(system);
+						static_cast<Agent*>(m_members[i])->template applySystem(system, std::forward<TArgs>(args)...);
+					}
+				}
+			}
+			
+			template<typename T, typename ...TArgs>
+			void executeSystem(const System<Config, T, TArgs...>& system, TArgs... args){
+				for(size_t i = 0; i < count(); i++){
+					if(m_members[i] != nullptr and m_members[i]->isExists()){
+						static_cast<Agent*>(m_members[i])->template applySystem(system, std::forward<TArgs>(args)...);
 					}
 				}
 			}

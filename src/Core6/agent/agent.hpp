@@ -57,22 +57,22 @@ namespace c6{
 			template<typename ...Ts>
 			struct ExpandCallHelper;
 			
-			template<typename T, typename TF>
-			void expandSignatureCall(TF&& function){
+			template<typename T, typename TF, typename ...TArgs>
+			void expandSignatureCall(TF&& function, TArgs&&... args){
 				static_assert(Config::template isSignature<T>(), "ERROR: c6::Agent::expandSignatureCall(): Type is not a Signature");
 				
 				using RequiredComponents = typename helper::SignatureKey<Config>::template SignatureComponents<T>;
 				
 				using Helper = MPL::Rename<ExpandCallHelper, RequiredComponents>;
 				
-				Helper::call(*this, function);
+				Helper::call(*this, function, std::forward<TArgs>(args)...);
 			}
 			
 			template<typename ...Ts>
 			struct ExpandCallHelper{
-				template<typename TF>
-				static void call(ThisType& agent, TF&& function){
-					function(agent.getGroup()->m_componentStorage.template getComponent<Ts>(agent.m_id)...);
+				template<typename TF, typename ...TArgs>
+				static void call(ThisType& agent, TF&& function, TArgs&&... args){
+					function(std::forward<TArgs>(args)..., agent.getGroup()->m_componentStorage.template getComponent<Ts>(agent.m_id)...);
 				}
 			};
 		public:
@@ -135,10 +135,10 @@ namespace c6{
 				return (sigKey & m_key) == sigKey;
 			}
 			
-			template<typename T>
-			void applySystem(const System<Config, T>& system){
+			template<typename T, typename ...TArgs>
+			void applySystem(const System<Config, T, TArgs...>& system, TArgs&&... args){
 				if(matchesSignature<T>())
-					expandSignatureCall<T>(system.function);
+					expandSignatureCall<T>(system.function, std::forward<TArgs>(args)...);
 			}
 			
 			Agent(typename AgentGroup::token, size_t id) : m_id(id) {};

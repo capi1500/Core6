@@ -33,11 +33,19 @@ namespace c6{
 		
 		template<typename ...Args>
 		struct SystemUnwrapper<MPL::TypeList<Args...>>{
-			using type = std::function<void(Args&...)>;
+			using type = std::function<void(Args...)>;
+		};
+		
+		template<typename>
+		struct AddReference;
+		
+		template<typename ...Args>
+		struct AddReference<MPL::TypeList<Args...>>{
+			using type = MPL::TypeList<Args&...>;
 		};
 	}
 	
-	template<typename TConfig, typename TSignature>
+	template<typename TConfig, typename TSignature, typename ...TArgs>
 	class System{
 			using Config = TConfig;
 			using Signature = TSignature;
@@ -46,10 +54,13 @@ namespace c6{
 			
 			template<typename T>
 			using IsComponentFilter = std::integral_constant<bool, Config::template isComponent<T>()>;
-			using ReqComponents = MPL::Filter<IsComponentFilter, Signature>;
+			using ReqComponents = typename helper::AddReference<MPL::Filter<IsComponentFilter, Signature>>::type;
+			using ExternArguments = MPL::TypeList<TArgs...>;
+			
+			using AllArguments = MPL::Concat<ExternArguments, ReqComponents>;
 			
 		public:
-			using FunctionType = typename helper::SystemUnwrapper<ReqComponents>::type;
+			using FunctionType = typename helper::SystemUnwrapper<AllArguments>::type;
 			
 			FunctionType function;
 			

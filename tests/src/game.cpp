@@ -23,9 +23,20 @@
 #include "game.hpp"
 
 void Game::run(){
+	c6::Scene* scene;
 	sf::Time time;
 	
-	c6::Scene* scene;
+	Move move([](sf::Time time, Drawable& r){
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			static_cast<sf::RectangleShape*>(r)->move(0, -200 * time.asSeconds());
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			static_cast<sf::RectangleShape*>(r)->move(-200 * time.asSeconds(), 0);
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			static_cast<sf::RectangleShape*>(r)->move(0, 200 * time.asSeconds());
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			static_cast<sf::RectangleShape*>(r)->move(200 * time.asSeconds(), 0);
+	});
+	
 	while(m_active){
 		time = m_clock.restart();
 		scene = getScene();
@@ -34,11 +45,11 @@ void Game::run(){
 		c6::Framework::getMessage()->processEvents();
 		
 		//scene->update(time);
-		mgr.executeSystem(move);
+		mgr.executeSystem(move, time);
 		
 		c6::Framework::getRenderer()->lock();
 		c6::Framework::getRenderer()->get().clear();
-		mgr.executeSystem(draw);
+		mgr.executeSystem(c6::ecs::system::draw<Config>, c6::Framework::getRenderer()->get());
 		c6::Framework::getRenderer()->get().display();
 		c6::Framework::getRenderer()->unlock();
 		//scene->draw();
@@ -92,30 +103,17 @@ void Game::init(){
 	Agent& a1 = mgr.newAgent();
 	Agent& a2 = mgr.newAgent();
 	
-	sf::RectangleShape r1({100, 100});
-	r1.setFillColor(sf::Color::Red);
+	sf::RectangleShape* r1 = new sf::RectangleShape({100, 100}), *r2 = new sf::RectangleShape({200, 200});
+	r1->setFillColor(sf::Color::Red);
+	r2->setFillColor(sf::Color::Green);
 	
-	a1.addComponent<Rect>(r1);
+	a1.addComponent<Drawable>(r1);
 	a1.addTag<Movable>();
+	a1.addTag<Rect>();
 	
-	r1.setFillColor(sf::Color::Green);
-	a2.addComponent<Rect>(r1);
+	a2.addComponent<Drawable>(r2);
+	a2.addTag<Rect>();
 	
 	m_finiteStateMachine.add(scene1());
 	Application::init();
-}
-
-Game::Game() : draw([](Rect& r){
-	c6::Framework::getRenderer()->get().draw(r);
-}), move([](Rect& r){
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		r.move(0, -1);
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		r.move(-1, 0);
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		r.move(0, 1);
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		r.move(1, 0);
-}){
-
 }

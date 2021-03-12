@@ -20,39 +20,43 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_GAME_HPP
-#define CORE6_GAME_HPP
+#ifndef CORE6_COMPONENTS_HPP
+#define CORE6_COMPONENTS_HPP
 
-#include <Core6/application.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 #include <Core6/agent/ecsConfig.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <Core6/agent/agentGroup.hpp>
-#include <Core6/agent/components/components.hpp>
+#include <Core6/agent/system.hpp>
 
-using Drawable = c6::ecs::component::Drawable;
-using CompList = c6::ecs::component::StdComponents;
+namespace c6{
+	namespace ecs{
+		namespace component{
+			using Drawable = sf::Drawable*;
+			using Transformable = sf::Transformable*;
+			
+			using StdComponents = ComponentList<Drawable, Transformable>;
+		}
+		namespace tag{
+			struct EventResponsible{};
+			
+			using StdTags = TagList<EventResponsible>;
+		}
+		namespace signature{
+			using Draw = Signature<component::Drawable>;
+			
+			using StrSignatures = SignatureList<Draw>;
+		}
+		namespace system{
+			template<typename Config>
+			using Draw = System<Config, signature::Draw, sf::RenderWindow&>;
+			
+			template<typename Config>
+			auto draw = Draw<Config>([](sf::RenderWindow& renderer, component::Drawable& r){
+				renderer.draw(*r);
+			});
+		}
+	}
+}
 
-struct Movable{};
-struct Rect{};
-using TagList = MPL::Concat<c6::TagList<Movable, Rect>, c6::ecs::tag::StdTags>;
-
-using MovableRectSig = c6::Signature<Drawable, Rect, Movable>;
-using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig>, c6::ecs::signature::StrSignatures>;
-
-using Config = c6::ECSConfig<CompList, TagList, SignatureList>;
-using Manager = c6::AgentGroup<Config>;
-using Agent = c6::Agent<Config>;
-
-using Move = c6::System<Config, MovableRectSig, sf::Time>;
-
-class Game : public c6::Application{
-	private:
-		c6::Scene* scene1();
-		c6::Scene* scene2();
-		Manager mgr;
-	public:
-		void run() override;
-		void init() override;
-};
-
-#endif //CORE6_GAME_HPP
+#endif //CORE6_COMPONENTS_HPP
