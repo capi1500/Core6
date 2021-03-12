@@ -33,9 +33,15 @@ void Game::run(){
 		c6::Framework::getInput()->handleInput();
 		c6::Framework::getMessage()->processEvents();
 		
-		scene->update(time);
+		//scene->update(time);
+		mgr.executeSystem(move);
 		
-		scene->draw();
+		c6::Framework::getRenderer()->lock();
+		c6::Framework::getRenderer()->get().clear();
+		mgr.executeSystem(draw);
+		c6::Framework::getRenderer()->get().display();
+		c6::Framework::getRenderer()->unlock();
+		//scene->draw();
 	}
 }
 
@@ -83,6 +89,33 @@ void Game::init(){
 	
 	//loadPlugins(std::string("../mods/"));
 	
+	Agent& a1 = mgr.newAgent();
+	Agent& a2 = mgr.newAgent();
+	
+	sf::RectangleShape r1({100, 100});
+	r1.setFillColor(sf::Color::Red);
+	
+	a1.addComponent<Rect>(r1);
+	a1.addTag<Movable>();
+	
+	r1.setFillColor(sf::Color::Green);
+	a2.addComponent<Rect>(r1);
+	
 	m_finiteStateMachine.add(scene1());
 	Application::init();
+}
+
+Game::Game() : draw([](Rect& r){
+	c6::Framework::getRenderer()->get().draw(r);
+}), move([](Rect& r){
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		r.move(0, -1);
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		r.move(-1, 0);
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		r.move(0, 1);
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		r.move(1, 0);
+}){
+
 }

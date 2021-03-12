@@ -24,8 +24,7 @@
 #include <Core6/agent/ecsConfig.hpp>
 #include <Core6/agent/agentGroup.hpp>
 
-// TODO finish commenting code
-
+/*
 namespace tests{
 	struct C0{
 	};
@@ -57,7 +56,7 @@ namespace tests{
 	using MyTagList = c6::TagList<T0, T1, T2>;
 	
 	using S0 = c6::Signature<>;
-	using S1 = c6::Signature<C0, C1>;
+	using S1 = c6::Signature<C0, C1, T0>;
 	using S2 = c6::Signature<C0, C4, T0>;
 	using S3 = c6::Signature<C1, T0, C3, T2>;
 	using MySignatureList = c6::SignatureList<S0, S1, S2, S3>;
@@ -72,12 +71,6 @@ namespace tests{
 	using System3 = c6::System<MyConfig, S3>;
 	
 	void runtimeTests(){
-		MyManager mgr;
-		Agent& a = mgr.newAgent();
-		a.addTag<T0>();
-		a.addComponent<C0>();
-		a.addComponent<C1>(true);
-		
 		System0 system0([](){
 			std::cout << "hello from 0\n";
 		});
@@ -87,23 +80,29 @@ namespace tests{
 			std::cout << "c1.x is = " << c1.x << "\n";
 		});
 		
-		if(a.matchesSignature<S0>())
-			a.applySystem(system0);
-		if(a.matchesSignature<S1>())
-			a.applySystem(system1);
+		MyManager mgr;
+		
+		Agent& a = mgr.newAgent();
+		a.addTag<T0>();
+		a.addComponent<C0>();
+		a.addComponent<C1>(true);
+		
+		Agent& b = mgr.newAgent();
+		b.addComponent<C0>();
+		b.addComponent<C1>(false);
 		
 		mgr.executeSystem<S0>(system0);
 		mgr.executeSystem<S1>(system1);
 		
 		mgr.destroy();
 	}
-}
+}*/
 
-int main(){/*
+int main(){
 	Game game;
 	game.init();
-	game.run();*/
-	tests::runtimeTests();
-	std::cout << "Tests passed!" << std::endl;
+	game.run();
+	//tests::runtimeTests();
+	//std::cout << "Tests passed!" << std::endl;
 }
 

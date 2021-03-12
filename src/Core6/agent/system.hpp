@@ -33,7 +33,7 @@ namespace c6{
 		
 		template<typename ...Args>
 		struct SystemUnwrapper<MPL::TypeList<Args...>>{
-			using type = std::function<void(Args...)>;
+			using type = std::function<void(Args&...)>;
 		};
 	}
 	
@@ -44,8 +44,12 @@ namespace c6{
 			using Key = typename Config::Key;
 			using ThisType = System<Config, Signature>;
 			
+			template<typename T>
+			using IsComponentFilter = std::integral_constant<bool, Config::template isComponent<T>()>;
+			using ReqComponents = MPL::Filter<IsComponentFilter, Signature>;
+			
 		public:
-			using FunctionType = typename helper::SystemUnwrapper<Signature>::type;
+			using FunctionType = typename helper::SystemUnwrapper<ReqComponents>::type;
 			
 			FunctionType function;
 			

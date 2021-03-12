@@ -39,11 +39,11 @@ set_target_properties(Core6debug PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../tests/b
 #set_target_properties(Core6plugin PROPERTIES LIBRARY_OUTPUT_DIRECTORY "../tests/mods")
 
 # compile options
-target_compile_options(Core6 PRIVATE -Wall -O3 -Wfatal-errors)
-target_compile_options(CreateCore6lib PRIVATE -Wall -O3)
-target_compile_options(Core6debugLib PRIVATE -Wall -O3)
-target_compile_options(Core6debug PRIVATE -Wall -O3)
-target_compile_options(Core6plugin PRIVATE -Wall -O3)
+target_compile_options(Core6 PRIVATE -Wall -O3 -Wfatal-errors -Wextra)
+target_compile_options(CreateCore6lib PRIVATE -Wall -O3 -Wfatal-errors -Wextra)
+target_compile_options(Core6debugLib PRIVATE -Wall -O3 -Wfatal-errors -Wextra)
+target_compile_options(Core6debug PRIVATE -Wall -O3 -Wfatal-errors -Wextra)
+target_compile_options(Core6plugin PRIVATE -Wall -O3 -Wfatal-errors -Wextra)
 
 # link libraries
 target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)

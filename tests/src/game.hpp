@@ -24,14 +24,39 @@
 #define CORE6_GAME_HPP
 
 #include <Core6/application.hpp>
+#include <Core6/agent/ecsConfig.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <Core6/agent/agentGroup.hpp>
+
+using Rect = sf::RectangleShape;
+using CompList = c6::ComponentList<Rect>;
+
+struct Movable{};
+using TagList = c6::TagList<Movable>;
+
+using RectSig = c6::Signature<Rect>;
+using MovableRectSig = c6::Signature<Rect, Movable>;
+using SignatureList = c6::SignatureList<RectSig, MovableRectSig>;
+
+using Config = c6::ECSConfig<CompList, TagList, SignatureList>;
+using Manager = c6::AgentGroup<Config>;
+using Agent = c6::Agent<Config>;
+
+using Draw = c6::System<Config, RectSig>;
+using Move = c6::System<Config, MovableRectSig>;
 
 class Game : public c6::Application{
 	private:
 		c6::Scene* scene1();
 		c6::Scene* scene2();
+		Manager mgr;
+		Draw draw;
+		Move move;
 	public:
 		void run() override;
 		void init() override;
+		
+		Game();
 };
 
 #endif //CORE6_GAME_HPP

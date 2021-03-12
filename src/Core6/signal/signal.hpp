@@ -70,7 +70,7 @@ namespace c6{
 				m_listeners.clear();
 			}
 			
-			const size_t count() const{
+			size_t count() const{
 				return m_listeners.size();
 			}
 	};
