@@ -37,9 +37,12 @@ struct Rect{};
 using TagList = MPL::Concat<c6::TagList<Rect>, c6::ecs::tag::StdTags>;
 
 using MovableRectSig = c6::Signature<Drawable, Rect, Transformable>;
-using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig>, c6::ecs::signature::StrSignatures>;
+using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig>, c6::ecs::signature::StdSignatures>;
 
-using Config = c6::ECSConfig<CompList, TagList, SignatureList>;
+using SysytemTimeList = MPL::TypeList<MovableRectSig>;
+using SysytemRenderList = MPL::TypeList<c6::ecs::signature::Draw>;
+
+using Config = c6::ECSConfig<CompList, TagList, SignatureList, SysytemTimeList, SysytemRenderList>;
 using Manager = c6::AgentGroup<Config>;
 using Agent = c6::Agent<Config>;
 template<typename ...TArgs>
@@ -47,6 +50,16 @@ using Factory = c6::Factory<Config, TArgs...>;
 
 using Move = c6::System<Config, MovableRectSig, const sf::Time&>;
 auto draw = c6::ecs::system::draw<Config>;
+Move move([](const sf::Time& time, Drawable& r, [[maybe_unused]]Transformable& t){
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		static_cast<sf::RectangleShape*>(r)->move(0, -200 * time.asSeconds());
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		static_cast<sf::RectangleShape*>(r)->move(-200 * time.asSeconds(), 0);
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		static_cast<sf::RectangleShape*>(r)->move(0, 200 * time.asSeconds());
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		static_cast<sf::RectangleShape*>(r)->move(200 * time.asSeconds(), 0);
+});
 
 class Game : public c6::Application{
 	private:

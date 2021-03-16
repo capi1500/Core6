@@ -20,35 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_COMPONENTSTORAGE_HPP
-#define CORE6_COMPONENTSTORAGE_HPP
-
-#include <vector>
-#include <type_traits>
-#include <MPL/MPL.hpp>
-#include "../ecsConfig.hpp"
-
-namespace c6{
-	template <typename TConfig>
-	class ComponentStorage{
-			using Config = TConfig;
-			using ComponentList = typename Config::ComponentList;
-			template<typename... Ts>
-			using TupleOfVectors = std::tuple<std::vector<Ts>...>;
-		private:
-			MPL::Rename<TupleOfVectors, ComponentList> m_components;
-		public:
-			void grow(size_t size){
-				MPL::forTuple([this, size](auto& v){
-					v.resize(size);
-				}, m_components);
-			}
-			
-			template<typename T>
-			auto& getComponent(size_t i) noexcept{
-				return std::get<std::vector<T>>(m_components)[i];
-			}
-	};
-}
-
-#endif //CORE6_COMPONENTSTORAGE_HPP
+#include "systemStorage.hpp"

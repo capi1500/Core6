@@ -27,22 +27,19 @@
 #include <bitset>
 
 namespace c6{
-	MPL_STRONG_TYPEDEF(std::size_t, DataIndex);
-	MPL_STRONG_TYPEDEF(std::size_t, AgentIndex);
-	MPL_STRONG_TYPEDEF(std::size_t, HandleDataIndex);
-	MPL_STRONG_TYPEDEF(int, Counter);
-	
 	template<typename... Ts> using Signature = MPL::TypeList<Ts...>;
 	template<typename... Ts> using SignatureList = MPL::TypeList<Ts...>;
 	template<typename... Ts> using ComponentList = MPL::TypeList<Ts...>;
 	template<typename... Ts> using TagList = MPL::TypeList<Ts...>;
 	
-	template<typename TCompomentList, typename TTagList, typename TSignatureList>
+	template<typename TCompomentList, typename TTagList, typename TSignatureList, typename TSystemTimeList, typename TSystemRenderList>
 	struct ECSConfig{
 		using ComponentList = typename TCompomentList::TypeList;
 		using TagList = typename TTagList::TypeList;
 		using SignatureList = typename TSignatureList::TypeList;
-		using ThisType = ECSConfig<ComponentList, TagList, SignatureList>;
+		using SystemTimeList = typename TSystemTimeList::TypeList;
+		using SystemRenderList = typename TSystemRenderList::TypeList;
+		using ThisType = ECSConfig<ComponentList, TagList, SignatureList, SystemTimeList, SystemRenderList>;
 		
 		template<typename T>
 		static constexpr bool isComponent() noexcept{

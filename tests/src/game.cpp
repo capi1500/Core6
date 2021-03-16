@@ -26,17 +26,6 @@ void Game::run(){
 	c6::Scene<Config>* scene;
 	sf::Time time;
 	
-	Move move([](const sf::Time& time, Drawable& r, [[maybe_unused]]Transformable& t){
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			static_cast<sf::RectangleShape*>(r)->move(0, -200 * time.asSeconds());
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			static_cast<sf::RectangleShape*>(r)->move(-200 * time.asSeconds(), 0);
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			static_cast<sf::RectangleShape*>(r)->move(0, 200 * time.asSeconds());
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			static_cast<sf::RectangleShape*>(r)->move(200 * time.asSeconds(), 0);
-	});
-	
 	while(m_active){
 		time = m_clock.restart();
 		scene = getScene<Config>();
@@ -45,7 +34,6 @@ void Game::run(){
 		c6::Framework::getMessage()->processEvents();
 		
 		scene->update(time);
-		scene->executeSystem(move, const_cast<const sf::Time&>(time));
 		
 		scene->draw();
 	}
@@ -61,6 +49,8 @@ c6::Scene<Config>* Game::scene1(){
 			m_finiteStateMachine.replace(scene2());
 		}
 	});
+	scene->addTimeSystem(move);
+	scene->addRenderSystem(draw);
 	
 	Factory<int, int, sf::Color> f([](Agent& a, int x, int y, sf::Color color){
 		sf::RectangleShape* r = new sf::RectangleShape({100, 100});

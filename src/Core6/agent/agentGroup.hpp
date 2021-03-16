@@ -30,6 +30,9 @@
 #include "agent.hpp"
 #include "system.hpp"
 #include "factory.hpp"
+#include "ecs/systemStorage.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <Core6/framework.hpp>
 
 namespace c6{
 	template <typename TConfig>
@@ -37,10 +40,19 @@ namespace c6{
 			using Config = TConfig;
 			using SignatureBitsetStorage = SignatureStorage<Config>;
 			using ComponentStorage = ComponentStorage<Config>;
+			
+			using TimeSystemList = typename Config::SystemTimeList;
+			using RenderSystemList = typename Config ::SystemRenderList;
+			using TimeSystemStorage = SystemStorage<Config, TimeSystemList, const sf::Time&>;
+			using RenderSystemStorage = SystemStorage<Config, RenderSystemList, sf::RenderWindow&>;
+			
 			using Agent = Agent<Config>;
 		private:
 			SignatureBitsetStorage m_signatureStorage;
 			ComponentStorage m_componentStorage;
+			
+			TimeSystemStorage m_timeSystemStorage;
+			RenderSystemStorage m_renderSystemStorage;
 			
 			struct token{};
 		public:
@@ -77,6 +89,30 @@ namespace c6{
 				addToBack(a);
 				factory.init(*a, std::forward<TArgs>(args)...);
 			}*/
+			
+			template<typename T>
+			void addTimeSystem(const System<Config, T, const sf::Time&>& timeSystem){
+				m_timeSystemStorage.template addSystem(timeSystem);
+			}
+			
+			template<typename T>
+			void addRenderSystem(const System<Config, T, sf::RenderWindow&>& renderSystem){
+				m_renderSystemStorage.template addSystem(renderSystem);
+			}
+			
+			void update(const sf::Time& time) override{
+				for(size_t i = 0; i < count(); i++){
+					if(m_members[i] != nullptr and m_members[i]->isExists())
+						m_timeSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), time);
+				}
+			}
+			
+			void draw() override{
+				for(size_t i = 0; i < count(); i++){
+					if(m_members[i] != nullptr and m_members[i]->isExists())
+						m_renderSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), Framework::getRenderer()->get());
+				}
+			}
 			
 			friend Agent;
 	};

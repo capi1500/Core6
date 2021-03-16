@@ -45,7 +45,7 @@ namespace c6{
 		namespace signature{
 			using Draw = Signature<component::Drawable>;
 			
-			using StrSignatures = SignatureList<Draw>;
+			using StdSignatures = SignatureList<Draw>;
 		}
 		namespace system{
 			template<typename Config>

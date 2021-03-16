@@ -20,35 +20,50 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_COMPONENTSTORAGE_HPP
-#define CORE6_COMPONENTSTORAGE_HPP
+#ifndef CORE6_SYSTEMSTORAGE_HPP
+#define CORE6_SYSTEMSTORAGE_HPP
 
+#include <tuple>
 #include <vector>
-#include <type_traits>
-#include <MPL/MPL.hpp>
-#include "../ecsConfig.hpp"
+#include "MPL/MPL.hpp"
+#include "../system.hpp"
+#include "../agent.hpp"
 
 namespace c6{
-	template <typename TConfig>
-	class ComponentStorage{
+	template<typename TConfig, typename TList, typename ...TArgs>
+	class SystemStorage{
 			using Config = TConfig;
-			using ComponentList = typename Config::ComponentList;
+			using SignatureList = TList;
+			
+			template<typename Signature>
+			using System = System<Config, Signature, TArgs...>;
+			
 			template<typename... Ts>
-			using TupleOfVectors = std::tuple<std::vector<Ts>...>;
+			using TupleOfSystems = std::tuple<std::vector<System<Ts>>...>;
+			
+			using Agent = Agent<Config>;
 		private:
-			MPL::Rename<TupleOfVectors, ComponentList> m_components;
+			MPL::Rename<TupleOfSystems, SignatureList> m_systems;
 		public:
-			void grow(size_t size){
-				MPL::forTuple([this, size](auto& v){
-					v.resize(size);
-				}, m_components);
+			template<typename T>
+			void addSystem(const T& system){
+				std::get<std::vector<T>>(m_systems).push_back(system);
 			}
 			
 			template<typename T>
-			auto& getComponent(size_t i) noexcept{
-				return std::get<std::vector<T>>(m_components)[i];
+			void executeOn(Agent* a, TArgs&&... args){
+				auto& v = std::get<std::vector<T>>(m_systems);
+				for(auto& s : v)
+					a->template applySystem(s, std::forward<TArgs>(args)...);
+			}
+			
+			void executeAllOn(Agent* a, TArgs&&... args){
+				MPL::forTuple([this, a, &args...](auto& v){
+					for(auto& s : v)
+						a->template applySystem(s, std::forward<TArgs>(args)...);
+				}, m_systems);
 			}
 	};
 }
 
-#endif //CORE6_COMPONENTSTORAGE_HPP
+#endif //CORE6_SYSTEMSTORAGE_HPP

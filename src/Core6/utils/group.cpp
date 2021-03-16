@@ -25,7 +25,7 @@
 #include "Core6/framework.hpp"
 
 namespace c6{
-	Group::Group(bool order) : Gizmo(), m_order(false){
+	Group::Group([[maybe_unused]] bool order) : Gizmo(), m_order(false){
 	}
 	
 	void Group::destroy(){

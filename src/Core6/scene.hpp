@@ -54,7 +54,7 @@ namespace c6{
 				Framework::getRenderer()->lock();
 				Framework::getRenderer()->get().setView(m_camera);
 				Framework::getRenderer()->get().clear();
-				this->template executeSystem(ecs::system::draw<Config>, Framework::getRenderer()->get());
+				AgentGroup<Config>::draw();
 				Framework::getRenderer()->get().display();
 				Framework::getRenderer()->unlock();
 			};
