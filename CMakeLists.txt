@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(Core6 VERSION 0.2.0 DESCRIPTION "basic game engine, edition 6")
+project(Core6 VERSION 0.2.1 DESCRIPTION "basic game engine, edition 6")
 
 set(CMAKE_CXX_STANDARD 20)
 

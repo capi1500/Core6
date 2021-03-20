@@ -90,10 +90,10 @@ void Game::init(){
 	Framework::getResourceManager().loadTextures(std::string("../assets/textures"));
 	Framework::getResourceManager().loadSounds(std::string("../assets/sounds"));
 	
-	//c6::Console::useMessageType(c6::MessageType::Debug);
+	c6::Console::useMessageType(c6::MessageType::Debug);
 	c6::Console::useMessageType(c6::MessageType::Error);
 	c6::Console::useMessageType(c6::MessageType::Info);
-	//c6::Console::useMessageType(c6::MessageType::Loading);
+	c6::Console::useMessageType(c6::MessageType::Loading);
 	
 	RectComponent* r = new RectComponent;
 	r->r.setSize({100, 100});
@@ -103,4 +103,16 @@ void Game::init(){
 	
 	m_finiteStateMachine.add(scene1());
 	Application::init();
+}
+
+Game::~Game(){
+	Framework::destroyResourceManager();
+	Framework::destroyInputHandler();
+	Framework::destroySoundboard();
+	Framework::getRenderer().lock();
+	if(Framework::getRenderer().get().isOpen()){
+		Framework::getRenderer().get().close();
+	}
+	Framework::getRenderer().unlock();
+	Framework::destroyRenderer();
 }

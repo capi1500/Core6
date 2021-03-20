@@ -36,6 +36,7 @@ class Game : public c6::Application<Config>{
 	public:
 		void run() override;
 		void init() override;
+		~Game();
 };
 
 #endif //CORE6_GAME_HPP

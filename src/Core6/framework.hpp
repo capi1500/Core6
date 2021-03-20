@@ -47,20 +47,36 @@ namespace c6{
 			static LazyClass<Renderer> m_renderer;
 			static LazyClass<Soundboard> m_soundboard;
 		public:
-			static ResourceManager& getResourceManager(){
+			static ResourceManager& getResourceManager() noexcept{
 				return m_resourceManager();
 			}
 			
-			static InputHandler& getInputHandler(){
+			static InputHandler& getInputHandler() noexcept{
 				return m_input();
 			}
 			
-			static Renderer& getRenderer(){
+			static Renderer& getRenderer() noexcept{
 				return m_renderer();
 			}
 			
-			static Soundboard& getSoundboard(){
+			static Soundboard& getSoundboard() noexcept{
 				return m_soundboard();
+			}
+			
+			static void destroyResourceManager() noexcept{
+				m_resourceManager.destroy();
+			}
+			
+			static void destroyInputHandler() noexcept{
+				m_input.destroy();
+			}
+			
+			static void destroyRenderer() noexcept{
+				m_renderer.destroy();
+			}
+			
+			static void destroySoundboard() noexcept{
+				m_soundboard.destroy();
 			}
 	};
 	template<concepts::Config Config> LazyClass<typename Config::ResourceManager> Framework<Config>::m_resourceManager;
