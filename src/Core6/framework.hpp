@@ -23,13 +23,9 @@
 #ifndef CORE6_FRAMEWORK_HPP
 #define CORE6_FRAMEWORK_HPP
 
-#include <Core6/utils/singleton.hpp>
-#include <Core6/systems/inputHandler.hpp>
-#include <Core6/signal/message.hpp>
-#include <Core6/systems/renderer.hpp>
-#include <Core6/systems/resourceManager.hpp>
-#include <Core6/plugin/entryPoint.hpp>
-#include <SFML/Audio/Music.hpp>
+#include <Core6/utils/lazyClass.hpp>
+#include <Core6/utils/nonCopyable.hpp>
+#include <Core6/config.hpp>
 
 namespace c6{
 	/**
@@ -38,120 +34,39 @@ namespace c6{
 	 * Provides Loader, ResourceManager, InputHandler, Renderer, Storage<std::string, sf::Music>, Signal<CoreSignal> and Signal<Message>. <br>
 	 * All services are initialized with nullptr. To prevent accessing uninitialized memory, on first usage, if not initialized before, service is created with default service objects.
 	 */
-	class Framework : Singleton<Framework>{
+	template<concepts::Config TConfig>
+	class Framework : NonCopyable{
+			using Config = TConfig;
+			using ResourceManager = typename Config::ResourceManager;
+			using InputHandler = typename Config::InputHandler;
+			using Renderer = typename Config::Renderer;
+			using Soundboard = typename Config::Soundboard;
 		private:
-			static ResourceManager* m_resourceManager;
-			static InputHandler* m_input;
-			static Renderer* m_renderer;
-			static Storage<std::string, sf::Music>* m_musicPlayer;
-			static Signal<Message>* m_message;
-			static EntryPoint* m_entryPoint;
+			static LazyClass<ResourceManager> m_resourceManager;
+			static LazyClass<InputHandler> m_input;
+			static LazyClass<Renderer> m_renderer;
+			static LazyClass<Soundboard> m_soundboard;
 		public:
-			Framework(token t);
-			virtual ~Framework();
+			static ResourceManager& getResourceManager(){
+				return m_resourceManager();
+			}
 			
-			/**
-			 * @brief Function accessing ResourceManager
-			 * <br><br>
-			 * If assetManager is not initialized, it is created as default ResourceManager object
-			 * @return Pointer to assetManager service
-			 */
-			static ResourceManager* getResourceManager();
+			static InputHandler& getInputHandler(){
+				return m_input();
+			}
 			
-			/**
-			 * @brief Function accessing InputHandler
-			 * <br><br>
-			 * If input is not initialized, it is created as default InputHandler object
-			 * @return Pointer to input service
-			 */
-			static InputHandler* getInput();
+			static Renderer& getRenderer(){
+				return m_renderer();
+			}
 			
-			/**
-			 * @brief Function accessing Renderer
-			 * <br><br>
-			 * If renderer is not initialized, it is created as default Renderer object
-			 * @return Pointer to renderer service
-			 */
-			static Renderer* getRenderer();
-			
-			/**
-			 * @brief Function accessing Storage<std::string, sf::Music>
-			 * <br><br>
-			 * If musicPlater is not initialized, it is created as default Storage<std::string, sf::Music> object
-			 * @return Pointer to musicPlater service
-			 */
-			static Storage<std::string, sf::Music>* getMusicPlayer();
-			
-			/**
-			 * @brief Function accessing Signal<Message>
-			 * <br><br>
-			 * If message is not initialized, it is created as default Signal<Message> object
-			 * @return Pointer to message service
-			 */
-			static Signal<Message>* getMessage();
-			
-			/**
-			 * @brief Function accessing EntryPoint
-			 * <br><br>
-			 * If entryPoint is not initialized, it is created as default EntryPoint object
-			 * @return Pointer to entryPoint service
-			 */
-			static EntryPoint* getEntryPoint();
-			
-			/**
-			 * @brief Registers new assetManager service
-			 * @param assetManager - new assetManager service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerResourceManager(ResourceManager* assetManager);
-			
-			/**
-			 * @brief Registers new input service
-			 * @param input - new input service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerInput(InputHandler* input);
-			
-			/**
-			 * @brief Registers new renderer service
-			 * @param renderer - new renderer service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerRenderer(Renderer* renderer);
-			
-			/**
-			 * @brief Registers new musicPlater service
-			 * @param musicPlater - new musicPlater service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerMusicPlayer(Storage<std::string, sf::Music>* musicPlater);
-			
-			/**
-			 * @brief Registers new message service
-			 * @param message - new message service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerMessage(Signal<Message>* message);
-			
-			/**
-			 * @brief Registers new EntryPoint service
-			 * @param entryPoint - new EntryPoint service
-			 * @return
-			 * true if previous service was overwritten<br>
-			 * false otherwise
-			 */
-			static bool registerEntryPoint(EntryPoint* entryPoint);
+			static Soundboard& getSoundboard(){
+				return m_soundboard();
+			}
 	};
+	template<concepts::Config Config> LazyClass<typename Config::ResourceManager> Framework<Config>::m_resourceManager;
+	template<concepts::Config Config> LazyClass<typename Config::InputHandler> Framework<Config>::m_input;
+	template<concepts::Config Config> LazyClass<typename Config::Renderer> Framework<Config>::m_renderer;
+	template<concepts::Config Config> LazyClass<typename Config::Soundboard> Framework<Config>::m_soundboard;
 }
 
 #endif //CORE6_FRAMEWORK_HPP

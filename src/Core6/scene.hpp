@@ -31,14 +31,17 @@
 #include <Core6/agent/agentGroup.hpp>
 #include "framework.hpp"
 #include <Core6/agent/components.hpp>
+#include <Core6/config.hpp>
+#include <Core6/framework.hpp>
 
 namespace c6{
 	/**
-	 * @brief Class managing storing, updating and drawing Agents
+	 * @brief Class managing storing, updating and drawing Agents.
 	 */
-	template<typename TConfig>
+	template<concepts::Config TConfig>
 	class Scene : public AgentGroup<TConfig>, public FiniteState, public Listener<sf::Event>{
-		using Config = TConfig;
+			using Config = TConfig;
+			using Framework = Framework<Config>;
 		private:
 			Camera m_camera;
 			
@@ -51,12 +54,12 @@ namespace c6{
 			 * @brief draw all stored Agents
 			 */
 			void draw() override{
-				Framework::getRenderer()->lock();
-				Framework::getRenderer()->get().setView(m_camera);
-				Framework::getRenderer()->get().clear();
+				Framework::getRenderer().lock();
+				Framework::getRenderer().get().setView(m_camera);
+				Framework::getRenderer().get().clear();
 				AgentGroup<Config>::draw();
-				Framework::getRenderer()->get().display();
-				Framework::getRenderer()->unlock();
+				Framework::getRenderer().get().display();
+				Framework::getRenderer().unlock();
 			};
 			
 			void onSignal(const sf::Event& signal) override{
@@ -69,18 +72,18 @@ namespace c6{
 			 * @brief constructor of scene
 			 */
 			Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f){
-				Framework::getInput()->add(this);
+				Framework::getInputHandler().add(this);
 			};
 			
 			/**
 			 * @brief constructor of scene
 			 */
 			Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine), Listener<sf::Event>(){
-				Framework::getInput()->add(this);
+				Framework::getInputHandler().add(this);
 			}
 			
 			~Scene(){
-				Framework::getInput()->remove(this);
+				Framework::getInputHandler().remove(this);
 			};
 	};
 }

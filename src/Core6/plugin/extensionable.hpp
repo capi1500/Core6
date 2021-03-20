@@ -23,14 +23,9 @@
 #ifndef CORE6_EXTENSIONABLE_HPP
 #define CORE6_EXTENSIONABLE_HPP
 
-#include <string>
-
 namespace c6{
 	class Extensionable{
 		public:
-			static Extensionable* create(Extensionable* extensionable);
-			virtual Extensionable* clone() = 0;
-			virtual std::string tag() = 0;
 			virtual ~Extensionable() = default;
 	};
 }

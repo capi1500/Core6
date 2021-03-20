@@ -27,7 +27,10 @@
 
 class Plugin : public c6::Package{
 	public:
-		Plugin();
+		void onLoad() override;
+		void onUnLoad() override;
+	protected:
+		std::string name() override;
 };
 
 extern "C" {

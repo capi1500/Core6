@@ -35,18 +35,19 @@
 #include <Core6/framework.hpp>
 
 namespace c6{
-	template <typename TConfig>
+	template<concepts::Config TConfig>
 	class AgentGroup : public Group{
-			using Config = TConfig;
-			using SignatureBitsetStorage = SignatureStorage<Config>;
-			using ComponentStorage = ComponentStorage<Config>;
+			using ECSConfig = typename TConfig::ECSConfig;
+			using SignatureBitsetStorage = SignatureStorage<TConfig>;
+			using ComponentStorage = ComponentStorage<TConfig>;
 			
-			using TimeSystemList = typename Config::SystemTimeList;
-			using RenderSystemList = typename Config ::SystemRenderList;
-			using TimeSystemStorage = SystemStorage<Config, TimeSystemList, const sf::Time&>;
-			using RenderSystemStorage = SystemStorage<Config, RenderSystemList, sf::RenderWindow&>;
+			using TimeSystemList = typename ECSConfig::SystemTimeList;
+			using RenderSystemList = typename ECSConfig::SystemRenderList;
+			using TimeSystemStorage = SystemStorage<TConfig, TimeSystemList, const sf::Time&>;
+			using RenderSystemStorage = SystemStorage<TConfig, RenderSystemList, sf::RenderWindow&>;
 			
-			using Agent = Agent<Config>;
+			using Framework = Framework<TConfig>;
+			using Agent = Agent<TConfig>;
 		private:
 			SignatureBitsetStorage m_signatureStorage;
 			ComponentStorage m_componentStorage;
@@ -57,7 +58,7 @@ namespace c6{
 			struct token{};
 		public:
 			template<typename T, typename ...TArgs>
-			void executeSystem(const System<Config, T, TArgs...>& system, TArgs&&... args){
+			void executeSystem(const System<TConfig, T, TArgs...>& system, TArgs&&... args){
 				for(size_t i = 0; i < count(); i++){
 					if(m_members[i] != nullptr and m_members[i]->isExists()){
 						static_cast<Agent*>(m_members[i])->template applySystem(system, std::forward<TArgs>(args)...);
@@ -75,7 +76,7 @@ namespace c6{
 			}*/
 			
 			template<typename ...TArgs>
-			void newAgent(Factory<Config, TArgs...>& factory, TArgs... args){
+			void newAgent(Factory<TConfig, TArgs...>& factory, TArgs... args){
 				Agent* a = new Agent(token(), count());
 				m_componentStorage.grow(count() + 1);
 				addToBack(a);
@@ -91,12 +92,12 @@ namespace c6{
 			}*/
 			
 			template<typename T>
-			void addTimeSystem(const System<Config, T, const sf::Time&>& timeSystem){
+			void addTimeSystem(const System<TConfig, T, const sf::Time&>& timeSystem){
 				m_timeSystemStorage.template addSystem(timeSystem);
 			}
 			
 			template<typename T>
-			void addRenderSystem(const System<Config, T, sf::RenderWindow&>& renderSystem){
+			void addRenderSystem(const System<TConfig, T, sf::RenderWindow&>& renderSystem){
 				m_renderSystemStorage.template addSystem(renderSystem);
 			}
 			
@@ -110,7 +111,7 @@ namespace c6{
 			void draw() override{
 				for(size_t i = 0; i < count(); i++){
 					if(m_members[i] != nullptr and m_members[i]->isExists())
-						m_renderSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), Framework::getRenderer()->get());
+						m_renderSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), Framework::getRenderer().get());
 				}
 			}
 			

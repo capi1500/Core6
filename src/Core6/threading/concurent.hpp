@@ -30,21 +30,29 @@ namespace c6{
 	class Concurent{
 		private:
 			Type m_t;
-			std::mutex m_mutex;
+			mutable std::mutex m_mutex;
 		public:
-			void lock(){
+			void lock() const{
 				m_mutex.lock();
 			}
 			
-			void unlock(){
+			void unlock() const{
 				m_mutex.unlock();
 			}
 			
-			Type& operator () (){
+			Type& operator() (){
+				return m_t;
+			}
+			
+			const Type& operator() () const{
 				return m_t;
 			}
 			
 			Type& get(){
+				return m_t;
+			}
+			
+			const Type& get() const{
 				return m_t;
 			}
 	};

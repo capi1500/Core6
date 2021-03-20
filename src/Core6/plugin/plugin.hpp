@@ -28,6 +28,7 @@
 #endif
 #include <string>
 #include "package.hpp"
+#include <Core6/systems/console.hpp>
 
 namespace c6{
 	class Plugin{
@@ -37,23 +38,81 @@ namespace c6{
 			#endif
 			Package* m_package;
 		public:
-			bool load(const std::string& path);
+			bool load(const std::string& path){
+				Console::send(Message("Plugin: Loading plugin from path '" + path + "'", MessageType::Debug));
+				#ifdef WIN32
+				if(m_lib){
+					Console::send(Message("Plugin: Plugin already loaded", MessageType::Error));
+					return false;
+				}
+				m_lib = LoadLibrary(path.c_str());
+				if(!m_lib){
+					Console::send(Message("Plugin: Cannot find plugin at '" + path + "'", MessageType::Error));
+					return false;
+				}
+				typedef Package*(*__stdcall fun)();
+				#else
+				typedef Package* (*fun)();
+				#endif
+				auto create = getFunction<fun>("create");
+				if(!create)
+					return false;
+				m_package = create();
+				m_package->onLoad();
+				Console::send(Message("Plugin: Loaded plugin " + m_package->name() + " from path '" + path + "'", MessageType::Debug));
+				return true;
+			}
 			
-			void unload();
+			void unload(){
+				Console::send(Message("Plugin: Unloading plugin", MessageType::Debug));
+				if(m_package != nullptr){
+					m_package->onUnLoad();
+					delete m_package;
+					m_package = nullptr;
+				}
+				#ifdef WIN32
+				if(!m_lib){
+					Console::send(Message("Plugin: plugin not loaded, nothing to unload", MessageType::Error));
+				}
+				else{
+					FreeLibrary(m_lib);
+					m_lib = nullptr;
+				}
+				#else
+				#endif
+			}
 			
-			template<typename T>
+			template<class T>
+			requires std::is_invocable_v<T>
 			T getFunction(const std::string& name){
-				auto out = (T)GetProcAddress(m_lib, name.c_str());
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wcast-function-type"
+				T out = reinterpret_cast<T>(GetProcAddress(m_lib, name.c_str()));
+				#pragma GCC diagnostic pop
 				if(!out){
-					Framework::getMessage()->send(Message("cannot retrieve function address '" + name + "'", MessageType::Error));
+					Console::send(Message("Plugin: Cannot retrieve function address '" + name + "'", MessageType::Error));
 					return nullptr;
 				}
 				return out;
 			}
 			
-			Plugin();
+			Plugin(){
+				#ifdef WIN32
+				m_lib = nullptr;
+				#else
+				#endif
+				m_package = nullptr;
+			}
 			
-			~Plugin();
+			~Plugin(){
+				Console::send(Message("Plugin: Destroying", MessageType::Debug));
+				#ifdef WIN32
+				if(m_lib)
+					unload();
+				#else
+				#endif
+				Console::send(Message("Plugin: Destroyed", MessageType::Debug));
+			}
 	};
 }
 

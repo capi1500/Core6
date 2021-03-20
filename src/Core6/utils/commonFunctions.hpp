@@ -30,6 +30,28 @@
 #include <SFML/Window/Event.hpp>
 
 namespace c6{
+	namespace concepts{
+		namespace helper{
+			class Obj{};
+		}
+		
+		template<typename T> concept Integral = requires{
+			std::is_integral_v<T>;
+		};
+		
+		template<class T, auto... Args> concept CreatableArgs = requires{
+			T(Args...);
+		};
+		
+		template<class T, class... Args> concept CreatableTypes = requires(Args... args){
+			T(args...);
+		};
+		
+		template<typename T> concept Hashable = requires(T a) {
+			{ std::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
+		};
+	}
+	
 	/**
 	 * @brief transforms sf::Keyboard::Key to std::string
 	 * @param key - a key
@@ -75,7 +97,7 @@ namespace c6{
 	 * @param to - last element of interval
 	 * @return random value between from and to
 	 */
-	template<typename T>
+	template<concepts::Integral T>
 	T rand(T from, T to){
 		return std::rand() % (to - from + 1) + from;
 	}
@@ -114,7 +136,7 @@ namespace c6{
 	 */
 	template<class F, class G>
 	inline auto compose(F f, G g){
-		return [f, g](auto ... param){
+		return [f, g](auto... param){
 			return f(g(param...));
 		};
 	}

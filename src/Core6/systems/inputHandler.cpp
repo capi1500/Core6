@@ -20,7 +20,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Core6/framework.hpp>
+#include <Core6/systems/console.hpp>
 #include <Core6/utils/commonFunctions.hpp>
 #include <iostream>
 #include "inputHandler.hpp"
@@ -31,7 +31,7 @@ namespace c6{
 			sf::Event event;
 			while(m_window->pollEvent(event)){
 				send(event);
-				c6::Framework::getMessage()->send(sfEventToMessage(event));
+				//Console::send(sfEventToMessage(event));
 			}
 			processEvents();
 		}

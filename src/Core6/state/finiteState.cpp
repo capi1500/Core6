@@ -31,4 +31,12 @@ namespace c6{
 	void FiniteState::setIsActive(bool isActive){
 		m_active = isActive;
 	}
+	
+	FiniteStateMachine& FiniteState::getStateMachine(){
+		return m_finiteStateMachine;
+	}
+	
+	const FiniteStateMachine& FiniteState::getStateMachine() const{
+		return m_finiteStateMachine;
+	}
 }

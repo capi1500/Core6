@@ -29,19 +29,19 @@
 #define API
 #endif
 
-#include <string>
-#include "extensionable.hpp"
-#include <Core6/utils/storage.hpp>
+#include "entryPoint.hpp"
 
 namespace c6{
 	class Package{
-		private:
-			Storage<std::string, Extensionable*> m_templates;
 		protected:
-			void registerTemplate(const std::string& name, Extensionable* extensionable);
+			template<std::copyable T>
+			void registerTemplate(const std::string& name, T* element){
+				EntryPoint::addTemplate(name, element);
+			}
 		public:
-			virtual void onLoad();
-			virtual void onUnLoad();
+			virtual std::string name() = 0;
+			virtual void onLoad() = 0;
+			virtual void onUnLoad() = 0;
 			virtual ~Package() = default;
 	};
 }

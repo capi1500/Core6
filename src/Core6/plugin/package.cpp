@@ -20,21 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Core6/framework.hpp>
 #include "package.hpp"
-
-namespace c6{
-	void Package::registerTemplate(const std::string& name, Extensionable* extensionable){
-		m_templates[name] = extensionable;
-	}
-	
-	void Package::onLoad(){
-		for(auto& t : m_templates){
-			Framework::getEntryPoint()->addTemplate(t.first, t.second);
-		}
-	}
-	
-	void Package::onUnLoad(){
-	
-	}
-}

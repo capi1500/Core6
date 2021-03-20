@@ -22,7 +22,7 @@
 
 #include <Core6/utils/commonFunctions.hpp>
 #include "group.hpp"
-#include "Core6/framework.hpp"
+#include <Core6/systems/console.hpp>
 
 namespace c6{
 	Group::Group([[maybe_unused]] bool order) : Gizmo(), m_order(false){
@@ -151,7 +151,7 @@ namespace c6{
 	
 	Gizmo* Group::getRandom(){
 		if(m_members.size() == 0){
-			Framework::getMessage()->send(Message("Cannot get random gizmo from group: empty group", MessageType::Error));
+			Console::send(Message("Cannot get random gizmo from group: empty group", MessageType::Error));
 			return nullptr;
 		}
 		return m_members[rand(0ull, m_members.size() - 1)];
@@ -159,7 +159,7 @@ namespace c6{
 	
 	Gizmo* Group::getGizmo(size_t at){
 		if(m_members.size() <= at){
-			Framework::getMessage()->send(Message("Cannot get gizmo from group: index bigger than group's size", MessageType::Error));
+			Console::send(Message("Cannot get gizmo from group: index bigger than group's size", MessageType::Error));
 			return nullptr;
 		}
 		return m_members[at];

@@ -58,6 +58,7 @@ namespace c6{
 			 * @param ext - (optional) executes [f] only on files with [ext] extension
 			 */
 			template<class F>
+			requires std::is_invocable_v<F, std::string>
 			void execute(F f, bool recursive = false, const std::string& ext = "") const{
 				if(not m_path.empty()){
 					if(isDirectory()){

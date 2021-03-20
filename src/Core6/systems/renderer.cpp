@@ -21,7 +21,3 @@
 */
 
 #include "renderer.hpp"
-
-namespace c6{
-
-}

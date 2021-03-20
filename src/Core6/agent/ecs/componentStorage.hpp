@@ -27,12 +27,13 @@
 #include <type_traits>
 #include <MPL/MPL.hpp>
 #include "../ecsConfig.hpp"
+#include <Core6/config.hpp>
 
 namespace c6{
-	template <typename TConfig>
+	template <concepts::Config TConfig>
 	class ComponentStorage{
-			using Config = TConfig;
-			using ComponentList = typename Config::ComponentList;
+			using ECSConfig = typename TConfig::ECSConfig;
+			using ComponentList = typename ECSConfig::ComponentList;
 			template<typename... Ts>
 			using TupleOfVectors = std::tuple<std::vector<Ts>...>;
 		private:

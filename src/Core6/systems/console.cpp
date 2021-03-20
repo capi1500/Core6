@@ -25,16 +25,12 @@
 #include "console.hpp"
 
 namespace c6{
-	Console::Console(){
-		Framework::getMessage()->add(this);
-		m_info = m_debug = m_error = m_loader = false;
-	}
+	bool Console::m_info = false;
+	bool Console::m_debug = false;
+	bool Console::m_error = false;
+	bool Console::m_loader = false;
 	
-	Console::~Console(){
-		Framework::getMessage()->remove(this);
-	}
-	
-	void Console::useMessageType(MessageType type){
+	void Console::useMessageType(MessageType type) noexcept{
 		switch(type){
 			case MessageType::Info:
 				m_info = true;
@@ -51,7 +47,7 @@ namespace c6{
 		}
 	}
 	
-	void Console::onSignal(const Message& signal){
+	void Console::send(const Message& signal) noexcept{
 		if(signal.getType() == MessageType::Error and m_error)
 			std::cerr << signal.write() << "\n";
 		else if(signal.getType() == MessageType::Debug and m_debug)

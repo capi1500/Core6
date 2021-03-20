@@ -20,11 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <iostream>
 #include "scene.hpp"
-#include "framework.hpp"
-#include <Core6/agent/components.hpp>
-
-namespace c6{
-
-}

@@ -22,14 +22,14 @@
 
 #include <Core6/signal/message.hpp>
 #include "finiteStateMachine.hpp"
-#include "Core6/framework.hpp"
+#include <Core6/systems/console.hpp>
 #include <Core6/signal/signal.hpp>
 
 namespace c6{
 	FiniteState* FiniteStateMachine::getCurrentState(){
 		processEvents();
 		if(m_pushdownAutomaton.empty()){
-			Framework::getMessage()->send(Message("No active FiniteStates in FiniteStateMachine", MessageType::Error));
+			Console::send(Message("No active FiniteStates in FiniteStateMachine", MessageType::Error));
 			return nullptr;
 		}
 		return m_pushdownAutomaton.top();
@@ -80,7 +80,7 @@ namespace c6{
 		else if(signal.type == FiniteStateEvent::Pop){
 			for(unsigned i = 0; i < signal.pop.count; i++){
 				if(m_pushdownAutomaton.empty()){
-					Framework::getMessage()->send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
+					Console::send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
 					return;
 				}
 				delete m_pushdownAutomaton.top();
@@ -91,7 +91,7 @@ namespace c6{
 		}
 		else if(signal.type == FiniteStateEvent::Replace){
 			if(m_pushdownAutomaton.empty()){
-				Framework::getMessage()->send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
+				Console::send(Message("Cannot pop states: No states in FiniteStateMachine", MessageType::Error));
 				return;
 			}
 			delete m_pushdownAutomaton.top();

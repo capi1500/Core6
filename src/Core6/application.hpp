@@ -29,29 +29,66 @@
 #include <Core6/state/finiteStateMachine.hpp>
 #include <Core6/scene.hpp>
 #include <Core6/plugin/plugin.hpp>
+#include <Core6/config.hpp>
 
 namespace c6{
+	/**
+	 * @brief
+	 * class managing running the app. It listens for sf::Events.
+	 *
+	 *
+	 */
+	template<concepts::Config Config>
 	class Application : public Listener<sf::Event>{
 		protected:
-			Console m_console;
+			using Framework = Framework<Config>;
+			using Scene = Scene<Config>;
+			
 			sf::Clock m_clock;
 			FiniteStateMachine m_finiteStateMachine;
-			std::vector<Plugin> m_plugins;
+			std::vector<Plugin*> m_plugins;
 			bool m_active;
 			
-			template<typename Config>
-			Scene<Config>* getScene(){
-				return dynamic_cast<Scene<Config>*>(m_finiteStateMachine.getCurrentState());
+			Scene* getScene(){
+				return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
 			}
 			
-			void loadPlugins(const Path& path);
+			void loadPlugins(const Path& path){
+				auto loadPlugin = [this](const std::string name){
+					m_plugins.push_back(new Plugin());
+					m_plugins.back()->load(name);
+				};
+				path.execute(loadPlugin, "true", ".dll");
+			}
 		public:
-			void onSignal(const sf::Event& signal) override;
+			void onSignal(const sf::Event& signal) override{
+				if(signal.type == sf::Event::Closed)
+					m_active = false;
+			}
 			
 			virtual void run() = 0;
-			virtual void init();
+			virtual void init(){
+				m_active = true;
+				Framework::getInputHandler().add(this);
+			}
 			
-			virtual ~Application();
+			virtual ~Application(){
+				Console::send(Message("Closing Application", MessageType::Debug));
+				Console::send(Message("Clearing Finite State Machine", MessageType::Debug));
+				m_finiteStateMachine.clear();
+				m_finiteStateMachine.processEvents();
+				Console::send(Message("All finite states closed", MessageType::Debug));
+				Console::send(Message("Destroing templates", MessageType::Debug));
+				EntryPoint::destroy();
+				Console::send(Message("Templates destroyed", MessageType::Debug));
+				Console::send(Message("Unloadign plugins", MessageType::Debug));
+				for(auto& p : m_plugins){
+					delete p;
+					p = nullptr;
+				}
+				m_plugins.clear();
+				Console::send(Message("Plugins unloaded", MessageType::Debug));
+			}
 	};
 }
 

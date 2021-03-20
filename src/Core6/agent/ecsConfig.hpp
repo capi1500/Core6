@@ -25,14 +25,15 @@
 
 #include <MPL/MPL.hpp>
 #include <bitset>
+#include <Core6/utils/commonFunctions.hpp>
 
 namespace c6{
-	template<typename... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<typename... Ts> using SignatureList = MPL::TypeList<Ts...>;
-	template<typename... Ts> using ComponentList = MPL::TypeList<Ts...>;
-	template<typename... Ts> using TagList = MPL::TypeList<Ts...>;
+	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
+	template<class... Ts> using SignatureList = MPL::TypeList<Ts...>;
+	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
+	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
 	
-	template<typename TCompomentList, typename TTagList, typename TSignatureList, typename TSystemTimeList, typename TSystemRenderList>
+	template<class TCompomentList, class TTagList, class TSignatureList, class TSystemTimeList, class TSystemRenderList>
 	struct ECSConfig{
 		using ComponentList = typename TCompomentList::TypeList;
 		using TagList = typename TTagList::TypeList;
@@ -41,17 +42,17 @@ namespace c6{
 		using SystemRenderList = typename TSystemRenderList::TypeList;
 		using ThisType = ECSConfig<ComponentList, TagList, SignatureList, SystemTimeList, SystemRenderList>;
 		
-		template<typename T>
+		template<class T>
 		static constexpr bool isComponent() noexcept{
 			return MPL::Contains<T, ComponentList>{};
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr bool isTag() noexcept{
 			return MPL::Contains<T, TagList>{};
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr bool isSignature() noexcept{
 			return MPL::Contains<T, SignatureList>{};
 		}
@@ -68,33 +69,65 @@ namespace c6{
 			return MPL::size<SignatureList>();
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr std::size_t componentID() noexcept{
 			return MPL::IndexOf<T, ComponentList>{};
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr std::size_t tagID() noexcept{
 			return MPL::IndexOf<T, TagList>{};
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr std::size_t signatureID() noexcept{
 			return MPL::IndexOf<T, SignatureList>{};
 		}
 		
 		using Key = std::bitset<componentCount() + tagCount()>;
 		
-		template<typename T>
+		template<class T>
 		static constexpr std::size_t componentBit() noexcept{
 			return componentID<T>();
 		}
 		
-		template<typename T>
+		template<class T>
 		static constexpr std::size_t tagBit() noexcept{
 			return componentCount() + tagID<T>();
 		}
 	};
+	
+	namespace concepts{
+		template<class T> concept ECSConfig = requires{
+			typename T::ComponentList;
+			typename T::TagList;
+			typename T::SignatureList;
+			typename T::SystemTimeList;
+			typename T::SystemRenderList;
+			{T::template isComponent<helper::Obj>()} -> std::same_as<bool>;
+			{T::template isTag<helper::Obj>()} -> std::same_as<bool>;
+			{T::template isSignature<helper::Obj>()} -> std::same_as<bool>;
+			{T::componentCount()} -> std::convertible_to<std::size_t>;
+			{T::tagCount()} -> std::convertible_to<std::size_t>;
+			{T::signatureCount()} -> std::convertible_to<std::size_t>;
+			{T::template componentID<helper::Obj>()} -> std::convertible_to<std::size_t>;
+			{T::template tagID<helper::Obj>()} -> std::convertible_to<std::size_t>;
+			{T::template signatureID<helper::Obj>()} -> std::convertible_to<std::size_t>;
+			{T::template componentBit<helper::Obj>()} -> std::convertible_to<std::size_t>;
+			{T::template tagBit<helper::Obj>()} -> std::convertible_to<std::size_t>;
+		};
+		
+		namespace helper{
+			template<ECSConfig Config, class Sig>
+			struct IsSignature{
+				static constexpr bool value = Config::template isSignature<Sig>();
+			};
+		}
+		
+		template<class Config, class Sig> concept IsSignature = requires{
+			helper::IsSignature<Config, Sig>::value;
+		};
+	}
 }
 
 #endif //CORE6_ECSCONFIG_HPP

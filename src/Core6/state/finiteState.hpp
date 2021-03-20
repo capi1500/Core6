@@ -29,9 +29,17 @@
 namespace c6{
 	class FiniteStateMachine;
 	
+	/**
+	 * @brief One of base classes for FiniteStateMachine pattern. Represents one arbitrary state. State is closely tied to c6::FiniteStateMachine.
+	 *
+	 * FiniteState is meant to be overriden. You can access and communicate with parent c6::FiniteStateMachine using getStateMachine();
+	 */
 	class FiniteState : virtual public Gizmo{
-		protected:
+		private:
 			FiniteStateMachine& m_finiteStateMachine;
+		protected:
+			FiniteStateMachine& getStateMachine();
+			const FiniteStateMachine& getStateMachine() const;
 		public:
 			FiniteState(FiniteStateMachine& finiteStateMachine);
 			

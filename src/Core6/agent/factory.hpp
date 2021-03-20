@@ -27,11 +27,11 @@
 #include "agent.hpp"
 
 namespace c6{
-	template<typename TConfig, typename ...TArgs>
+	template<concepts::Config TConfig, typename ...TArgs>
 	class Factory{
-			using Config = TConfig;
-			using Agent = Agent<Config>;
-			using AgentGroup = AgentGroup<Config>;
+			using ECSConfig = typename TConfig::ECSConfig;
+			using Agent = Agent<TConfig>;
+			using AgentGroup = AgentGroup<TConfig>;
 			using FunctionType = std::function<void(Agent&, TArgs...)>;
 		private:
 			FunctionType init;

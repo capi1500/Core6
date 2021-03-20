@@ -30,18 +30,18 @@
 #include "../agent.hpp"
 
 namespace c6{
-	template<typename TConfig, typename TList, typename ...TArgs>
+	template<concepts::Config TConfig, typename TList, typename ...TArgs>
 	class SystemStorage{
-			using Config = TConfig;
+			using ECSConfig = typename TConfig::ECSConfig;
 			using SignatureList = TList;
 			
 			template<typename Signature>
-			using System = System<Config, Signature, TArgs...>;
+			using System = System<TConfig, Signature, TArgs...>;
 			
 			template<typename... Ts>
 			using TupleOfSystems = std::tuple<std::vector<System<Ts>>...>;
 			
-			using Agent = Agent<Config>;
+			using Agent = Agent<TConfig>;
 		private:
 			MPL::Rename<TupleOfSystems, SignatureList> m_systems;
 		public:

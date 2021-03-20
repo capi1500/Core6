@@ -24,23 +24,22 @@
 #define CORE6_SIGNATURESTORAGE_HPP
 
 #include <MPL/MPL.hpp>
-#include "../ecsConfig.hpp"
+#include <Core6/config.hpp>
 
 namespace c6{
 	namespace helper{
-		template<typename TConfig>
+		template<concepts::Config TConfig>
 		struct SignatureKey{
-			using Config = TConfig;
-			using ThisType = SignatureKey<Config>;
-			using SignatureList = typename Config::SignatureList;
-			using Key = typename Config::Key;
+			using ECSConfig = typename TConfig::ECSConfig;
+			using SignatureList = typename ECSConfig::SignatureList;
+			using Key = typename ECSConfig::Key;
 			
-			using KeyStorage = MPL::Tuple<MPL::Repeat<Config::signatureCount(), Key>>;
+			using KeyStorage = MPL::Tuple<MPL::Repeat<ECSConfig::signatureCount(), Key>>;
 			
 			template<typename T>
-			using IsComponentFilter = std::integral_constant<bool, Config::template isComponent<T>()>;
+			using IsComponentFilter = std::integral_constant<bool, ECSConfig::template isComponent<T>()>;
 			template<typename T>
-			using IsTagFilter = std::integral_constant<bool, Config::template isTag<T>()>;
+			using IsTagFilter = std::integral_constant<bool, ECSConfig::template isTag<T>()>;
 			
 			template<typename TSignature>
 			using SignatureComponents = MPL::Filter<IsComponentFilter, TSignature>;
@@ -49,9 +48,10 @@ namespace c6{
 		};
 	}
 	
-	template <typename TConfig>
+	template <concepts::Config TConfig>
 	class SignatureStorage{
 			using Config = TConfig;
+			using ECSConfig = typename Config::ECSConfig;
 			using SignatureKey = typename helper::SignatureKey<Config>;
 			using SignatureList = typename SignatureKey::SignatureList;
 			using KeyStorage = typename SignatureKey::KeyStorage;
@@ -66,25 +66,25 @@ namespace c6{
 				using SignatureTags = typename SignatureKey::template SignatureTags<T>;
 				
 				MPL::forTypes<SignatureComponents>([this, &key](auto t){
-					key[Config::template componentBit<MPL_TYPE(t)>()] = true;
+					key[ECSConfig::template componentBit<MPL_TYPE(t)>()] = true;
 				});
 				
 				MPL::forTypes<SignatureTags>([this, &key](auto t){
-					key[Config::template tagBit<MPL_TYPE(t)>()] = true;
+					key[ECSConfig::template tagBit<MPL_TYPE(t)>()] = true;
 				});
 			}
 		
 		public:
 			template<typename T>
 			auto& getSignatureKey() noexcept{
-				static_assert(Config::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
-				return std::get<Config::template signatureID<T>()>(m_storage);
+				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
+				return std::get<ECSConfig::template signatureID<T>()>(m_storage);
 			}
 			
 			template<typename T>
 			const auto& getSignatureKey() const noexcept{
-				static_assert(Config::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
-				return std::get<Config::template signatureID<T>()>(m_storage);
+				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
+				return std::get<ECSConfig::template signatureID<T>()>(m_storage);
 			}
 			
 			SignatureStorage() noexcept{

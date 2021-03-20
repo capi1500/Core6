@@ -20,18 +20,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <src/objects/rectComponent.hpp>
 #include "game.hpp"
 
 void Game::run(){
-	c6::Scene<Config>* scene;
+	Scene* scene;
 	sf::Time time;
 	
 	while(m_active){
 		time = m_clock.restart();
-		scene = getScene<Config>();
+		scene = getScene();
 		
-		c6::Framework::getInput()->handleInput();
-		c6::Framework::getMessage()->processEvents();
+		Framework::getInputHandler().handleInput();
 		
 		scene->update(time);
 		
@@ -53,8 +53,8 @@ c6::Scene<Config>* Game::scene1(){
 	scene->addRenderSystem(draw);
 	
 	Factory<int, int, sf::Color> f([](Agent& a, int x, int y, sf::Color color){
-		sf::RectangleShape* r = new sf::RectangleShape({100, 100});
-		r->setFillColor(color);
+		RectComponent* r = new RectComponent(c6::EntryPoint::getTemplate<RectComponent>("rect"));
+		r->r.setFillColor(color);
 		r->setPosition(x, y);
 		a.addComponent<Drawable>(r);
 		a.addComponent<Transformable>(r);
@@ -81,22 +81,25 @@ c6::Scene<Config>* Game::scene2(){
 }
 
 void Game::init(){
-	c6::Framework::getRenderer()->lock();
-	c6::Framework::getRenderer()->get().create(sf::VideoMode(500, 500), "Plugins test");
-	c6::Framework::getInput()->registerWindow(&c6::Framework::getRenderer()->get());
-	c6::Framework::getRenderer()->unlock();
+	Framework::getRenderer().lock();
+	Framework::getRenderer().get().create(sf::VideoMode(500, 500), "Plugins test");
+	Framework::getInputHandler().registerWindow(&Framework::getRenderer().get());
+	Framework::getRenderer().unlock();
 	
-	c6::Framework::getResourceManager()->loadFonts(std::string("../assets/fonts"));
-	c6::Framework::getResourceManager()->loadTextures(std::string("../assets/textures"));
-	c6::Framework::getResourceManager()->loadSounds(std::string("../assets/sounds"));
+	Framework::getResourceManager().loadFonts(std::string("../assets/fonts"));
+	Framework::getResourceManager().loadTextures(std::string("../assets/textures"));
+	Framework::getResourceManager().loadSounds(std::string("../assets/sounds"));
 	
-	//m_console.useMessageType(c6::MessageType::Debug);
-	m_console.useMessageType(c6::MessageType::Error);
-	m_console.useMessageType(c6::MessageType::Info);
-	m_console.useMessageType(c6::MessageType::Loading);
-	c6::Framework::getMessage()->add(&m_console);
+	//c6::Console::useMessageType(c6::MessageType::Debug);
+	c6::Console::useMessageType(c6::MessageType::Error);
+	c6::Console::useMessageType(c6::MessageType::Info);
+	//c6::Console::useMessageType(c6::MessageType::Loading);
 	
-	//loadPlugins(std::string("../mods/"));
+	RectComponent* r = new RectComponent;
+	r->r.setSize({100, 100});
+	c6::EntryPoint::addDefaultTemplate("rect", r);
+	
+	loadPlugins(std::string("../mods/"));
 	
 	m_finiteStateMachine.add(scene1());
 	Application::init();

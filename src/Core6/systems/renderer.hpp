@@ -23,18 +23,26 @@
 #ifndef CORE6_RENDERER_HPP
 #define CORE6_RENDERER_HPP
 
-#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <Core6/utils/group.hpp>
-#include "Core6/camera.hpp"
-#include <iostream>
 #include <Core6/threading/concurent.hpp>
 
 namespace c6{
+	namespace base{
+		class Renderer : public Concurent<sf::RenderWindow>{
+		
+		};
+	}
+	
+	namespace concepts{
+		template<class T> concept Renderer = requires{
+			std::is_base_of_v<base::Renderer, T>;
+		};
+	}
+	
 	/**
 	 * @brief System handling rendering, extends sf::RenderWindow
 	 */
-	class Renderer : public Concurent<sf::RenderWindow>{
+	class Renderer : public base::Renderer{
 	
 	};
 }

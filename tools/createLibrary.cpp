@@ -54,6 +54,10 @@ int main(){
 	system("cmake --build ..\\cmake_files\\ --target Core6plugin");
 	system("xcopy ..\\cmake_files\\libCore6plugin.dll ..\\tests\\mods /Y /q");
 	
+	system("echo Building plugin2");
+	system("cmake --build ..\\cmake_files\\ --target Core6plugin2");
+	system("xcopy ..\\cmake_files\\libCore6plugin2.dll ..\\tests\\mods /Y /q");
+	
 	system("echo Building executable");
 	system("cmake --build ..\\cmake_files\\ --target Core6debug");
 	#elif unix

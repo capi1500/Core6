@@ -26,18 +26,16 @@
 #include <Core6/signal/message.hpp>
 
 namespace c6{
-	class Console : public Listener<Message>{
+	class Console{
 		private:
-			bool m_info;
-			bool m_debug;
-			bool m_error;
-			bool m_loader;
+			static bool m_info;
+			static bool m_debug;
+			static bool m_error;
+			static bool m_loader;
 		public:
-			void useMessageType(MessageType type);
+			static void useMessageType(MessageType type) noexcept;
 			
-			void onSignal(const Message& signal) override;
-			Console();
-			virtual ~Console();
+			static void send(const Message& message) noexcept;
 	};
 }
 

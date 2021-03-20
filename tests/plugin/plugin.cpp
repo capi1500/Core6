@@ -21,6 +21,8 @@
 */
 
 #include "plugin.hpp"
+#include <src/objects/rectComponent.hpp>
+#include <iostream>
 
 extern "C" {
 c6::Package* API create(){
@@ -28,6 +30,16 @@ c6::Package* API create(){
 }
 }
 
-Plugin::Plugin(){
+void Plugin::onLoad(){
+	RectComponent* r = new RectComponent;
+	r->r.setSize({50, 50});
+	registerTemplate("rect", r);
+}
 
+void Plugin::onUnLoad(){
+
+}
+
+std::string Plugin::name(){
+	return "plugin";
 }

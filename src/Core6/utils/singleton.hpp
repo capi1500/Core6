@@ -47,7 +47,6 @@ namespace c6{
 			struct token{};
 			
 			Singleton() = default;
-		
 		public:
 			static T& instance(){
 				static T instance{token{}};

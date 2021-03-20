@@ -23,40 +23,6 @@
 #include "entryPoint.hpp"
 
 namespace c6{
-	void EntryPoint::setDefaultTemplate(const std::string& name, Extensionable* extensionable){
-		m_defaultTemplates[name] = extensionable;
-	}
-	
-	void EntryPoint::addTemplate(const std::string& name, Extensionable* extensionable){
-		m_templates[name] = extensionable;
-	}
-	
-	bool EntryPoint::tryAddTemplate(const std::string& name, Extensionable* extensionable){
-		if(m_templates.count(name) != 0)
-			return false;
-		addTemplate(name, extensionable);
-		return true;
-	}
-	
-	bool EntryPoint::removeTemplate(const std::string& name){
-		if(m_templates.count(name) == 0)
-			return false;
-		delete m_templates[name];
-		m_templates[name] = nullptr;
-		m_templates.erase(name);
-		return true;
-	}
-	
-	EntryPoint::~EntryPoint(){
-		for(auto& t : m_templates){
-			delete t.second;
-			t.second = nullptr;
-		}
-		for(auto& t : m_defaultTemplates){
-			delete t.second;
-			t.second = nullptr;
-		}
-		m_templates.clear();
-		m_defaultTemplates.clear();
-	}
+	std::map<std::string, Extensionable*> EntryPoint::m_defaultTemplates;
+	std::map<std::string, Extensionable*> EntryPoint::m_templates;
 }

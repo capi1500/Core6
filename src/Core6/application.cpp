@@ -21,29 +21,3 @@
 */
 
 #include "application.hpp"
-
-namespace c6{
-	void Application::loadPlugins(const Path& path){
-		auto loadPlugin = [&](const std::string name){
-			m_plugins.push_back(Plugin());
-			m_plugins.back().load(name);
-		};
-		path.execute(loadPlugin);
-	}
-	
-	Application::~Application(){
-		m_finiteStateMachine.clear();
-		m_finiteStateMachine.processEvents();
-		m_plugins.clear();
-	}
-	
-	void Application::onSignal(const sf::Event& signal){
-		if(signal.type == sf::Event::Closed)
-			m_active = false;
-	}
-	
-	void Application::init(){
-		m_active = true;
-		Framework::getInput()->add(this);
-	}
-}

@@ -35,8 +35,40 @@
 #include <SFML/Graphics/Font.hpp>
 
 namespace c6{
+	namespace base{
+		class ResourceManager{
+			public:
+				virtual void addTexture(const std::string& name) noexcept = 0;
+				virtual void removeTexture(const std::string& name) noexcept = 0;
+				virtual const sf::Texture& getTexture(const std::string& name) const noexcept = 0;
+				virtual void addSound(const std::string& name) noexcept = 0;
+				virtual void removeSound(const std::string& name) noexcept = 0;
+				virtual const sf::SoundBuffer& getSound(const std::string& name) const noexcept = 0;
+				virtual void addShader(const std::string& name, const sf::Shader::Type type) noexcept = 0;
+				virtual void removeShader(const std::string& name) noexcept = 0;
+				virtual const sf::Shader& getShader(const std::string& name) const noexcept = 0;
+				virtual void addFont(const std::string& name) noexcept = 0;
+				virtual void removeFont(const std::string& name) noexcept = 0;
+				virtual const sf::Font& getFont(const std::string& name) const noexcept = 0;
+				
+				virtual void loadTextures(const Path& path) noexcept = 0;
+				virtual void loadSounds(const Path& path) noexcept = 0;
+				virtual void loadShaders(const Path& path) noexcept = 0;
+				virtual void loadFonts(const Path& path) noexcept = 0;
+				
+				ResourceManager() = default;
+				virtual ~ResourceManager() = default;
+		};
+	}
+	
+	namespace concepts{
+		template<class T> concept ResourceManager = requires{
+			std::is_base_of_v<base::ResourceManager, T>;
+		};
+	}
+	
 	/** @brief class that holds all game resources */
-	class ResourceManager{
+	class ResourceManager : public base::ResourceManager{
 		private:
 			Concurent<Storage<std::string, sf::Texture>> m_texture;
 			Concurent<Storage<std::string, sf::SoundBuffer>> m_sound;
@@ -52,30 +84,30 @@ namespace c6{
 			std::thread m_thread;
 			Concurent<bool> m_working;
 			Concurent<std::queue<std::pair<Path, Type>>> m_queue;
-			void threadFunction();
+			void threadFunction() noexcept;
 			
-			void texturesFromPath(const Path& path);
-			void soundsFromPath(const Path& path);
-			void shadersFromPath(const Path& path);
-			void fontsFromPath(const Path& path);
+			void texturesFromPath(const Path& path) noexcept;
+			void soundsFromPath(const Path& path) noexcept;
+			void shadersFromPath(const Path& path) noexcept;
+			void fontsFromPath(const Path& path) noexcept;
 		public:
-			void addTexture(const std::string& name);
-			void removeTexture(const std::string& name);
-			const sf::Texture& getTexture(const std::string& name);
-			void addSound(const std::string& name);
-			void removeSound(const std::string& name);
-			const sf::SoundBuffer& getSound(const std::string& name);
-			void addShader(const std::string& name, const sf::Shader::Type type);
-			void removeShader(const std::string& name);
-			const sf::Shader& getShader(const std::string& name);
-			void addFont(const std::string& name);
-			void removeFont(const std::string& name);
-			const sf::Font& getFont(const std::string& name);
+			void addTexture(const std::string& name) noexcept override;
+			void removeTexture(const std::string& name) noexcept override;
+			const sf::Texture& getTexture(const std::string& name) const noexcept override;
+			void addSound(const std::string& name) noexcept override;
+			void removeSound(const std::string& name) noexcept override;
+			const sf::SoundBuffer& getSound(const std::string& name) const noexcept override;
+			void addShader(const std::string& name, const sf::Shader::Type type) noexcept override;
+			void removeShader(const std::string& name) noexcept override;
+			const sf::Shader& getShader(const std::string& name) const noexcept override;
+			void addFont(const std::string& name) noexcept override;
+			void removeFont(const std::string& name) noexcept override;
+			const sf::Font& getFont(const std::string& name) const noexcept override;
 			
-			void loadTextures(const Path& path);
-			void loadSounds(const Path& path);
-			void loadShaders(const Path& path);
-			void loadFonts(const Path& path);
+			void loadTextures(const Path& path) noexcept override;
+			void loadSounds(const Path& path) noexcept override;
+			void loadShaders(const Path& path) noexcept override;
+			void loadFonts(const Path& path) noexcept override;
 			
 			ResourceManager();
 			virtual ~ResourceManager();

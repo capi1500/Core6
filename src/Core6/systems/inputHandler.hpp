@@ -28,7 +28,19 @@
 #include <memory>
 
 namespace c6{
-	class InputHandler : public Signal<sf::Event>{
+	namespace base{
+		class InputHandler : public Signal<sf::Event>{
+		
+		};
+	}
+	
+	namespace concepts{
+		template<class T> concept InputHandler = requires{
+			std::is_base_of_v<base::InputHandler, T>;
+		};
+	}
+	
+	class InputHandler : public base::InputHandler{
 		private:
 			sf::Window* m_window;
 		public:

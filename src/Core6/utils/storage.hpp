@@ -27,7 +27,7 @@
 #include <unordered_map>
 
 namespace c6{
-	template<class Key, class Type>
+	template<concepts::Hashable Key, class Type>
 	class Storage : public std::unordered_map<Key, Type>{
 	
 	};

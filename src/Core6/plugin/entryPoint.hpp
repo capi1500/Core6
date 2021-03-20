@@ -23,32 +23,87 @@
 #ifndef CORE6_ENTRYPOINT_HPP
 #define CORE6_ENTRYPOINT_HPP
 
+#include <iostream>
+#include <map>
 #include <string>
+#include <concepts>
+#include <Core6/systems/console.hpp>
 #include "extensionable.hpp"
-#include <Core6/utils/storage.hpp>
 
 namespace c6{
 	class EntryPoint{
 		private:
-			Storage<std::string, Extensionable*> m_defaultTemplates;
-			Storage<std::string, Extensionable*> m_templates;
-		public:
-			void setDefaultTemplate(const std::string& name, Extensionable* extensionable);
-			void addTemplate(const std::string& name, Extensionable* extensionable);
-			bool tryAddTemplate(const std::string& name, Extensionable* extensionable);
-			bool removeTemplate(const std::string& name);
+			static std::map<std::string, Extensionable*> m_defaultTemplates;
+			static std::map<std::string, Extensionable*> m_templates;
 			
-			template<class T>
-			T* get(const std::string& name){
-				if(m_templates.count(name) == 0){
-					if(m_defaultTemplates.count(name) == 0)
-						return nullptr;
-					return dynamic_cast<T*>(m_defaultTemplates[name])->clone();
-				}
-				return dynamic_cast<T*>(m_templates[name])->clone();
+			static bool hasNonDefaultTemplate(const std::string& name) noexcept{
+				return m_templates.count(name) > 0;
 			}
 			
-			~EntryPoint();
+			template<std::copyable T>
+			requires std::is_base_of_v<Extensionable, T>
+			static T copy(Extensionable* element) noexcept{
+				return T(*static_cast<T*>(element));
+			}
+		public:
+			static bool hasTemplate(const std::string& name) noexcept{
+				return m_templates.count(name) + m_defaultTemplates.count(name) > 0;
+			}
+			
+			static bool hasDefaultTemplate(const std::string& name) noexcept{
+				return m_defaultTemplates.count(name) > 0;
+			}
+			
+			template<std::copyable T>
+			requires std::is_base_of_v<Extensionable, T>
+			static void addDefaultTemplate(const std::string& name, T* element) noexcept{
+				Console::send(Message("EntryPoint: registering default template " + name, MessageType::Debug));
+				if(hasDefaultTemplate(name)){
+					Console::send(Message("EntryPoint: destroying default template " + name, MessageType::Debug));
+					delete m_defaultTemplates[name];
+					m_defaultTemplates[name] = nullptr;
+				}
+				m_defaultTemplates[name] = element;
+				Console::send(Message("EntryPoint: added default template " + name, MessageType::Debug));
+			}
+			
+			template<std::copyable T>
+			requires std::is_base_of_v<Extensionable, T>
+			static void addTemplate(const std::string& name, T* element) noexcept{
+				Console::send(Message("EntryPoint: registering template " + name, MessageType::Debug));
+				if(hasNonDefaultTemplate(name)){
+					Console::send(Message("EntryPoint: destroying template " + name, MessageType::Debug));
+					delete m_templates[name];
+					m_templates[name] = nullptr;
+				}
+				m_templates[name] = element;
+				Console::send(Message("EntryPoint: added template " + name, MessageType::Debug));
+			}
+			
+			template<std::copyable T>
+			requires std::is_base_of_v<Extensionable, T>
+			static T getTemplate(const std::string& name) noexcept{
+				if(not hasTemplate(name))
+					Console::send(Message("No template of name '" + name + "' in Entry Point", MessageType::Error));
+				if(not hasNonDefaultTemplate(name))
+					return copy<T>(m_defaultTemplates[name]);
+				return copy<T>(m_templates[name]);
+			}
+			
+			static void destroy() noexcept{
+				for(auto& t : m_templates){
+					Console::send(Message("EntryPoint: destroying template " + t.first, MessageType::Debug));
+					delete t.second;
+					t.second = nullptr;
+				}
+				m_templates.clear();
+				for(auto& t : m_defaultTemplates){
+					Console::send(Message("EntryPoint: destroying default template " + t.first, MessageType::Debug));
+					delete t.second;
+					t.second = nullptr;
+				}
+				m_defaultTemplates.clear();
+			}
 	};
 }
 

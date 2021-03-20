@@ -31,17 +31,17 @@
 #include "ecs/componentStorage.hpp"
 
 namespace c6{
-	template <typename TConfig>
+	template<concepts::Config TConfig>
 	class AgentGroup;
 	
-	template <typename TConfig>
+	template<concepts::Config TConfig>
 	class Agent : public Gizmo{
-			using Config = TConfig;
-			using Key = typename Config::Key;
-			using ThisType = Agent<Config>;
-			using AgentGroup = AgentGroup<Config>;
-			using ComponentStorage = ComponentStorage<Config>;
-			using SignatureStorage = SignatureStorage<Config>;
+			using ECSConfig = typename TConfig::ECSConfig;
+			using Key = typename ECSConfig::Key;
+			using ThisType = Agent<TConfig>;
+			using AgentGroup = AgentGroup<TConfig>;
+			using ComponentStorage = ComponentStorage<TConfig>;
+			using SignatureStorage = SignatureStorage<TConfig>;
 		private:
 			Key m_key;
 			size_t m_id;
@@ -59,9 +59,9 @@ namespace c6{
 			
 			template<typename T, typename TF, typename ...TArgs>
 			void expandSignatureCall(TF&& function, TArgs&&... args){
-				static_assert(Config::template isSignature<T>(), "ERROR: c6::Agent::expandSignatureCall(): Type is not a Signature");
+				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::Agent::expandSignatureCall(): Type is not a Signature");
 				
-				using RequiredComponents = typename helper::SignatureKey<Config>::template SignatureComponents<T>;
+				using RequiredComponents = typename helper::SignatureKey<TConfig>::template SignatureComponents<T>;
 				
 				using Helper = MPL::Rename<ExpandCallHelper, RequiredComponents>;
 				
@@ -78,31 +78,31 @@ namespace c6{
 		public:
 			template<typename T>
 			bool hasTag() const noexcept{
-				static_assert(Config ::template isTag<T>(), "ERROR: c6::Agent::hasTag(): Type is not a Tag");
-				return m_key[Config::template tagBit<T>()];
+				static_assert(ECSConfig::template isTag<T>(), "ERROR: c6::Agent::hasTag(): Type is not a Tag");
+				return m_key[ECSConfig::template tagBit<T>()];
 			}
 			
 			template<typename T>
 			void addTag() noexcept{
-				static_assert(Config ::template isTag<T>(), "ERROR: c6::Agent::addTag(): Type is not a Tag");
-				m_key[Config::template tagBit<T>()] = true;
+				static_assert(ECSConfig::template isTag<T>(), "ERROR: c6::Agent::addTag(): Type is not a Tag");
+				m_key[ECSConfig::template tagBit<T>()] = true;
 			}
 			
 			template<typename T>
 			void deleteTag() noexcept{
-				static_assert(Config ::template isTag<T>(), "ERROR: c6::Agent::deleteTag(): Type is not a Tag");
-				m_key[Config::template tagBit<T>()] = false;
+				static_assert(ECSConfig::template isTag<T>(), "ERROR: c6::Agent::deleteTag(): Type is not a Tag");
+				m_key[ECSConfig::template tagBit<T>()] = false;
 			}
 			
 			template<typename T>
 			bool hasComponent() const noexcept{
-				static_assert(Config::template isComponent<T>(), "ERROR: c6::Agent::hasComponent(): Type is not a Component");
-				return m_key[Config::template componentBit<T>()];
+				static_assert(ECSConfig::template isComponent<T>(), "ERROR: c6::Agent::hasComponent(): Type is not a Component");
+				return m_key[ECSConfig::template componentBit<T>()];
 			}
 			
 			template<typename T>
 			auto& getComponent() noexcept{
-				static_assert(Config::template isComponent<T>(), "ERROR: c6::Agent::getComponent(): Type is not a Component");
+				static_assert(ECSConfig::template isComponent<T>(), "ERROR: c6::Agent::getComponent(): Type is not a Component");
 				assert(hasComponent<T>());
 				
 				return getGroup()->m_componentStorage.template getComponent<T>(m_id);
@@ -110,9 +110,9 @@ namespace c6{
 			
 			template<typename T, typename ...Targs>
 			auto& addComponent(Targs&& ...args) noexcept{
-				static_assert(Config::template isComponent<T>(), "ERROR: c6::Agent::addComponent(): Type is not a Component");
+				static_assert(ECSConfig::template isComponent<T>(), "ERROR: c6::Agent::addComponent(): Type is not a Component");
 				
-				m_key[Config::template componentBit<T>()] = true;
+				m_key[ECSConfig::template componentBit<T>()] = true;
 				
 				auto& c = getComponent<T>();
 				c = T(MPL_FWD(args)...);
@@ -122,13 +122,13 @@ namespace c6{
 			
 			template<typename T>
 			void deleteComponent() noexcept{
-				static_assert(Config::template isComponent<T>(), "ERROR: c6::Agent::deleteComponent(): Type is not a Component");
-				m_key[Config::template componentBit<T>()] = false;
+				static_assert(ECSConfig::template isComponent<T>(), "ERROR: c6::Agent::deleteComponent(): Type is not a Component");
+				m_key[ECSConfig::template componentBit<T>()] = false;
 			}
 			
 			template<typename T>
 			bool matchesSignature() const noexcept{
-				static_assert(Config::template isSignature<T>(), "ERROR: c6::Agent::matchesSignature(): Type is not a Signature");
+				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::Agent::matchesSignature(): Type is not a Signature");
 				
 				const auto& sigKey = getGroup()->m_signatureStorage.template getSignatureKey<T>();
 				
@@ -136,7 +136,7 @@ namespace c6{
 			}
 			
 			template<typename T, typename ...TArgs>
-			void applySystem(const System<Config, T, TArgs...>& system, TArgs&&... args){
+			void applySystem(const System<TConfig, T, TArgs...>& system, TArgs&&... args){
 				if(matchesSignature<T>())
 					expandSignatureCall<T>(system.function, std::forward<TArgs>(args)...);
 			}

@@ -25,32 +25,33 @@
 
 #include <functional>
 #include <MPL/MPL.hpp>
+#include <Core6/config.hpp>
 
 namespace c6{
 	namespace helper{
-		template<typename>
+		template<class>
 		struct SystemUnwrapper;
 		
-		template<typename ...Args>
+		template<class ...Args>
 		struct SystemUnwrapper<MPL::TypeList<Args...>>{
 			using type = std::function<void(Args...)>;
 		};
 		
-		template<typename>
+		template<class>
 		struct AddReference;
 		
-		template<typename ...Args>
+		template<class ...Args>
 		struct AddReference<MPL::TypeList<Args...>>{
 			using type = MPL::TypeList<Args&...>;
 		};
 	}
 	
-	template<typename TConfig, typename TSignature, typename ...TArgs>
+	template<concepts::Config TConfig, class TSignature, class ...TArgs>
+	requires concepts::IsSignature<typename TConfig::ECSConfig, TSignature>
 	class System{
-			using Config = TConfig;
+			using Config = typename TConfig::ECSConfig;
 			using Signature = TSignature;
 			using Key = typename Config::Key;
-			using ThisType = System<Config, Signature>;
 			
 			template<typename T>
 			using IsComponentFilter = std::integral_constant<bool, Config::template isComponent<T>()>;
