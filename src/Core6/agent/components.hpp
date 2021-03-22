@@ -26,34 +26,46 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <Core6/agent/ecsConfig.hpp>
+#include <Core6/config.hpp>
 #include <Core6/agent/system.hpp>
+#include <box2d/b2_body.h>
 
 namespace c6{
 	namespace ecs{
 		namespace component{
 			using Drawable = sf::Drawable*;
 			using Transformable = sf::Transformable*;
+			using Physic = b2Body*;
 			
-			using StdComponents = ComponentList<Drawable, Transformable>;
+			using StdComponents = ComponentList<Drawable, Transformable, Physic>;
 		}
 		namespace tag{
 			struct EventResponsible{};
-			
-			using StdTags = TagList<EventResponsible>;
+			struct PhysicallyMoving{};
+			using StdTags = TagList<EventResponsible, PhysicallyMoving>;
 		}
 		namespace signature{
 			using Draw = Signature<component::Drawable>;
+			using PhysicsTransformableSync = Signature<tag::PhysicallyMoving, component::Transformable, component::Physic>;
 			
-			using StdSignatures = SignatureList<Draw>;
+			using StdSignatures = SignatureList<Draw, PhysicsTransformableSync>;
 		}
 		namespace system{
-			template<typename Config>
+			template<concepts::Config Config>
 			using Draw = System<Config, signature::Draw, sf::RenderWindow&>;
 			
-			template<typename Config>
+			template<concepts::Config Config>
 			auto draw = Draw<Config>([](sf::RenderWindow& renderer, component::Drawable& r){
 				renderer.draw(*r);
+			});
+			
+			template<concepts::Config Config>
+			using PhysicsTransformableSync = System<Config, signature::PhysicsTransformableSync, const sf::Time&>;
+			
+			template<concepts::Config Config>
+			auto physicsTransformableSync = PhysicsTransformableSync<Config>([]([[maybe_unused]] const sf::Time& time, component::Transformable& t, component::Physic& p){
+				t->setPosition(Config::PhysicsConfig::meterToPixel(p->GetPosition()));
+				t->setRotation(180 * p->GetAngle() / b2_pi);
 			});
 		}
 	}

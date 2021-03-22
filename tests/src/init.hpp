@@ -29,19 +29,23 @@
 #include <Core6/agent/factory.hpp>
 #include <Core6/plugin/entryPoint.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <Core6/scene.hpp>
 
 // ECS Config
 using Drawable = c6::ecs::component::Drawable;
 using Transformable = c6::ecs::component::Transformable;
-using CompList = c6::ecs::component::StdComponents;
+using Physic = c6::ecs::component::Physic;
+using CompList = MPL::Concat<c6::ecs::component::StdComponents>;
 
 struct Rect{};
-using TagList = MPL::Concat<c6::TagList<Rect>, c6::ecs::tag::StdTags>;
+struct Player{};
+using TagList = MPL::Concat<c6::TagList<Rect, Player>, c6::ecs::tag::StdTags>;
 
-using MovableRectSig = c6::Signature<Drawable, Rect, Transformable>;
-using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig>, c6::ecs::signature::StdSignatures>;
+using MovableRectSig = c6::Signature<Rect, Transformable>;
+using PlayerMoveSig = c6::Signature<Physic, Player>;
+using SignatureList = MPL::Concat<c6::SignatureList<MovableRectSig, PlayerMoveSig>, c6::ecs::signature::StdSignatures>;
 
-using SysytemTimeList = MPL::TypeList<MovableRectSig>;
+using SysytemTimeList = MPL::TypeList<MovableRectSig, PlayerMoveSig, c6::ecs::signature::PhysicsTransformableSync>;
 using SysytemRenderList = MPL::TypeList<c6::ecs::signature::Draw>;
 
 using ECSConfig = c6::ECSConfig<CompList,
@@ -49,6 +53,9 @@ using ECSConfig = c6::ECSConfig<CompList,
 								SignatureList,
 								SysytemTimeList,
 								SysytemRenderList>;
+
+// Physics Config
+using PhysicsConfig = c6::PhysicsConfig;
 
 // Main Config
 using Config = c6::Config<ECSConfig,
@@ -58,21 +65,17 @@ using Config = c6::Config<ECSConfig,
 						  c6::Soundboard>;
 
 // Common types aliases
+using Scene = c6::Scene<Config>;
 using Agent = c6::Agent<Config>;
 template<typename ...TArgs>
 using Factory = c6::Factory<Config, TArgs...>;
 
 using Move = c6::System<Config, MovableRectSig, const sf::Time&>;
-auto draw = c6::ecs::system::draw<Config>;
-Move move([](const sf::Time& time, [[maybe_unused]]Drawable& r, Transformable& t){
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		t->move(0, -200 * time.asSeconds());
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		t->move(-200 * time.asSeconds(), 0);
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		t->move(0, 200 * time.asSeconds());
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		t->move(200 * time.asSeconds(), 0);
-});
+using MovePlayer = c6::System<Config, PlayerMoveSig, const sf::Time&>;
+
+extern c6::ecs::system::Draw<Config> draw;
+extern Move move;
+extern MovePlayer playerMove;
+extern c6::ecs::system::PhysicsTransformableSync<Config> physics;
 
 #endif //CORE6_INIT_HPP

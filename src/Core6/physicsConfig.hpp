@@ -20,23 +20,37 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_GAME_HPP
-#define CORE6_GAME_HPP
+#ifndef CORE6_PHYSICSCONFIG_HPP
+#define CORE6_PHYSICSCONFIG_HPP
 
-#include "init.hpp"
-#include <Core6/application.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <Core6/agent/agentGroup.hpp>
-#include <Core6/scene.hpp>
+#include <concepts>
+#include <box2d/b2_math.h>
+#include <SFML/System/Vector2.hpp>
 
-class Game : public c6::Application<Config>{
-	private:
-		Scene* scene1();
-		Scene* scene2();
-	public:
-		void run() override;
-		void init() override;
-		~Game();
-};
+namespace c6{
+	struct PhysicsConfig{
+		static const float scaleFactor;
+		static const b2Vec2 gravity;
+		static const unsigned velocityIterations;
+		static const unsigned positionIterations;
+		
+		static b2Vec2 pixelToMeter(const sf::Vector2f& pixel){
+			return b2Vec2(pixel.x / scaleFactor, pixel.y / scaleFactor);
+		}
+		
+		static sf::Vector2f meterToPixel(const b2Vec2& meter){
+			return sf::Vector2f(meter.x * scaleFactor, meter.y * scaleFactor);
+		}
+	};
+	
+	namespace concepts{
+		template<class T> concept PhysicsConfig = requires{
+			{T::scaleFactor} -> std::convertible_to<float>;
+			{T::gravity} -> std::convertible_to<b2Vec2>;
+			{T::velocityIterations} -> std::convertible_to<unsigned>;
+			{T::positionIterations} -> std::convertible_to<unsigned>;
+		};
+	}
+}
 
-#endif //CORE6_GAME_HPP
+#endif //CORE6_PHYSICSCONFIG_HPP

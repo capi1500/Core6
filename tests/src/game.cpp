@@ -22,6 +22,9 @@
 
 #include <src/objects/rectComponent.hpp>
 #include "game.hpp"
+#include <box2d/b2_common.h>
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_fixture.h>
 
 void Game::run(){
 	Scene* scene;
@@ -53,7 +56,7 @@ c6::Scene<Config>* Game::scene1(){
 	scene->addRenderSystem(draw);
 	
 	Factory<int, int, sf::Color> f([](Agent& a, int x, int y, sf::Color color){
-		RectComponent* r = new RectComponent(c6::EntryPoint::getTemplate<RectComponent>("rect"));
+		RectComponent* r = c6::EntryPoint::getTemplate<RectComponent>("rect");
 		r->r.setFillColor(color);
 		r->setPosition(x, y);
 		a.addComponent<Drawable>(r);
@@ -67,8 +70,8 @@ c6::Scene<Config>* Game::scene1(){
 	return scene;
 }
 
-c6::Scene<Config>* Game::scene2(){
-	c6::Scene<Config>* scene = new c6::Scene<Config>(m_finiteStateMachine, [&](const sf::Event& event){
+Scene* Game::scene2(){
+	Scene* scene = new Scene(m_finiteStateMachine, [&](const sf::Event& event){
 		if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Num1){
 			m_finiteStateMachine.add(scene1());
 		} else if(event.type == sf::Event::KeyPressed and event.key.code == sf::Keyboard::Backspace){
@@ -77,6 +80,109 @@ c6::Scene<Config>* Game::scene2(){
 			m_finiteStateMachine.replace(scene1());
 		}
 	});
+	
+	Factory<sf::Vector2f, sf::Vector2f> ground([this, scene](Agent& agent, sf::Vector2f pos, sf::Vector2f size){
+		RectComponent* r = new RectComponent;
+		r->r.setSize(size);
+		r->r.setFillColor(sf::Color::Green);
+		r->setOrigin(size.x / 2, size.y / 2);
+		
+		agent.addComponent<Drawable>(r);
+		agent.addComponent<Transformable>(r);
+		
+		b2BodyDef groundBodyDef;
+		groundBodyDef.position = PhysicsConfig::pixelToMeter(pos);
+		
+		b2PolygonShape groundBox;
+		b2Vec2 s = PhysicsConfig::pixelToMeter({size.x / 2, size.y / 2});
+		groundBox.SetAsBox(s.x, s.y);
+		
+		Physic p = scene->getWorld().CreateBody(&groundBodyDef);
+		p->CreateFixture(&groundBox, 0.f);
+		
+		agent.addTag<c6::ecs::tag::PhysicallyMoving>();
+		agent.addComponent<Physic>(p);
+	});
+	
+	Factory<sf::Vector2f, sf::Vector2f, float> box([this, scene](Agent& agent, sf::Vector2f pos, sf::Vector2f size, float angle){
+		RectComponent* r = new RectComponent;
+		r->r.setSize(size);
+		r->r.setFillColor(sf::Color::Blue);
+		r->setOrigin(size.x / 2, size.y / 2);
+		
+		agent.addComponent<Drawable>(r);
+		agent.addComponent<Transformable>(r);
+		
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position = PhysicsConfig::pixelToMeter(pos);
+		
+		b2PolygonShape box;
+		b2Vec2 s = PhysicsConfig::pixelToMeter({size.x / 2, size.y / 2});
+		box.SetAsBox(s.x, s.y);
+		
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &box;
+		fixtureDef.density = 1.f;
+		fixtureDef.friction = 0.3f;
+		
+		bodyDef.angle = angle;
+		
+		Physic p = scene->getWorld().CreateBody(&bodyDef);
+		p->CreateFixture(&fixtureDef);
+		
+		agent.addTag<c6::ecs::tag::PhysicallyMoving>();
+		agent.addComponent<Physic>(p);
+	});
+	
+	Factory<sf::Vector2f, sf::Vector2f, float> player([this, scene](Agent& agent, sf::Vector2f pos, sf::Vector2f size, float angle){
+		RectComponent* r = new RectComponent;
+		r->r.setSize(size);
+		r->r.setFillColor(sf::Color::Red);
+		r->setOrigin(size.x / 2, size.y / 2);
+		
+		agent.addComponent<Drawable>(r);
+		agent.addComponent<Transformable>(r);
+		
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position = PhysicsConfig::pixelToMeter(pos);
+		bodyDef.allowSleep = true;
+		bodyDef.awake = false;
+		bodyDef.fixedRotation = true;
+		
+		b2PolygonShape box;
+		b2Vec2 s = PhysicsConfig::pixelToMeter({size.x / 2, size.y / 2});
+		box.SetAsBox(s.x, s.y);
+		
+		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &box;
+		fixtureDef.density = 1.f;
+		fixtureDef.friction = 0.3f;
+		
+		bodyDef.angle = angle;
+		
+		Physic p = scene->getWorld().CreateBody(&bodyDef);
+		p->CreateFixture(&fixtureDef);
+		
+		agent.addComponent<Physic>(p);
+		
+		agent.addTag<c6::ecs::tag::PhysicallyMoving>();
+		agent.addTag<Player>();
+	});
+	
+	scene->addTimeSystem(playerMove);
+	scene->addTimeSystem(physics);
+	scene->addRenderSystem(draw);
+	
+	scene->newAgent(ground, {500, 500}, {500, 50});
+	
+	for(int i = 0; i < 15; i++)
+		scene->newAgent(box, {50 + i * 50.f, 0}, {50, 50}, 0.f);
+	for(int i = 0; i < 10; i++)
+		scene->newAgent(box, {50 + i * 60.f + 25, 100}, {50, 50}, b2_pi / (i + 1));
+	scene->newAgent(player, {500, 250}, {50, 50}, 0.f);
+	
 	return scene;
 }
 

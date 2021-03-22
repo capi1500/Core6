@@ -29,6 +29,7 @@
 #include <Core6/systems/inputHandler.hpp>
 #include <Core6/systems/soundboard.hpp>
 #include <Core6/agent/ecsConfig.hpp>
+#include "physicsConfig.hpp"
 
 namespace c6{
 	template<concepts::ECSConfig TECSConfig,
@@ -38,6 +39,7 @@ namespace c6{
 			 concepts::Soundboard TSoundboard>
 	struct Config{
 		using ECSConfig = TECSConfig;
+		using PhysicsConfig = PhysicsConfig;
 		using ResourceManager = TResourceManager;
 		using InputHandler = TInputHandler;
 		using Renderer = TRenderer;
@@ -47,6 +49,7 @@ namespace c6{
 	namespace concepts{
 		template<class T> concept Config = requires{
 			concepts::ECSConfig<typename T::ECSConfig>;
+			concepts::PhysicsConfig<typename T::PhysicsConfig>;
 			concepts::ResourceManager<typename T::ResourceManager>;
 			concepts::InputHandler<typename T::InputHandler>;
 			concepts::Renderer<typename T::Renderer>;

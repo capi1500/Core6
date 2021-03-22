@@ -33,6 +33,7 @@
 namespace c6{
 	class EntryPoint{
 		private:
+			// TODO, change to c6::Storage
 			static std::map<std::string, Extensionable*> m_defaultTemplates;
 			static std::map<std::string, Extensionable*> m_templates;
 			
@@ -42,8 +43,8 @@ namespace c6{
 			
 			template<std::copyable T>
 			requires std::is_base_of_v<Extensionable, T>
-			static T copy(Extensionable* element) noexcept{
-				return T(*static_cast<T*>(element));
+			static T* copy(Extensionable* element) noexcept{
+				return new T(*static_cast<T*>(element));
 			}
 		public:
 			static bool hasTemplate(const std::string& name) noexcept{
@@ -82,7 +83,7 @@ namespace c6{
 			
 			template<std::copyable T>
 			requires std::is_base_of_v<Extensionable, T>
-			static T getTemplate(const std::string& name) noexcept{
+			static T* getTemplate(const std::string& name) noexcept{
 				if(not hasTemplate(name))
 					Console::send(Message("No template of name '" + name + "' in Entry Point", MessageType::Error));
 				if(not hasNonDefaultTemplate(name))

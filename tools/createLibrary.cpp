@@ -34,8 +34,12 @@ int main(){
 	system("mkdir ..\\tests\\mods");
 	system("mkdir ..\\tests\\bin");
 	
+	system("echo Copying library binaries");
+	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\tests\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\tests\\bin\\ /Y /q");
+	
 	system("echo Building Core6");
-	system("cmake -G \"CodeBlocks - MinGW Makefiles\" -B..\\cmake_files ..\\");
+	system("cmake -G \"CodeBlocks - MinGW Makefiles\" -B ..\\cmake_files ..\\");
 	system("cmake --build ..\\cmake_files\\ --target Core6");
 	system("xcopy /s /EXCLUDE:excludeWin.txt ..\\src ..\\Core6\\include /Y /q");
 	system("xcopy ..\\cmake_files\\libCore6.dll ..\\Core6\\bin /Y /q");
@@ -44,6 +48,7 @@ int main(){
 	system("echo Building test project");
 	system("echo Copying binaries");
 	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\tests\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\tests\\bin\\ /Y /q");
 	system("xcopy ..\\Core6\\bin ..\\tests\\bin\\ /Y /q");
 	
 	system("echo Building test binary");

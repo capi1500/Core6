@@ -20,23 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_GAME_HPP
-#define CORE6_GAME_HPP
-
-#include "init.hpp"
-#include <Core6/application.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <Core6/agent/agentGroup.hpp>
-#include <Core6/scene.hpp>
-
-class Game : public c6::Application<Config>{
-	private:
-		Scene* scene1();
-		Scene* scene2();
-	public:
-		void run() override;
-		void init() override;
-		~Game();
-};
-
-#endif //CORE6_GAME_HPP
+#include "physicsConfig.hpp"
