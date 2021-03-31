@@ -72,7 +72,7 @@ namespace c6{
 			struct ExpandCallHelper{
 				template<typename TF, typename ...TArgs>
 				static void call(ThisType& agent, TF&& function, TArgs&&... args){
-					function(std::forward<TArgs>(args)..., agent.getGroup()->m_componentStorage.template getComponent<Ts>(agent.m_id)...);
+					function(agent.getGroup()->m_componentStorage.template getComponent<Ts>(agent.m_id)..., std::forward<TArgs>(args)...);
 				}
 			};
 		public:

@@ -33,7 +33,7 @@ const unsigned PhysicsConfig::positionIterations = 3;
 c6::ecs::system::Draw<Config> draw = c6::ecs::system::draw<Config>;
 c6::ecs::system::PhysicsTransformableSync<Config> physics = c6::ecs::system::physicsTransformableSync<Config>;
 
-Move move([](const sf::Time& time, Transformable& t){
+Move move([](Transformable& t, const sf::Time& time){
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		t->move(0, -200 * time.asSeconds());
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -44,7 +44,7 @@ Move move([](const sf::Time& time, Transformable& t){
 		t->move(200 * time.asSeconds(), 0);
 });
 
-MovePlayer playerMove([]([[maybe_unused]] const sf::Time& t, Physic& p){
+MovePlayer playerMove([](Physic& p, [[maybe_unused]] const sf::Time& t){
 	b2Vec2 v(0, 0);
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		v.y -= 30;

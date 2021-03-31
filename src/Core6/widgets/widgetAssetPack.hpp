@@ -67,7 +67,7 @@ namespace c6{
 			ButtonDef inactive;
 		};
 		
-		std::string font;
+		sf::Font font;
 		TextDef regular;
 		TextDef highlighted;
 		TextDef link;

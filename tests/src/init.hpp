@@ -30,13 +30,12 @@
 #include <Core6/plugin/entryPoint.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <Core6/scene.hpp>
-#include <Core6/widgets/widgets.hpp>
 
 // ECS Config
 using Drawable = c6::ecs::component::Drawable;
 using Transformable = c6::ecs::component::Transformable;
 using Physic = c6::ecs::component::Physic;
-using CompList = MPL::Concat<c6::ecs::component::StdComponents, c6::widget::component::WidgetComponents>;
+using CompList = c6::ecs::component::StdComponents;
 
 struct Rect{};
 struct Player{};

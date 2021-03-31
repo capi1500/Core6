@@ -24,58 +24,32 @@
 #define CORE6_FACTORIES_HPP
 
 #include "widgetAssetPack.hpp"
-#include "widgets.hpp"
 #include <Core6/config.hpp>
 #include <Core6/agent/factory.hpp>
 #include <Core6/framework.hpp>
+#include <Core6/widgets/components/label.hpp>
+#include <Core6/agent/components.hpp>
 
 namespace c6{
 	namespace widget{
 		namespace factory{
-			namespace helper{
-				auto createTextComponent(WidgetAssetPack::TextDef def){
-					component::Text text;
-					text.setStyle(def.style);
-					text.setCharacterSize(def.characterSize);
-					text.setLineSpacing(def.lineSpacing);
-					text.setLetterSpacing(def.letterSpacing);
-					text.setOutlineThickness(def.thickness);
-					text.setFillColor(def.fillColor);
-					text.setOutlineColor(def.outlineColor);
-					return text;
-				}
-				
-				auto createFrame9Component(WidgetAssetPack::FrameDef def, std::function<const sf::Texture&(const std::string&)> get){
-					component::Frame9Component f9;
-					for(int i = 0; i < 3; i++){
-						for(int j = 0; j < 3; j++){
-							f9.regular[i][j].setTexture(get(def.regular.part[i][j]));
-							f9.disabled[i][j].setTexture(get(def.disabled.part[i][j]));
-							f9.highlighted[i][j].setTexture(get(def.highlighted.part[i][j]));
-						}
-					}
-					return f9;
-				}
-			}
-			
 			template<concepts::Config Config, class... AddArgs>
 			using WidgetFactory = Factory<Config,
 										 const WidgetAssetPack&,
 										 const sf::Vector2f&,
-										 const sf::Vector2f&,
+										 const sf::Vector2u&,
 										 AddArgs...>;
 			
 			template<concepts::Config Config>
-			auto labelFactory = WidgetFactory<Config, const std::string&>([](Agent<Config>& agent, const WidgetAssetPack& assetPack, const sf::Vector2f& position, const sf::Vector2f& size, const std::string& label){
-				typename Config::ResourceManager& assets = Framework<Config>::getResourceManager();
-				
-				agent.template addComponent<component::Frame9Component>(helper::createFrame9Component(assetPack.frame, [&assets](const std::string& name){return assets.getTexture(name);}));
-				
-				auto text = helper::createTextComponent(assetPack.regular);
-				text.setFont(assets.getFont(assetPack.font));
-				text.setString(label);
-				
-				agent.template addComponent<component::Text>(text);
+			auto labelFactory = WidgetFactory<Config, const std::string&>([](Agent<Config>& agent, const WidgetAssetPack& assetPack, const sf::Vector2f& position, const sf::Vector2u& size, const std::string& string){
+				component::Label* label = new component::Label();
+				label->applyFrameDef(assetPack.frame);
+				label->applyTextDef(assetPack.regular);
+				label->setSize(size);
+				label->setPosition(position);
+				label->text.setString(string);
+				agent.template addComponent<ecs::component::Drawable>(label);
+				agent.template addComponent<ecs::component::Transformable>(label);
 			});
 		}
 	}

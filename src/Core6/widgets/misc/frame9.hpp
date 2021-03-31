@@ -37,7 +37,14 @@ namespace c6{
 			protected:
 				void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 			public:
-				Frame9(const WidgetAssetPack& assetPack, WidgetAssetPack::Frame9 def, const sf::Vector2u& size);
+				const sf::Vector2u& getSize() const;
+				void setSize(const sf::Vector2u& size);
+				
+				void applyDef(const WidgetAssetPack::Frame9& def);
+				
+				Frame9() = default;
+				Frame9(const WidgetAssetPack::Frame9& def);
+				Frame9(const WidgetAssetPack::Frame9& def, const sf::Vector2u& size);
 		};
 	}
 }

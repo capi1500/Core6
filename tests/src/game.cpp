@@ -69,17 +69,16 @@ c6::Scene<Config>* Game::scene1(){
 	scene->newAgent(f, 0, 0, sf::Color::Green);
 	
 	c6::WidgetAssetPack assetPack;
-	assetPack.font = "../assets/fonts/Pixeled.ttf";
+	assetPack.font.loadFromFile("../assets/fonts/Pixeled.ttf");
 	for(int i = 0; i < 3; i++){
 		for(int j = 0; j < 3; j++){
-			assetPack.frame.regular.part[i][j]
-					= assetPack.frame.highlighted.part[i][j]
-					= assetPack.frame.disabled.part[i][j]
-					= "../assets/textures/cyan.png";
+			assetPack.frame.regular.part[i][j].loadFromFile("../assets/textures/cyan.png");
+			assetPack.frame.highlighted.part[i][j].loadFromFile("../assets/textures/cyan.png");
+			assetPack.frame.disabled.part[i][j].loadFromFile("../assets/textures/cyan.png");
 		}
 	}
 	
-	scene->newAgent<const c6::WidgetAssetPack&, const sf::Vector2f&, const sf::Vector2f&, const std::string&>(c6::widget::factory::labelFactory<Config>, assetPack, sf::Vector2f(300, 300), sf::Vector2f(200, 200), "tekst");
+	scene->newAgent<const c6::WidgetAssetPack&, const sf::Vector2f&, const sf::Vector2u&, const std::string&>(c6::widget::factory::labelFactory<Config>, assetPack, sf::Vector2f(300, 300), sf::Vector2u(3, 4), "tekst");
 	
 	return scene;
 }

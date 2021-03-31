@@ -36,7 +36,6 @@ namespace c6{
 					void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 				public:
 					Frame9* currentFrame;
-				
 			};
 		}
 	}

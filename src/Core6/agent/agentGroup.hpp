@@ -97,7 +97,7 @@ namespace c6{
 			}
 			
 			template<typename T>
-			void addRenderSystem(const System<TConfig, T, sf::RenderWindow&>& renderSystem){
+			void addRenderSystem(const System<TConfig, T, sf::RenderWindow&, sf::RenderStates>& renderSystem){
 				m_renderSystemStorage.template addSystem(renderSystem);
 			}
 			

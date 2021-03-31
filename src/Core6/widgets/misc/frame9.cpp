@@ -34,7 +34,7 @@ namespace c6{
 					target.draw(m_sprites[i][1], states);
 					states.transform.translate(m_textureSizes[1].x, 0);
 				}
-				target.draw(m_sprite[i][2], states);
+				target.draw(m_sprites[i][2], states);
 				states.transform.translate(-m_textureSizes[1].x * m_size.x - m_textureSizes[0].x, m_textureSizes[i].y);
 			};
 			
@@ -44,8 +44,7 @@ namespace c6{
 			drawRow(2);
 		}
 		
-		Frame9::Frame9(const WidgetAssetPack& assetPack, WidgetAssetPack::Frame9 def, const sf::Vector2u& size){
-			m_size = size;
+		void Frame9::applyDef(const WidgetAssetPack::Frame9& def){
 			for(unsigned i = 0; i < 3; i++){
 				for(unsigned j = 0; j < 3; j++){
 					m_sprites[i][j].setTexture(def.part[i][j]);
@@ -55,6 +54,23 @@ namespace c6{
 				m_textureSizes[i].x = def.part[0][i].getSize().x;
 				m_textureSizes[i].y = def.part[i][0].getSize().y;
 			}
+		}
+		
+		Frame9::Frame9(const WidgetAssetPack::Frame9& def){
+			applyDef(def);
+		}
+		
+		Frame9::Frame9(const WidgetAssetPack::Frame9& def, const sf::Vector2u& size){
+			m_size = size;
+			applyDef(def);
+		}
+		
+		const sf::Vector2u& Frame9::getSize() const{
+			return m_size;
+		}
+		
+		void Frame9::setSize(const sf::Vector2u& size){
+			m_size = size;
 		}
 	}
 }

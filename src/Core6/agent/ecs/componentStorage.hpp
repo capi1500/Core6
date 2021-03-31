@@ -49,6 +49,25 @@ namespace c6{
 			auto& getComponent(size_t i) noexcept{
 				return std::get<std::vector<T>>(m_components)[i];
 			}
+			
+			ComponentStorage(){
+				MPL::forTuple([this](auto& v){
+					if constexpr(std::is_pointer_v<decltype(v)>){
+						v = nullptr;
+					}
+				}, m_components);
+			}
+			
+			~ComponentStorage(){
+				MPL::forTuple([this](auto& v){
+					if constexpr (std::is_pointer_v<decltype(v)>){
+						if(v != nullptr){
+							delete v;
+							v = nullptr;
+						}
+					}
+				}, m_components);
+			}
 	};
 }
 
