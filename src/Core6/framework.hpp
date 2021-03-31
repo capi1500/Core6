@@ -30,9 +30,7 @@
 namespace c6{
 	/**
 	 * @brief Global service provider
-	 * <br><br>
-	 * Provides Loader, ResourceManager, InputHandler, Renderer, Storage<std::string, sf::Music>, Signal<CoreSignal> and Signal<Message>. <br>
-	 * All services are initialized with nullptr. To prevent accessing uninitialized memory, on first usage, if not initialized before, service is created with default service objects.
+	 * Provides Loader, ResourceManager, InputHandler, Renderer, Soundboard. <br>
 	 */
 	template<concepts::Config TConfig>
 	class Framework : NonCopyable{

@@ -58,7 +58,7 @@ namespace c6{
 			using ReqComponents = typename helper::AddReference<MPL::Filter<IsComponentFilter, Signature>>::type;
 			using ExternArguments = MPL::TypeList<TArgs...>;
 			
-			using AllArguments = MPL::Concat<ExternArguments, ReqComponents>;
+			using AllArguments = MPL::Concat<ReqComponents, ExternArguments>;
 			
 		public:
 			using FunctionType = typename helper::SystemUnwrapper<AllArguments>::type;

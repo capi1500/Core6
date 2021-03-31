@@ -131,7 +131,48 @@ namespace c6{
 		return "Unknown";
 	}
 	
+	std::string vector2fToString(sf::Vector2f vec){
+		return "[" + std::to_string(vec.x) + " " + std::to_string(vec.y) + "]";
+	}
+	
 	Message sfEventToMessage([[maybe_unused]] const sf::Event& event){
+		std::string text = "sf::Event";
+		if(event.type == sf::Event::KeyPressed){
+			text += "::KeyPressed " + keyToString(event.key.code);
+		}
+		else if(event.type == sf::Event::KeyReleased){
+			text += "::KeyReleased " + keyToString(event.key.code);
+		}
+		else if(event.type == sf::Event::Closed)
+			text += "::Closed";
+		else if(event.type == sf::Event::GainedFocus)
+			text += "::GainedFocus";
+		else if(event.type == sf::Event::LostFocus)
+			text += "::LostFocus";
+		else if(event.type == sf::Event::MouseButtonPressed)
+			text += "::MouseButtonPressed " + buttonToString(event.mouseButton.button) + " + at [" + std::to_string(event.mouseButton.x) + ", " + std::to_string(event.mouseButton.y) + "]";
+		else if(event.type == sf::Event::MouseButtonReleased)
+			text += "::MouseButtonReleased " + buttonToString(event.mouseButton.button) + " + at [" + std::to_string(event.mouseButton.x) + ", " + std::to_string(event.mouseButton.y) + "]";
+		else if(event.type == sf::Event::MouseEntered)
+			text += "::MouseEntered";
+		else if(event.type == sf::Event::MouseLeft)
+			text += "::MouseLeft";
+		else if(event.type == sf::Event::MouseMoved)
+			text += "::MouseMoved to [" + std::to_string(event.mouseMove.x) + ", " + std::to_string(event.mouseMove.y) + "]";
+		else if(event.type == sf::Event::MouseWheelMoved)
+			text += "::MouseWheelMoved by " + std::to_string(event.mouseWheel.delta) + "[" + std::to_string(event.mouseWheel.x) + ", " + std::to_string(event.mouseWheel.y) + "]";
+		else if(event.type == sf::Event::MouseWheelScrolled){
+			text += "::MouseWheelScrolled ";
+			if(event.mouseWheelScroll.wheel == sf::Mouse::HorizontalWheel)
+				text += "Horizontal";
+			else
+				text += "Vertical";
+			text += " by " + std::to_string(event.mouseWheelScroll.delta) + "[" + std::to_string(event.mouseWheelScroll.x) + ", " + std::to_string(event.mouseWheelScroll.y) + "]";
+		}
+		else if(event.type == sf::Event::Resized)
+			text += "::Resized";
+		else if(event.type == sf::Event::TextEntered)
+			text += "::TextEntered";
 		return Message("sf::Event", MessageType::Debug);
 	}
 	

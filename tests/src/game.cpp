@@ -25,6 +25,7 @@
 #include <box2d/b2_common.h>
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_fixture.h>
+#include <Core6/widgets/factories.hpp>
 
 void Game::run(){
 	Scene* scene;
@@ -66,6 +67,19 @@ c6::Scene<Config>* Game::scene1(){
 	
 	scene->newAgent(f, 100, 100, sf::Color::Red);
 	scene->newAgent(f, 0, 0, sf::Color::Green);
+	
+	c6::WidgetAssetPack assetPack;
+	assetPack.font = "../assets/fonts/Pixeled.ttf";
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			assetPack.frame.regular.part[i][j]
+					= assetPack.frame.highlighted.part[i][j]
+					= assetPack.frame.disabled.part[i][j]
+					= "../assets/textures/cyan.png";
+		}
+	}
+	
+	scene->newAgent<const c6::WidgetAssetPack&, const sf::Vector2f&, const sf::Vector2f&, const std::string&>(c6::widget::factory::labelFactory<Config>, assetPack, sf::Vector2f(300, 300), sf::Vector2f(200, 200), "tekst");
 	
 	return scene;
 }

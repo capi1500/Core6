@@ -55,7 +55,7 @@ namespace c6{
 			using Draw = System<Config, signature::Draw, sf::RenderWindow&>;
 			
 			template<concepts::Config Config>
-			auto draw = Draw<Config>([](sf::RenderWindow& renderer, component::Drawable& r){
+			auto draw = Draw<Config>([](component::Drawable& r, sf::RenderWindow& renderer, sf::RenderStates states = sf::RenderStates()){
 				renderer.draw(*r);
 			});
 			
@@ -63,7 +63,7 @@ namespace c6{
 			using PhysicsTransformableSync = System<Config, signature::PhysicsTransformableSync, const sf::Time&>;
 			
 			template<concepts::Config Config>
-			auto physicsTransformableSync = PhysicsTransformableSync<Config>([]([[maybe_unused]] const sf::Time& time, component::Transformable& t, component::Physic& p){
+			auto physicsTransformableSync = PhysicsTransformableSync<Config>([](component::Transformable& t, component::Physic& p, [[maybe_unused]] const sf::Time& time){
 				t->setPosition(Config::PhysicsConfig::meterToPixel(p->GetPosition()));
 				t->setRotation(180 * p->GetAngle() / b2_pi);
 			});

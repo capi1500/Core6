@@ -36,6 +36,9 @@
 
 namespace c6{
 	namespace base{
+		/** @brief interface for ResourceManager
+		 *
+		 */
 		class ResourceManager{
 			public:
 				virtual void addTexture(const std::string& name) noexcept = 0;
@@ -67,7 +70,12 @@ namespace c6{
 		};
 	}
 	
-	/** @brief class that holds all game resources */
+	/** @brief Storage for textures, sounds, shaders and fonts.
+	 * Default implementation supports multithreading.
+	 * There is one loading thread. While it's working you can still
+	 * access resources. It can be slower than normaly though. Also you can
+	 * request the ResourceManager to load more resources
+	 */
 	class ResourceManager : public base::ResourceManager{
 		private:
 			Concurent<Storage<std::string, sf::Texture>> m_texture;
