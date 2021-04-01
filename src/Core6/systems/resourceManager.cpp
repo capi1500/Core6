@@ -159,9 +159,10 @@ namespace c6{
 	}
 	
 	void ResourceManager::fontsFromPath(const Path& path) noexcept{
+		Console::send(Message("Loading fonts from " + path.getPath(), MessageType::Loading));
 		for(auto ext : {"ttf", "otf", "cff", "pfb", "pfm", "afm", "aat", "sil", "fon", "bdf", "pfr", }){
 			path.execute([&](const std::string& path){
-				Console::send(Message("Loading sound '" + path + "'", MessageType::Loading));
+				Console::send(Message("Loading font '" + path + "'", MessageType::Loading));
 				addFont(path);
 			}, true, std::string(".") + ext);
 		}

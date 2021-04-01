@@ -45,7 +45,7 @@ namespace c6{
 				}, m_components);
 			}
 			
-			template<typename T>
+			template<concepts::Component<ECSConfig> T>
 			auto& getComponent(size_t i) noexcept{
 				return std::get<std::vector<T>>(m_components)[i];
 			}

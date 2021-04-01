@@ -44,7 +44,7 @@ namespace c6{
 			using TimeSystemList = typename ECSConfig::SystemTimeList;
 			using RenderSystemList = typename ECSConfig::SystemRenderList;
 			using TimeSystemStorage = SystemStorage<TConfig, TimeSystemList, const sf::Time&>;
-			using RenderSystemStorage = SystemStorage<TConfig, RenderSystemList, sf::RenderWindow&>;
+			using RenderSystemStorage = SystemStorage<TConfig, RenderSystemList, sf::RenderWindow&, const sf::RenderStates&>;
 			
 			using Framework = Framework<TConfig>;
 			using Agent = Agent<TConfig>;
@@ -57,7 +57,7 @@ namespace c6{
 			
 			struct token{};
 		public:
-			template<typename T, typename ...TArgs>
+			template<concepts::Signature<typename TConfig::ECSConfig> T, typename ...TArgs>
 			void executeSystem(const System<TConfig, T, TArgs...>& system, TArgs&&... args){
 				for(size_t i = 0; i < count(); i++){
 					if(m_members[i] != nullptr and m_members[i]->isExists()){
@@ -91,13 +91,13 @@ namespace c6{
 				factory.init(*a, std::forward<TArgs>(args)...);
 			}*/
 			
-			template<typename T>
+			template<concepts::Signature<typename TConfig::ECSConfig> T>
 			void addTimeSystem(const System<TConfig, T, const sf::Time&>& timeSystem){
 				m_timeSystemStorage.template addSystem(timeSystem);
 			}
 			
-			template<typename T>
-			void addRenderSystem(const System<TConfig, T, sf::RenderWindow&, sf::RenderStates>& renderSystem){
+			template<concepts::Signature<typename TConfig::ECSConfig> T>
+			void addRenderSystem(const System<TConfig, T, sf::RenderWindow&, const sf::RenderStates&>& renderSystem){
 				m_renderSystemStorage.template addSystem(renderSystem);
 			}
 			
@@ -109,9 +109,13 @@ namespace c6{
 			}
 			
 			void draw() override{
+				draw(sf::RenderStates());
+			}
+			
+			void draw(const sf::RenderStates& renderStates){
 				for(size_t i = 0; i < count(); i++){
 					if(m_members[i] != nullptr and m_members[i]->isExists())
-						m_renderSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), Framework::getRenderer().get());
+						m_renderSystemStorage.executeAllOn(static_cast<Agent*>(m_members[i]), Framework::getRenderer().get(), renderStates);
 				}
 			}
 			

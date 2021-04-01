@@ -30,12 +30,12 @@ namespace c6{
 			auto drawRow = [&target, &states, this](unsigned i){
 				target.draw(m_sprites[i][0], states);
 				states.transform.translate(m_textureSizes[0].x, 0);
-				for(unsigned i = 0; i < m_size.x; i++){
+				for(unsigned j = 0; j < m_size.x; j++){
 					target.draw(m_sprites[i][1], states);
 					states.transform.translate(m_textureSizes[1].x, 0);
 				}
 				target.draw(m_sprites[i][2], states);
-				states.transform.translate(-m_textureSizes[1].x * m_size.x - m_textureSizes[0].x, m_textureSizes[i].y);
+				states.transform.translate(-static_cast<int>(m_textureSizes[1].x * m_size.x) - static_cast<int>(m_textureSizes[0].x), m_textureSizes[i].y);
 			};
 			
 			drawRow(0);

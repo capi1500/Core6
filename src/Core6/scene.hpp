@@ -69,7 +69,7 @@ namespace c6{
 				Framework::getRenderer().lock();
 				Framework::getRenderer().get().setView(m_camera);
 				Framework::getRenderer().get().clear();
-				AgentGroup::draw();
+				AgentGroup::draw(/*m_camera.getTransform()*/);
 				Framework::getRenderer().get().display();
 				Framework::getRenderer().unlock();
 			};

@@ -68,17 +68,47 @@ c6::Scene<Config>* Game::scene1(){
 	scene->newAgent(f, 100, 100, sf::Color::Red);
 	scene->newAgent(f, 0, 0, sf::Color::Green);
 	
-	c6::WidgetAssetPack assetPack;
-	assetPack.font.loadFromFile("../assets/fonts/Pixeled.ttf");
-	for(int i = 0; i < 3; i++){
-		for(int j = 0; j < 3; j++){
-			assetPack.frame.regular.part[i][j].loadFromFile("../assets/textures/cyan.png");
-			assetPack.frame.highlighted.part[i][j].loadFromFile("../assets/textures/cyan.png");
-			assetPack.frame.disabled.part[i][j].loadFromFile("../assets/textures/cyan.png");
-		}
-	}
+	assetPack.font = Framework::getResourceManager().getFont("../assets/fonts/Pixeled.ttf");
 	
-	scene->newAgent<const c6::WidgetAssetPack&, const sf::Vector2f&, const sf::Vector2u&, const std::string&>(c6::widget::factory::labelFactory<Config>, assetPack, sf::Vector2f(300, 300), sf::Vector2u(3, 4), "tekst");
+	assetPack.frame.regular.part[0][0] =
+	assetPack.frame.highlighted.part[0][0] =
+	assetPack.frame.disabled.part[0][0] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/blue.png");
+	assetPack.frame.regular.part[0][1] =
+	assetPack.frame.highlighted.part[0][1] =
+	assetPack.frame.disabled.part[0][1] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/cyan.png");
+	assetPack.frame.regular.part[0][2] =
+	assetPack.frame.highlighted.part[0][2] =
+	assetPack.frame.disabled.part[0][2] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/red.png");
+	assetPack.frame.regular.part[1][0] =
+	assetPack.frame.highlighted.part[1][0] =
+	assetPack.frame.disabled.part[1][0] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/white.png");
+	assetPack.frame.regular.part[1][1] =
+	assetPack.frame.highlighted.part[1][1] =
+	assetPack.frame.disabled.part[1][1] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/green.png");
+	assetPack.frame.regular.part[1][2] =
+	assetPack.frame.highlighted.part[1][2] =
+	assetPack.frame.disabled.part[1][2] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/red.png");
+	assetPack.frame.regular.part[2][0] =
+	assetPack.frame.highlighted.part[2][0] =
+	assetPack.frame.disabled.part[2][0] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/blue.png");
+	assetPack.frame.regular.part[2][1] =
+	assetPack.frame.highlighted.part[2][1] =
+	assetPack.frame.disabled.part[2][1] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/magenta.png");
+	assetPack.frame.regular.part[2][2] =
+	assetPack.frame.highlighted.part[2][2] =
+	assetPack.frame.disabled.part[2][2] =
+			Framework::getResourceManager().getTexture("../assets/textures/rgb/white.png");
+	
+	scene->newAgent<const c6::WidgetAssetPack&, const sf::Vector2f&, const sf::Vector2u&, const std::string&>
+	        (c6::widget::factory::labelFactory<Config>, assetPack, sf::Vector2f(300, 300), sf::Vector2u(9, 5), "tekst");
 	
 	return scene;
 }
@@ -218,7 +248,7 @@ void Game::init(){
 	r->r.setSize({100, 100});
 	c6::EntryPoint::addDefaultTemplate("rect", r);
 	
-	loadPlugins(std::string("../mods/"));
+	//loadPlugins(std::string("../mods/"));
 	
 	m_finiteStateMachine.add(scene1());
 	Application::init();

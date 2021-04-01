@@ -23,7 +23,7 @@
 #ifndef CORE6_LABEL_HPP
 #define CORE6_LABEL_HPP
 
-#include "Graphic.hpp"
+#include "graphic.hpp"
 
 namespace c6{
 	namespace widget{
@@ -46,7 +46,7 @@ namespace c6{
 					void setSize(const sf::Vector2u& size);
 					const sf::Vector2u& getSize() const;
 					
-					Label() = default;
+					Label();
 					Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef);
 					Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef, const sf::Vector2u& size);
 					Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef, const std::string& string);

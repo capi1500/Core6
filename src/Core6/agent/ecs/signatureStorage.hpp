@@ -41,9 +41,9 @@ namespace c6{
 			template<typename T>
 			using IsTagFilter = std::integral_constant<bool, ECSConfig::template isTag<T>()>;
 			
-			template<typename TSignature>
+			template<concepts::Signature<typename TConfig::ECSConfig> TSignature>
 			using SignatureComponents = MPL::Filter<IsComponentFilter, TSignature>;
-			template<typename TSignature>
+			template<concepts::Signature<typename TConfig::ECSConfig> TSignature>
 			using SignatureTags = MPL::Filter<IsTagFilter, TSignature>;
 		};
 	}
@@ -58,7 +58,7 @@ namespace c6{
 		private:
 			KeyStorage m_storage;
 			
-			template<typename T>
+			template<concepts::Signature<ECSConfig> T>
 			void initializeKey() noexcept{
 				auto& key = getSignatureKey<T>();
 				
@@ -75,15 +75,13 @@ namespace c6{
 			}
 		
 		public:
-			template<typename T>
+			template<concepts::Signature<ECSConfig> T>
 			auto& getSignatureKey() noexcept{
-				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
 				return std::get<ECSConfig::template signatureID<T>()>(m_storage);
 			}
 			
-			template<typename T>
+			template<concepts::Signature<ECSConfig> T>
 			const auto& getSignatureKey() const noexcept{
-				static_assert(ECSConfig::template isSignature<T>(), "ERROR: c6::SignatureStorage::getSignatureKey(): Type is not a Signature");
 				return std::get<ECSConfig::template signatureID<T>()>(m_storage);
 			}
 			

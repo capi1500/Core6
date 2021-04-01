@@ -20,15 +20,27 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "Graphic.hpp"
+#ifndef CORE6_GRAPHIC_HPP
+#define CORE6_GRAPHIC_HPP
+
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <Core6/widgets/misc/frame9.hpp>
 
 namespace c6{
 	namespace widget{
 		namespace component{
-			void Graphic::draw(sf::RenderTarget& target, sf::RenderStates states) const{
-				states.transform.combine(getTransform());
-				target.draw(*currentFrame, states);
-			}
+			class Graphic : public sf::Drawable, public sf::Transformable{
+				protected:
+					void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+				public:
+					Frame9* currentFrame;
+					
+					Graphic();
+			};
 		}
 	}
 }
+
+#endif //CORE6_GRAPHIC_HPP

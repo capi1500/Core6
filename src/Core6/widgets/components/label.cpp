@@ -21,6 +21,7 @@
 */
 
 #include "label.hpp"
+#include <iostream>
 
 namespace c6{
 	namespace widget{
@@ -57,21 +58,28 @@ namespace c6{
 				return regular.getSize();
 			}
 			
+			Label::Label(){
+				currentFrame = &regular;
+			}
+			
 			Label::Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef){
 				applyFrameDef(frameDef);
 				applyTextDef(textDef);
+				currentFrame = &regular;
 			}
 			
 			Label::Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef, const sf::Vector2u& size){
 				applyFrameDef(frameDef);
 				applyTextDef(textDef);
 				setSize(size);
+				currentFrame = &regular;
 			}
 			
 			Label::Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef, const std::string& string){
 				applyFrameDef(frameDef);
 				applyTextDef(textDef);
 				text.setString(string);
+				currentFrame = &regular;
 			}
 			
 			Label::Label(const WidgetAssetPack::FrameDef& frameDef, const WidgetAssetPack::TextDef& textDef, const sf::Vector2u& size, const std::string& string){
@@ -79,6 +87,7 @@ namespace c6{
 				applyTextDef(textDef);
 				setSize(size);
 				text.setString(string);
+				currentFrame = &regular;
 			}
 		}
 	}

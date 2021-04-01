@@ -52,10 +52,10 @@ namespace c6{
 		}
 		namespace system{
 			template<concepts::Config Config>
-			using Draw = System<Config, signature::Draw, sf::RenderWindow&, sf::RenderStates>;
+			using Draw = System<Config, signature::Draw, sf::RenderWindow&, const sf::RenderStates&>;
 			
 			template<concepts::Config Config>
-			auto draw = Draw<Config>([](component::Drawable& r, sf::RenderWindow& renderer, sf::RenderStates states = sf::RenderStates()){
+			auto draw = Draw<Config>([](component::Drawable& r, sf::RenderWindow& renderer, const sf::RenderStates& states){
 				renderer.draw(*r, states);
 			});
 			

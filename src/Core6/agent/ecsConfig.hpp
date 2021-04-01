@@ -122,10 +122,28 @@ namespace c6{
 			struct IsSignature{
 				static constexpr bool value = Config::template isSignature<Sig>();
 			};
+			
+			template<ECSConfig Config, class Component>
+			struct IsComponent{
+				static constexpr bool value = Config::template isComponent<Component>();
+			};
+			
+			template<ECSConfig Config, class Tag>
+			struct IsTag{
+				static constexpr bool value = Config::template isTag<Tag>();
+			};
 		}
 		
-		template<class Config, class Sig> concept IsSignature = requires{
+		template<class Sig, class Config> concept Signature = requires{
 			helper::IsSignature<Config, Sig>::value;
+		};
+		
+		template<class Comp, class Config> concept Component = requires{
+			helper::IsComponent<Config, Comp>::value;
+		};
+		
+		template<class T, class Config> concept Tag = requires{
+			helper::IsTag<Config, T>::value;
 		};
 	}
 }

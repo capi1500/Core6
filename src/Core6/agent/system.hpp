@@ -47,7 +47,7 @@ namespace c6{
 	}
 	
 	template<concepts::Config TConfig, class TSignature, class ...TArgs>
-	requires concepts::IsSignature<typename TConfig::ECSConfig, TSignature>
+	requires concepts::Signature<TSignature, typename TConfig::ECSConfig>
 	class System{
 			using Config = typename TConfig::ECSConfig;
 			using Signature = TSignature;

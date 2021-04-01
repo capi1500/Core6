@@ -28,9 +28,12 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <Core6/agent/agentGroup.hpp>
 #include <Core6/scene.hpp>
+#include <Core6/widgets/widgetAssetPack.hpp>
 
 class Game : public c6::Application<Config>{
 	private:
+		c6::WidgetAssetPack assetPack;
+		
 		Scene* scene1();
 		Scene* scene2();
 	public:
