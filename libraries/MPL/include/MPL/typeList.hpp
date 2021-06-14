@@ -10,4 +10,5 @@ namespace MPL{
 		static constexpr std::size_t size{sizeof...(Ts)};
 	};
 }
+
 #endif //MPL_TYPELIST_HPP
