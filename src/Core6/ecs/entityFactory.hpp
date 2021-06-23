@@ -30,16 +30,21 @@ namespace c6{
 	
 	template<concepts::Config Config, class... Args>
 	class EntityFactory{
+			using ECS = EntityComponentSystem<Config>;
+			using EntityId = typename ECS::ItemId;
 		protected:
-			virtual void spawn(const EntityComponentSystem<Config>& entityManager, EntityId id, const Args&... args) const;
+			virtual void spawn(const ECS& entityManager, EntityId id, const Args&... args) const;
 			
 			friend class EntityComponentSystem<Config>;
 	};
 	
 	template<concepts::Config Config, class... Args>
 	class SimpleEntityFactory{
-		private:
+			using ECS = EntityComponentSystem<Config>;
+			using EntityId = typename ECS::ItemId;
+			
 			using Function = std::function<void(const EntityComponentSystem<Config>&, EntityId, const Args&...)>;
+		private:
 			Function function;
 		protected:
 			void spawn(const EntityComponentSystem<Config>& entityManager, EntityId id, const Args&... args) const final{

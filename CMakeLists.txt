@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(Core6 VERSION 0.4.2 DESCRIPTION "basic game engine, edition 6")
+project(Core6 VERSION 0.4.3 DESCRIPTION "basic game engine, edition 6")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -12,17 +12,20 @@ else()
     set(SHRD_EXT so)
 endif(WIN32)
 
-# find SFML 2.5
+# include SFML 2.5
 set(SFML_DIR ${LIB_DIR}/SFML-2.5.1/lib/cmake/SFML/)
 find_package(SFML 2.5 COMPONENTS graphics window system audio network REQUIRED)
 
-# find Box2D
+# include Box2D
 include_directories(${LIB_DIR}/Box2D/include)
 
-# find MPL
+# include MPL
 include_directories(${LIB_DIR}/../MPL/include)
 
-# find gtest
+# include concurent
+include_directories(${LIB_DIR}/../Concurrent/include)
+
+# include gtest
 include_directories(${LIB_DIR}/gtest/include)
 
 # includes
@@ -31,8 +34,10 @@ include_directories(src/tests)
 
 # add targets
 
-add_library(Core6base SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/interfaces/builder.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/interfaces/activable.cpp src/Core6/base/interfaces/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/base/interfaces/factory.hpp)
-add_library(Core6ecs SHARED src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/impl/componentManager.hpp src/Core6/ecs/impl/entity.hpp src/Core6/ecs/entityFactory.hpp)
+add_library(Core6base SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/interfaces/builder.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/interfaces/activable.cpp src/Core6/base/interfaces/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/base/interfaces/factory.hpp src/Core6/utils/storage.hpp src/Core6/utils/path.cpp src/Core6/utils/path.hpp src/Core6/utils/shuffledList.hpp)
+add_library(Core6ecs SHARED src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/impl/componentManager.hpp src/Core6/ecs/entityFactory.hpp)
+add_library(Core6systems SHARED src/Core6/systems/renderer.hpp src/Core6/systems/resourceManager.cpp src/Core6/systems/resourceManager.hpp src/Core6/systems/inputHandler.cpp src/Core6/systems/inputHandler.hpp src/Core6/systems/soundboard.cpp src/Core6/systems/soundboard.hpp)
+add_library(Core6 SHARED src/Core6/framework.cpp src/Core6/framework.hpp test/utils/shuffledList.hpp)
 add_executable(tests test/main.cpp test/base/listener/listener.hpp test/base/listener/emitter.hpp test/ecs/entityManager.hpp test/ecs/config.hpp test/ecs/componentManager.hpp)
 
 set_target_properties(Core6ecs PROPERTIES LINKER_LANGUAGE CXX)
@@ -40,14 +45,26 @@ set_target_properties(Core6ecs PROPERTIES LINKER_LANGUAGE CXX)
 # compile options
 target_compile_options(Core6base PRIVATE -Wall -O3 -Wextra)
 target_compile_options(Core6ecs PRIVATE -Wall -O3 -Wextra)
+target_compile_options(Core6 PRIVATE -Wall -O3 -Wextra)
 target_compile_options(tests PRIVATE -Wall -O3 -Wextra)
 
 # link libraries
+target_link_libraries(Core6base stdc++fs)
+
 target_link_libraries(Core6ecs ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6base.${SHRD_EXT})
 
+target_link_libraries(Core6systems sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
+target_link_libraries(Core6systems ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6base.${SHRD_EXT})
+
+target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
+target_link_libraries(Core6 ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6base.${SHRD_EXT})
+target_link_libraries(Core6 ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6ecs.${SHRD_EXT})
+
 target_link_libraries(tests ${CMAKE_HOME_DIRECTORY}/cmake_files/libgtest.${SHRD_EXT})
+target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
 target_link_libraries(tests ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6base.${SHRD_EXT})
 target_link_libraries(tests ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6ecs.${SHRD_EXT})
+target_link_libraries(tests ${CMAKE_HOME_DIRECTORY}/cmake_files/libCore6.${SHRD_EXT})
 
 # @@@@@ OLD @@@@@ #
 

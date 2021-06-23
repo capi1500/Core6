@@ -26,11 +26,6 @@
 #include <bitset>
 
 namespace c6{
-	MPL_STRONG_TYPEDEF(std::size_t, EntityId);
-	MPL_STRONG_TYPEDEF(std::size_t, DataId);
-	MPL_STRONG_TYPEDEF(std::size_t, HandleDataId);
-	MPL_STRONG_TYPEDEF(int, HandleCounter);
-	
 	/**
 	 * Class which holds the configuration of the Entity Component System
 	 * @tparam TComponentList - list of components

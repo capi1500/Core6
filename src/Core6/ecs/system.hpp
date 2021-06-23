@@ -42,6 +42,8 @@ namespace c6{
 			};
 			
 			using Key = typename Config::Key;
+			using ECS = EntityComponentSystem<Config>;
+			using EntityId = typename ECS::EntityId;
 			
 			template<class T>
 			using IsComponentFilter = std::integral_constant<bool, Config::template isComponent<T>()>;
@@ -57,7 +59,7 @@ namespace c6{
 			
 			template<class... Args>
 			struct SystemUnwrapper<MPL::TypeList<Args...>>{
-				using type = std::function<void(const EntityComponentSystem<Config>&, EntityId, Args...)>;
+				using type = std::function<void(const ECS&, EntityId, Args...)>;
 			};
 			
 			static constexpr Key initKey(){

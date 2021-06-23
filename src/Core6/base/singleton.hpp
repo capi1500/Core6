@@ -36,9 +36,9 @@ namespace c6{
 	 * @endcode
 	 * @tparam T - the class that is a Singleton
 	 */
-	template<class T> requires std::is_default_constructible_v<T>
+	template<class T>
 	class Singleton : public NonCopyable{
-		private:
+		protected:
 			Singleton() = default;
 		public:
 			/**

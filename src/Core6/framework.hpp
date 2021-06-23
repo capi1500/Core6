@@ -22,29 +22,24 @@
 
 #pragma once
 
-#include <gtest/gtest.h>
-#include "config.hpp"
-#include <Core6/ecs/impl/componentManager.hpp>
+#include <Core6/base/singleton.hpp>
+#include <Core6/systems/renderer.hpp>
+#include <Core6/systems/resourceManager.hpp>
+#include <Core6/systems/inputHandler.hpp>
+#include <Core6/systems/soundboard.hpp>
 
-class ComponentManagerTest : public testing::Test{
-	public:
-		c6::ComponentManager<Config>* componentManager;
-	protected:
-		void SetUp() override{
-			componentManager = new c6::ComponentManager<Config>();
-		}
-		
-		void TearDown() override{
-			delete componentManager;
-		}
-};
-
-TEST_F(ComponentManagerTest, GeneralTest){
-	componentManager->resize(10);
-	
-	for(std::size_t i = 0; i < 10; i++){
-		ASSERT_EQ(typeid(componentManager->getComponent<C1>(i)), typeid(C1&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C2>(i)), typeid(C2&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C3>(i)), typeid(C3&));
-	}
+namespace c6{
+	class Framework : private Singleton<Framework>{
+		private:
+			Renderer renderer;
+			ResourceManager resources;
+			InputHandler inputHandler;
+			Soundboard soundboard;
+		public:
+			static Renderer& getRenderer() noexcept;
+			static ResourceManager& getResourceManager() noexcept;
+			static InputHandler& getInputHandler() noexcept;
+			static Soundboard& getSoundboard() noexcept;
+	};
 }
+

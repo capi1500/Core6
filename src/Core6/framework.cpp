@@ -20,31 +20,23 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#include "framework.hpp"
 
-#include <gtest/gtest.h>
-#include "config.hpp"
-#include <Core6/ecs/impl/componentManager.hpp>
-
-class ComponentManagerTest : public testing::Test{
-	public:
-		c6::ComponentManager<Config>* componentManager;
-	protected:
-		void SetUp() override{
-			componentManager = new c6::ComponentManager<Config>();
-		}
-		
-		void TearDown() override{
-			delete componentManager;
-		}
-};
-
-TEST_F(ComponentManagerTest, GeneralTest){
-	componentManager->resize(10);
+namespace c6{
 	
-	for(std::size_t i = 0; i < 10; i++){
-		ASSERT_EQ(typeid(componentManager->getComponent<C1>(i)), typeid(C1&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C2>(i)), typeid(C2&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C3>(i)), typeid(C3&));
+	Renderer& Framework::getRenderer() noexcept{
+		return get().renderer;
+	}
+	
+	ResourceManager& Framework::getResourceManager() noexcept{
+		return get().getResourceManager();
+	}
+	
+	InputHandler& Framework::getInputHandler() noexcept{
+		return get().inputHandler;
+	}
+	
+	Soundboard& Framework::getSoundboard() noexcept{
+		return get().soundboard;
 	}
 }

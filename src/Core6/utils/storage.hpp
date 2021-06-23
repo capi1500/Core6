@@ -20,31 +20,20 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#ifndef CORE6_STORAGE_HPP
+#define CORE6_STORAGE_HPP
 
-#include <gtest/gtest.h>
-#include "config.hpp"
-#include <Core6/ecs/impl/componentManager.hpp>
+#include <unordered_map>
+#include <functional>
 
-class ComponentManagerTest : public testing::Test{
-	public:
-		c6::ComponentManager<Config>* componentManager;
-	protected:
-		void SetUp() override{
-			componentManager = new c6::ComponentManager<Config>();
-		}
-		
-		void TearDown() override{
-			delete componentManager;
-		}
-};
-
-TEST_F(ComponentManagerTest, GeneralTest){
-	componentManager->resize(10);
-	
-	for(std::size_t i = 0; i < 10; i++){
-		ASSERT_EQ(typeid(componentManager->getComponent<C1>(i)), typeid(C1&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C2>(i)), typeid(C2&));
-		ASSERT_EQ(typeid(componentManager->getComponent<C3>(i)), typeid(C3&));
+namespace c6{
+	template<class Key, class Type>
+	requires requires(Key key){
+		{std::hash<Key>{}(key)} -> std::convertible_to<std::size_t>;
 	}
+	class Storage : public std::unordered_map<Key, Type>{
+	
+	};
 }
+
+#endif //CORE6_STORAGE_HPP

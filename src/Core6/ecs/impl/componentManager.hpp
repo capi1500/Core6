@@ -44,7 +44,7 @@ namespace c6{
 			}
 			
 			template<concepts::Component<Config> T>
-			T& getComponent(DataId i) noexcept{
+			T& getComponent(std::size_t i) noexcept{
 				return std::get<std::vector<T>>(components)[i];
 			}
 			
