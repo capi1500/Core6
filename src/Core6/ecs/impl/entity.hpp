@@ -20,14 +20,29 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <gtest/gtest.h>
-#include "base/listener/listener.hpp"
-#include "base/listener/emitter.hpp"
-#include "ecs/config.hpp"
-#include "ecs/entityManager.hpp"
-#include "ecs/componentManager.hpp"
+#pragma once
 
-int main(int argc, char** argv){
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+#include "../config.hpp"
+
+namespace c6{
+	template<concepts::Config Config>
+	struct Entity{
+		using Key = typename Config::Key;
+		
+		DataId dataId;
+		HandleDataId handleDataId;
+		Key key;
+		bool exist;
+	};
+	
+	struct HandleData{
+		EntityId entityId;
+		HandleCounter counter;
+	};
+	
+	struct Handle{
+		HandleDataId handleDataId;
+		HandleCounter counter;
+	};
 }
+

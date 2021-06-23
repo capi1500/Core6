@@ -4,7 +4,7 @@
 #include <type_traits>
 
 namespace MPL{
-	template<typename ...Ts>
+	template<class... Ts>
 	struct TypeList{
 		// Size of the list.
 		static constexpr std::size_t size{sizeof...(Ts)};

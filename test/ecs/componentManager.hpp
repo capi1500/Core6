@@ -20,14 +20,31 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <gtest/gtest.h>
-#include "base/listener/listener.hpp"
-#include "base/listener/emitter.hpp"
-#include "ecs/config.hpp"
-#include "ecs/entityManager.hpp"
-#include "ecs/componentManager.hpp"
+#pragma once
 
-int main(int argc, char** argv){
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+#include <gtest/gtest.h>
+#include "config.hpp"
+#include <Core6/ecs/impl/componentManager.hpp>
+
+class ComponentManagerTest : public testing::Test{
+	public:
+		c6::ComponentManager<Config>* componentManager;
+	protected:
+		void SetUp() override{
+			componentManager = new c6::ComponentManager<Config>();
+		}
+		
+		void TearDown() override{
+			delete componentManager;
+		}
+};
+
+TEST_F(ComponentManagerTest, GeneralTest){
+	componentManager->resize(10);
+	
+	for(c6::DataId i(0); i < 10; i++){
+		ASSERT_EQ(typeid(componentManager->getComponent<C1>(c6::DataId(i))), typeid(C1&));
+		ASSERT_EQ(typeid(componentManager->getComponent<C2>(c6::DataId(i))), typeid(C2&));
+		ASSERT_EQ(typeid(componentManager->getComponent<C3>(c6::DataId(i))), typeid(C3&));
+	}
 }

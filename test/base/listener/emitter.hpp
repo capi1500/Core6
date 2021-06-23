@@ -23,9 +23,9 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include <listener/emitter.hpp>
-#include "../../Core6/src/Core6/base/nonCopyable.hpp"
-#include "../../Core6/src/Core6/base/nonMovable.hpp"
+#include <Core6/base/listener/emitter.hpp>
+#include <Core6/base/nonCopyable.hpp>
+#include <Core6/base/nonMovable.hpp>
 
 class EmitterTest : public testing::Test{
 	protected:
@@ -41,19 +41,19 @@ class EmitterTest : public testing::Test{
 		
 		struct NonMovableEvent : public c6::NonMovable{
 			int x;
-			/*NonMovableEvent(const NonMovableEvent&) = default;
+			NonMovableEvent(const NonMovableEvent&) = default;
 			NonMovableEvent(NonMovableEvent&&) = delete;
 			
 			NonMovableEvent& operator = (const NonMovableEvent&) = default;
 			NonMovableEvent& operator = (NonMovableEvent&&) = delete;
 			
-			NonMovableEvent() = default;*/
+			NonMovableEvent() = default;
 		};
 		
 		template<class Event>
 		class OverrideListener : public c6::Listener<Event>{
 			public:
-				void onNotify(const Event& event) const noexcept override{
+				void onNotify(const Event& event) noexcept override{
 					test += event.x;
 				}
 		};

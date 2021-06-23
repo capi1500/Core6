@@ -23,7 +23,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include <listener/listener.hpp>
+#include <Core6/base/listener/listener.hpp>
 
 class ListenerTest : public testing::Test{
 	protected:
@@ -46,7 +46,7 @@ class ListenerTest : public testing::Test{
 			//c6::SimpleListener<Event> wrongLamdaListener4([]([[maybe_unused]] Event* event){});
 			//c6::SimpleListener<Event> wrongLamdaListener5([](){});
 			//c6::SimpleListener<Event> wrongLamdaListener6([]([[maybe_unused]] const NotEvent& notEvent){});
-			Override overrideListener;
+			//Override overrideListener;
 		}
 		
 		void TearDown() override{

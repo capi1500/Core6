@@ -20,14 +20,34 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <gtest/gtest.h>
-#include "base/listener/listener.hpp"
-#include "base/listener/emitter.hpp"
-#include "ecs/config.hpp"
-#include "ecs/entityManager.hpp"
-#include "ecs/componentManager.hpp"
+#pragma once
 
-int main(int argc, char** argv){
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+#include "config.hpp"
+
+namespace c6{
+	template<concepts::Config Config>
+	class EntityComponentSystem;
+	
+	template<concepts::Config Config, class... Args>
+	class EntityFactory{
+		protected:
+			virtual void spawn(const EntityComponentSystem<Config>& entityManager, EntityId id, const Args&... args) const;
+			
+			friend class EntityComponentSystem<Config>;
+	};
+	
+	template<concepts::Config Config, class... Args>
+	class SimpleEntityFactory{
+		private:
+			using Function = std::function<void(const EntityComponentSystem<Config>&, EntityId, const Args&...)>;
+			Function function;
+		protected:
+			void spawn(const EntityComponentSystem<Config>& entityManager, EntityId id, const Args&... args) const final{
+				function(entityManager, id, args...);
+			}
+		public:
+			SimpleEntityFactory(const Function& function) : function(function){}
+			SimpleEntityFactory(Function&& function) : function(std::forward<Function>(function)){}
+	};
 }
+

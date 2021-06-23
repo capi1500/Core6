@@ -20,14 +20,22 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <gtest/gtest.h>
-#include "base/listener/listener.hpp"
-#include "base/listener/emitter.hpp"
-#include "ecs/config.hpp"
-#include "ecs/entityManager.hpp"
-#include "ecs/componentManager.hpp"
+#pragma once
 
-int main(int argc, char** argv){
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
-}
+#include <gtest/gtest.h>
+#include <Core6/ecs/entityComponentSystem.hpp>
+#include "config.hpp"
+
+class EntityManager : public testing::Test{
+	public:
+		c6::EntityComponentSystem<Config>* entityManager;
+	protected:
+		void SetUp() override{
+			entityManager = new c6::EntityComponentSystem<Config>();
+		}
+		
+		void TearDown() override{
+			delete entityManager;
+		}
+};
+
