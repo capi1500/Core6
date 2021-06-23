@@ -292,12 +292,12 @@ namespace c6{
 				return entities[entity].key[Config::template componentBit<T>()];
 			}
 			
-			template<concepts::Component<Config> T, class... TArgs>
-			auto& addComponent(EntityId entity, TArgs&&... args) noexcept{
+			template<concepts::Component<Config> T, class... Args>
+			auto& addComponent(EntityId entity, const Args&... args) noexcept{
 				entities[entity].key[Config::template componentBit<T>] = true;
 				
 				auto& c = componentManager.template getComponent<T>(getEntity(entity).dataId);
-				c = T(MPL_FWD(args)...);
+				c = T(args...);
 				
 				return c;
 			}
@@ -339,9 +339,9 @@ namespace c6{
 				return hasComponent<T>(getHandleData(handle).entityId);
 			}
 			
-			template<concepts::Component<Config> T, class... TArgs>
-			auto& addComponent(const Handle& handle, TArgs&&... args) noexcept{
-				return addComponent<T>(getHandleData(handle).entityId, MPL_FWD(args)...);
+			template<concepts::Component<Config> T, class... Args>
+			auto& addComponent(const Handle& handle, const Args&... args) noexcept{
+				return addComponent<T>(getHandleData(handle).entityId, args...);
 			}
 			
 			template<concepts::Component<Config> T>
