@@ -20,26 +20,32 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <iostream>
-#include <src/objects/rectComponent.hpp>
-#include "pluginConflict.hpp"
+#include "loggable.hpp"
 
-extern "C" {
-c6::Package* API create(){
-	return new PluginConflict;
-}
-}
-
-void PluginConflict::onLoad(){;
-	RectComponent* r = new RectComponent;
-	r->r.setSize({200, 200});
-	registerTemplate("rect", r);
-}
-
-void PluginConflict::onUnLoad(){
+namespace c6{
+	void Loggable::message(const std::string& what, Message::MessageType type){
+		if(console != nullptr){
+			console->send(Message(what, type));
+		}
+	}
 	
-}
-
-std::string PluginConflict::name(){
-	return "plugin2";
+	void Loggable::attachConsole(Console& console){
+		this->console = &console;
+	}
+	
+	void Loggable::dettachConsole() noexcept{
+		console = nullptr;
+	}
+	
+	Loggable::Loggable() : console(nullptr){
+	
+	}
+	
+	Loggable::Loggable(Console& console) noexcept{
+		attachConsole(console);
+	}
+	
+	Loggable::~Loggable() noexcept{
+		dettachConsole();
+	}
 }

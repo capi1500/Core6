@@ -24,9 +24,11 @@
 
 #include <concurrent.hpp>
 #include <SFML/Graphics.hpp>
+#include <memory>
+#include <Core6/base/interfaces/loggable.hpp>
 
 namespace c6{
-	class Renderer : public concurrent<sf::RenderWindow>{
+	class Renderer : public sf::RenderWindow, public Loggable{
 	
 	};
 }

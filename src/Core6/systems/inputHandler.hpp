@@ -22,9 +22,14 @@
 
 #pragma once
 
+#include <SFML/Window/Window.hpp>
+#include <SFML/Window/Event.hpp>
+#include <Core6/base/listener/emitter.hpp>
+
 namespace c6{
-	class InputHandler{
-	
+	class InputHandler : public Emitter<sf::Event>{
+		public:
+			void handleEvents(sf::Window* window);
 	};
 }
 

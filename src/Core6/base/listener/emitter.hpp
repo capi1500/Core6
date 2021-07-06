@@ -24,6 +24,7 @@
 
 #include <set>
 #include <queue>
+#include <memory>
 #include "listener.hpp"
 
 namespace c6{
@@ -56,24 +57,37 @@ namespace c6{
 				}
 			}
 			
-			void addListener(Listener<Event>& listener) noexcept{
-				listeners.insert(&listener);
+			/**
+			 * Adds listener to the emmiter's notify list.<br>
+			 * Unless manually erased, the emmiter will destroy added listener during it's destruction.
+			 * @param listener
+			 */
+			void addListener(Listener<Event>* listener) noexcept{
+				listeners.insert(listener);
 			}
 			
-			void removeListener(Listener<Event>& listener) noexcept{
-				listeners.erase(&listener);
+			void removeListener(Listener<Event>* listener) noexcept{
+				listeners.erase(listener);
 			}
 			
 			void removeAllListeners() noexcept{
 				listeners.clear();
 			}
 			
+			[[nodiscard]]
 			size_t listenerCount() const noexcept{
 				return listeners.size();
 			}
 			
+			[[nodiscard]]
 			size_t eventCount() const noexcept{
 				return eventQueue.size();
+			}
+			
+			virtual ~Emitter(){
+				for(Listener<Event>* listener : listeners){
+					delete listener;
+				}
 			}
 	};
 }

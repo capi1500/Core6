@@ -22,17 +22,14 @@
 
 #pragma once
 
-#include <concurrent.hpp>
-#include <SFML/Audio/Music.hpp>
 #include <SFML/Audio/Sound.hpp>
-#include <Core6/utils/storage.hpp>
 #include <Core6/utils/shuffledList.hpp>
+#include <Core6/base/interfaces/loggable.hpp>
 
 namespace c6{
-	class Soundboard{
-		private:
-			concurrent<Storage<std::string, sf::Music>> music;
-			concurrent<ShuffledList<sf::Sound>> sounds;
+	class Soundboard : public ShuffledList<sf::Sound>, public Loggable{
+		public:
+			void refreshNoShrink() noexcept override;
 	};
 }
 

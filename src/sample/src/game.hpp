@@ -20,10 +20,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "rectComponent.hpp"
-#include <SFML/Graphics/RenderTarget.hpp>
+#pragma once
 
-void RectComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const{
-	states.transform.combine(getTransform());
-	target.draw(r, states);
+namespace c6{
+	class Game{
+	
+	};
 }
+

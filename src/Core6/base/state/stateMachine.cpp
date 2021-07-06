@@ -83,10 +83,10 @@ namespace c6{
 						break;
 				}
 			}){
-		addListener(*this);
+		addListener(this);
 	}
 	
 	StateMachine::~StateMachine() noexcept{
-		removeListener(*this);
+		removeListener(this);
 	}
 }

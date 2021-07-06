@@ -20,26 +20,23 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_GAME_HPP
-#define CORE6_GAME_HPP
+#pragma once
 
-#include "init.hpp"
-#include <Core6/application.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <Core6/agent/agentGroup.hpp>
-#include <Core6/scene.hpp>
-#include <Core6/widgets/widgetAssetPack.hpp>
+#include <Core6/systems/console.hpp>
 
-class Game : public c6::Application<Config>{
-	private:
-		c6::WidgetAssetPack assetPack;
-		
-		Scene* scene1();
-		Scene* scene2();
-	public:
-		void run() override;
-		void init() override;
-		~Game();
-};
+namespace c6{
+	class Loggable{
+		private:
+			Console* console;
+		protected:
+			void message(const std::string& what, Message::MessageType type);
+		public:
+			void attachConsole(Console& console);
+			void dettachConsole() noexcept;
+	
+			Loggable();
+			explicit Loggable(Console& console) noexcept;
+			virtual ~Loggable() noexcept;
+	};
+}
 
-#endif //CORE6_GAME_HPP

@@ -20,95 +20,117 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <iostream>
 #include "resourceManager.hpp"
 
 namespace c6{
-	void ResourceManager::addTexture(const std::string& name) noexcept{
-		textures.lambda([&name](auto& storage){
-			storage[name].loadFromFile(name);
-		});
+	void ResourceManager::addTexture(const Path& path) noexcept{
+		message("Loading texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
+		if(textures[path.getPath()].loadFromFile(path.getPath()))
+			message("Loaded texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
+		else
+			message("Cannot load texture " + path.getPath() + " from path: " + path.getPath(), Message::Error);
+	}
+	
+	void ResourceManager::addTexture(const std::string& name, const Path& path) noexcept{
+		message("Loading texture " + name + " from path: " + path.getPath(), Message::Loading);
+		if(textures[name].loadFromFile(path.getPath()))
+			message("Loaded texture " + name + " from path: " + path.getPath(), Message::Loading);
+		else
+			message("Cannot load texture " + name + " from path: " + path.getPath(), Message::Error);
 	}
 	
 	void ResourceManager::removeTexture(const std::string& name) noexcept{
-		textures.lambda([&name](auto& storage){
-			storage.erase(name);
-		});
+		textures.erase(name);
 	}
 	
 	const sf::Texture& ResourceManager::getTexture(const std::string& name) const noexcept{
-		while(true){
-			if(textures.lambda([&name](auto& storage){return storage.count(name) != 0;}).get()){
-				return textures.lambda([&name](auto& storage) -> const sf::Texture&{
-					return storage.at(name);
-				}).get();
-			}
-		}
+		return textures.at(name);
 	}
 	
-	void ResourceManager::addSound(const std::string& name) noexcept{
-		sounds.lambda([&name](auto& storage){
-			storage[name].loadFromFile(name);
-		});
+	bool ResourceManager::hasTexture(const std::string& name) const noexcept{
+		return textures.contains(name);
+	}
+	
+	void ResourceManager::addSound(const Path& path) noexcept{
+		sounds[path.getPath()].loadFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addSound(const std::string& name, const Path& path) noexcept{
+		sounds[name].loadFromFile(path.getPath());
 	}
 	
 	void ResourceManager::removeSound(const std::string& name) noexcept{
-		sounds.lambda([&name](auto& storage){
-			storage.erase(name);
-		});
+		sounds.erase(name);
 	}
 	
 	const sf::SoundBuffer& ResourceManager::getSound(const std::string& name) const noexcept{
-		while(true){
-			if(sounds.lambda([&name](auto& storage){return storage.count(name) != 0;}).get()){
-				return sounds.lambda([&name](auto& storage) -> const sf::SoundBuffer&{
-					return storage.at(name);
-				}).get();
-			}
-		}
+		return sounds.at(name);
 	}
 	
-	void ResourceManager::addShader(const std::string& name, const sf::Shader::Type type) noexcept{
-		shaders.lambda([&name, &type](auto& storage){
-			storage[name].loadFromFile(name, type);
-		});
+	bool ResourceManager::hasSound(const std::string& name) const noexcept{
+		return sounds.contains(name);
+	}
+	
+	void ResourceManager::addShader(const Path& path, sf::Shader::Type type) noexcept{
+		shaders[path.getPath()].loadFromFile(path.getPath(), type);
+	}
+	
+	void ResourceManager::addShader(const std::string& name, const Path& path, const sf::Shader::Type type) noexcept{
+		shaders[name].loadFromFile(path.getPath(), type);
 	}
 	
 	void ResourceManager::removeShader(const std::string& name) noexcept{
-		shaders.lambda([&name](auto& storage){
-			storage.erase(name);
-		});
+		shaders.erase(name);
 	}
 	
 	const sf::Shader& ResourceManager::getShader(const std::string& name) const noexcept{
-		while(true){
-			if(shaders.lambda([&name](auto& storage){return storage.count(name) != 0;}).get()){
-				return shaders.lambda([&name](auto& storage) -> const sf::Shader&{
-					return storage.at(name);
-				}).get();
-			}
-		}
+		return shaders.at(name);
 	}
 	
-	void ResourceManager::addFont(const std::string& name) noexcept{
-		fonts.lambda([&name](auto& storage){
-			storage[name].loadFromFile(name);
-		});
+	bool ResourceManager::hasShader(const std::string& name) const noexcept{
+		return shaders.contains(name);
+	}
+	
+	void ResourceManager::addFont(const Path& path) noexcept{
+		fonts[path.getPath()].loadFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addFont(const std::string& name, const Path& path) noexcept{
+		fonts[name].loadFromFile(path.getPath());
 	}
 	
 	void ResourceManager::removeFont(const std::string& name) noexcept{
-		fonts.lambda([&name](auto& storage){
-			storage.erase(name);
-		});
+		fonts.erase(name);
 	}
 	
 	const sf::Font& ResourceManager::getFont(const std::string& name) const noexcept{
-		while(true){
-			if(fonts.lambda([&name](auto& storage){return storage.count(name) != 0;}).get()){
-				return fonts.lambda([&name](auto& storage) -> const sf::Font&{
-					return storage.at(name);
-				}).get();
-			}
-		}
+		return fonts.at(name);
+	}
+	
+	bool ResourceManager::hasFont(const std::string& name) const noexcept{
+		return fonts.contains(name);
+	}
+	
+	void ResourceManager::addMusic(const Path& path) noexcept{
+		music[path.getPath()].openFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addMusic(const std::string& name, const Path& path) noexcept{
+		music[name].openFromFile(path.getPath());
+	}
+	
+	void ResourceManager::removeMusic(const std::string& name) noexcept{
+		music[name].stop();
+		music.erase(name);
+	}
+	
+	const sf::Music& ResourceManager::getMusic(const std::string& name) const noexcept{
+		return music.at(name);
+	}
+	
+	bool ResourceManager::hasMusic(const std::string& name) const noexcept{
+		return music.contains(name);
 	}
 	
 	void ResourceManager::loadTextures(const Path& path) noexcept{

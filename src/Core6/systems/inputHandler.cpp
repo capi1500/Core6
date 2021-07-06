@@ -21,3 +21,13 @@
 */
 
 #include "inputHandler.hpp"
+
+namespace c6{
+	void InputHandler::handleEvents(sf::Window* window){
+		sf::Event event;
+		while(window->pollEvent(event)){
+			notify(event);
+		}
+		processEvents();
+	}
+}

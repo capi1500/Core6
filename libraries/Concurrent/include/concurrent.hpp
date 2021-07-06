@@ -46,8 +46,10 @@
 #include "moveoncopy.hpp"
 #include "shared_queue.hpp"
 
+#include <iostream>
+
 namespace concurrent_helper {
-   typedef std::function<void() > Callback;
+   typedef std::function<void()> Callback;
 
    /** helper for non-void promises */
    template<typename Fut, typename F, typename T>
@@ -116,6 +118,7 @@ template <class T> class concurrent {
       while (_worker && !_done) {
 
          _q.wait_and_pop(call);
+         std::cout << "Calling next:\n";
          call();
       }
    }) {

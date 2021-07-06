@@ -20,26 +20,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "plugin.hpp"
-#include <src/objects/rectComponent.hpp>
-#include <iostream>
+#include "renderer.hpp"
 
-extern "C" {
-c6::Package* API create(){
-	return new Plugin;
-}
-}
+namespace c6{
 
-void Plugin::onLoad(){
-	RectComponent* r = new RectComponent;
-	r->r.setSize({50, 50});
-	registerTemplate("rect", r);
-}
-
-void Plugin::onUnLoad(){
-
-}
-
-std::string Plugin::name(){
-	return "plugin";
 }

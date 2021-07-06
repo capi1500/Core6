@@ -29,39 +29,31 @@ int main(){
 	system("mkdir ..\\Core6");
 	system("mkdir ..\\Core6\\bin");
 	system("mkdir ..\\Core6\\include");
-	system("rmdir /s /q ..\\tests\\mods");
-	system("rmdir /s /q ..\\tests\\bin");
-	system("mkdir ..\\tests\\mods");
-	system("mkdir ..\\tests\\bin");
+	//system("rmdir /s /q ..\\src\\sample\\mods");
+	system("rmdir /s /q ..\\src\\sample\\bin");
+	//system("mkdir ..\\src\\sample\\mods");
+	system("mkdir ..\\src\\sample\\bin");
 	
 	system("echo Copying library binaries");
-	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\tests\\bin\\ /Y /q");
-	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\tests\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\src\\sample\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\src\\sample\\bin\\ /Y /q");
 	
 	system("echo Building Core6");
 	system("cmake -G \"CodeBlocks - MinGW Makefiles\" -B ..\\cmake_files ..\\");
 	system("cmake --build ..\\cmake_files\\ --target Core6");
+	
 	system("xcopy /s /EXCLUDE:excludeWin.txt ..\\src ..\\Core6\\include /Y /q");
 	system("xcopy ..\\cmake_files\\libCore6.dll ..\\Core6\\bin /Y /q");
 	
-	
 	system("echo Building test project");
 	system("echo Copying binaries");
-	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\tests\\bin\\ /Y /q");
-	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\tests\\bin\\ /Y /q");
-	system("xcopy ..\\Core6\\bin ..\\tests\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\SFML-2.5.1\\bin ..\\src\\sample\\bin\\ /Y /q");
+	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\src\\sample\\bin\\ /Y /q");
+	system("xcopy ..\\Core6\\bin ..\\src\\sample\\bin\\ /Y /q");
 	
 	system("echo Building test binary");
 	system("cmake --build ..\\cmake_files\\ --target Core6debugLib");
-	system("xcopy ..\\cmake_files\\libCore6debugLib.dll ..\\tests\\bin /Y /q");
-	
-	system("echo Building plugin");
-	system("cmake --build ..\\cmake_files\\ --target Core6plugin");
-	system("xcopy ..\\cmake_files\\libCore6plugin.dll ..\\tests\\mods /Y /q");
-	
-	system("echo Building plugin2");
-	system("cmake --build ..\\cmake_files\\ --target Core6plugin2");
-	system("xcopy ..\\cmake_files\\libCore6plugin2.dll ..\\tests\\mods /Y /q");
+	system("xcopy ..\\cmake_files\\libCore6debugLib.dll ..\\src\\sample\\bin /Y /q");
 	
 	system("echo Building executable");
 	system("cmake --build ..\\cmake_files\\ --target Core6debug");

@@ -25,21 +25,25 @@
 #include <Core6/base/singleton.hpp>
 #include <Core6/systems/renderer.hpp>
 #include <Core6/systems/resourceManager.hpp>
-#include <Core6/systems/inputHandler.hpp>
 #include <Core6/systems/soundboard.hpp>
+#include <Core6/systems/console.hpp>
 
 namespace c6{
-	class Framework : private Singleton<Framework>{
+	class Framework : public Singleton<Framework>{
 		private:
 			Renderer renderer;
 			ResourceManager resources;
-			InputHandler inputHandler;
 			Soundboard soundboard;
 		public:
-			static Renderer& getRenderer() noexcept;
-			static ResourceManager& getResourceManager() noexcept;
-			static InputHandler& getInputHandler() noexcept;
-			static Soundboard& getSoundboard() noexcept;
+			static Renderer& getRenderer() noexcept{
+				return get().renderer;
+			}
+			static ResourceManager& getResourceManager() noexcept{
+				return get().resources;
+			}
+			static Soundboard& getSoundboard() noexcept{
+				return get().soundboard;
+			}
 	};
 }
 

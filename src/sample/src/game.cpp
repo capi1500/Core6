@@ -20,21 +20,4 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_PLUGINCONFLICT_HPP
-#define CORE6_PLUGINCONFLICT_HPP
-
-#include <Core6/plugin/package.hpp>
-
-class PluginConflict : public c6::Package{
-	public:
-		void onLoad() override;
-		void onUnLoad() override;
-	protected:
-		std::string name() override;
-};
-
-extern "C" {
-c6::Package* API create();
-}
-
-#endif //CORE6_PLUGINCONFLICT_HPP
+#include "game.hpp"

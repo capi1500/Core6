@@ -52,9 +52,9 @@ namespace c6{
 				HandleDataId handleDataId;
 				HandleCounter counter;
 			};
-		private:
-			using TInit = std::function<void(T&)>;
 			
+			using TInit = std::function<void(T&)>;
+		private:
 			TInit onTInit;
 			
 			std::vector<Item> items;
@@ -127,7 +127,7 @@ namespace c6{
 			}
 			
 			void refreshHandle(ItemId id) noexcept{
-				handlesData[items[id].handleDataId].itemsId = id;
+				handlesData[items[id].handleDataId].itemId = id;
 			}
 		public:
 			template<class Function, class... Args>
@@ -204,7 +204,12 @@ namespace c6{
 				size = sizeNext = 0;
 			}
 			
-			void refresh() noexcept{
+			void refresh(){
+				refreshNoShrink();
+				resize(size);
+			}
+			
+			virtual void refreshNoShrink() noexcept{
 				if(sizeNext == 0){
 					size = 0;
 					return;
@@ -247,7 +252,7 @@ namespace c6{
 				}
 			}
 			
-			ShuffledList(const TInit& onTInit = []([[maybe_unused]]T& t){});
+			ShuffledList(const TInit& onTInit = []([[maybe_unused]]T& t){}) : onTInit(onTInit) {};
 			virtual ~ShuffledList() = default;
 	};
 }
