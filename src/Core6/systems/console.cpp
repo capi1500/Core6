@@ -29,13 +29,13 @@ namespace c6{
 	
 	void Console::send(const Message& message) const noexcept{
 		if(error && message.type == Message::MessageType::Error)
-			std::cerr << "ERROR:" + message.what << "\n";
+			std::cerr << "ERROR: " + message.what << "\n";
 		else if(debug && message.type == Message::MessageType::Debug)
-			std::clog << "DEBUG:" + message.what << "\n";
+			std::clog << "DEBUG: " + message.what << "\n";
 		else if(loader && message.type == Message::MessageType::Loading)
 			std::clog << "LOADING: " + message.what << "\n";
 		else if(info && message.type == Message::MessageType::Info)
-			std::cout << "INFO:" + message.what << "\n";
+			std::cout << "INFO: " + message.what << "\n";
 	}
 	
 	Console::Console(bool mInfo, bool mDebug, bool mError, bool mLoader) noexcept : info(mInfo), debug(mDebug), error(mError), loader(mLoader){}

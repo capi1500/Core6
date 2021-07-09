@@ -27,6 +27,7 @@
 #include <MPL/MPL.hpp>
 #include <forward_list>
 #include <Core6/utils/shuffledList.hpp>
+#include <iostream>
 #include "config.hpp"
 #include "system.hpp"
 #include "Core6/ecs/impl/componentManager.hpp"
@@ -36,18 +37,20 @@ namespace c6{
 	template<concepts::Config Config>
 	class EntityComponentSystem : public ShuffledList<typename Config::Key>{
 			using Key = typename Config::Key;
-			using ItemId = typename ShuffledList<Key>::ItemId;
+		public:
+			using EntityId = typename ShuffledList<Key>::ItemId;
 			using DataId = typename ShuffledList<Key>::DataId;
 			using Handle = typename ShuffledList<Key>::Handle;
-			using Item = typename ShuffledList<Key>::Item;
-			
+			using Entity = typename ShuffledList<Key>::Item;
+			using ShuffledList = ShuffledList<Key>;
+		private:
 			template<class T>
 			using IsComponentPredicate = std::integral_constant<bool, Config::template isComponent<T>()>;
-		private:
+		
 			ComponentManager<Config> componentManager;
 			
 			void resize(size_t newCapacity) override{
-				resize(newCapacity);
+				ShuffledList::resize(newCapacity);
 				componentManager.resize(newCapacity);
 			}
 			
@@ -55,41 +58,43 @@ namespace c6{
 			struct ExpandCallHelper;
 			
 			template<concepts::Signature<Config> Sig, class Function, class... Args>
-			void expandSignatureCall(DataId entity, const Function& function, const Args&... args){
+			void expandSignatureCall(DataId entity, const Function& function, Args... args){
 				using RequiredComponents = MPL::Filter<IsComponentPredicate, Sig>;
 				
 				using ExpandedCall = MPL::Rename<ExpandCallHelper, RequiredComponents>;
 				
-				ExpandedCall::call(*this, entity, function, args...);
+				ExpandedCall::template call<Function, Args...>(*this, entity, function, args...);
 			}
 			
 			template<class... Components>
 			struct ExpandCallHelper{
 				template<class Function, class... Args>
-				static void call(EntityComponentSystem<Config>& entityManager, DataId entity, const Function& function, const Args&... args){
-					function(entityManager,
+				static void call(EntityComponentSystem<Config>& entityManager, DataId entity, const Function& function, Args... args){
+					function.function(/*entityManager,
 			                entity,
-			                entityManager.componentManager.template
+			                */entityManager.componentManager.template
 			                        getComponent<Components>(entity)...,
 					        args...
 	                );
 				}
 			};
 			
+			
+			
 		public:
 			template<concepts::Signature<Config> Signature, class... Args>
-			void execute(const System<Config, Signature, Args...>& system, const Args&... args){
+			void execute(const System<Config, Signature, Args...>& system, Args... args){
 				using Sys = System<Config, Signature, Args...>;
-				execute([this, &system, &args...](ItemId i){
-					Item& entity = getItem(i);
-					if(entity.exist && (Sys::key & entity.key) == Sys::key)
-						expandSignatureCall<Signature>(entity.dataId, system, args...);
+				ShuffledList::execute([this, &system, &args...](EntityId i){
+					Entity& entity = ShuffledList::getItem(i);
+					if(entity.exists && (Sys::key & entity.underlying) == Sys::key)
+						expandSignatureCall<Signature, Sys, Args...>(entity.dataId, system, args...);
 				});
 			}
 			
 			template<class... Args>
-			ItemId addFromFactory(const EntityFactory<Config, Args...>& factory, Args... args){
-				ItemId id = this->add();
+			EntityId addFromFactory(const EntityFactory<Config, Args...>& factory, Args... args){
+				EntityId id = this->add();
 				factory.spawn(*this, id, args...);
 				return id;
 			}
@@ -98,50 +103,49 @@ namespace c6{
 			[[nodiscard]]
 			Handle addWithHandleFromFactory(const EntityFactory<Config, Args...>& factory, Args... args){
 				Handle handle = this->addWithHandle();
-				factory.spawn(*this, getItemId(handle), args...);
+				factory.spawn(*this, ShuffledList::getItemId(handle), args...);
 				return handle;
 			}
 			
 			template<concepts::Tag<Config> T>
 			[[nodiscard]]
-			bool hasTag(ItemId id) const noexcept{
-				return get(id).key[Config::template tagBit<T>()];
+			bool hasTag(EntityId id) const noexcept{
+				return ShuffledList::get(id)[Config::template tagBit<T>()];
 			}
 			
 			template<concepts::Tag<Config> T>
-			void addTag(ItemId id) noexcept{
-				get(id).key[Config::template tagBit<T>] = true;
+			void addTag(EntityId id) noexcept{
+				ShuffledList::get(id)[Config::template tagBit<T>()] = true;
 			}
 			
 			template<concepts::Tag<Config> T>
-			void deleteTag(ItemId id) noexcept{
-				get(id).key[Config::template tagBit<T>] = false;
+			void deleteTag(EntityId id) noexcept{
+				ShuffledList::get(id)[Config::template tagBit<T>()] = false;
 			}
 			
 			template<concepts::Component<Config> T>
 			[[nodiscard]]
-			bool hasComponent(ItemId id) const noexcept{
-				return get(id).key[Config::template componentBit<T>()];
+			bool hasComponent(EntityId id) const noexcept{
+				return ShuffledList::get(id)[Config::template componentBit<T>()];
 			}
 			
 			template<concepts::Component<Config> T, class... Args>
-			auto& addComponent(ItemId id, const Args&... args) noexcept{
-				get(id).key[Config::template componentBit<T>] = true;
-				
-				auto& c = componentManager.template getComponent<T>(getItem(id).dataId);
+			auto& addComponent(EntityId id, const Args&... args) noexcept{
+				ShuffledList::get(id)[Config::template componentBit<T>()] = true;
+				auto& c = componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId);
 				c = T(args...);
 				
 				return c;
 			}
 			
 			template<concepts::Component<Config> T>
-			auto& getComponent(ItemId id){
-				return componentManager.template getComponent<T>(getItem(id).dataId);
+			auto& getComponent(EntityId id){
+				return componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId);
 			}
 			
 			template<concepts::Component<Config> T>
-			void deleteComponent(ItemId id) noexcept{
-				get(id).key[Config::template componentBit<T>] = false;
+			void deleteComponent(EntityId id) noexcept{
+				ShuffledList::get(id)[Config::template componentBit<T>] = false;
 			}
 			
 			template<concepts::Tag<Config> T>
@@ -182,7 +186,7 @@ namespace c6{
 				deleteComponent<T>(getHandleData(handle).itemId);
 			}
 			
-			EntityComponentSystem() : ShuffledList<Key>([](Key& key){key.reset();}){}
+			EntityComponentSystem() : ShuffledList([](Key& key){key.reset();}){}
 	};
 }
 

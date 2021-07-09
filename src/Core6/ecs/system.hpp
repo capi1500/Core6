@@ -50,38 +50,41 @@ namespace c6{
 			template<typename T>
 			using IsTagFilter = std::integral_constant<bool, Config::template isTag<T>()>;
 			
-			using RequiredComponents = typename AddReference<MPL::Filter<IsComponentFilter, Signature>>::type;
-			using RequiredTags = typename AddReference<MPL::Filter<IsTagFilter, Signature>>::type;
-			using Arguments = MPL::Concat<RequiredComponents, MPL::TypeList<TArgs...>>;
+			using RequiredComponents = MPL::Filter<IsComponentFilter, Signature>;
+			using RequiredTags = MPL::Filter<IsTagFilter, Signature>;
+			using Arguments = MPL::Concat<typename AddReference<MPL::Filter<IsComponentFilter, Signature>>::type, MPL::TypeList<TArgs...>>;
 			
 			template<class>
 			struct SystemUnwrapper;
-			
 			template<class... Args>
 			struct SystemUnwrapper<MPL::TypeList<Args...>>{
-				using type = std::function<void(const ECS&, EntityId, Args...)>;
+				using type = std::function<void(/*const ECS&, EntityId, */Args...)>;
 			};
 			
-			static constexpr Key initKey(){
-				Key key;
+			static Key initKey() noexcept{
+				Key tmp;
 				
-				MPL::forTypes<RequiredComponents>([&](auto t){
-					key[Config::template componentBit<MPL_TYPE(t)>()] = true;
+				MPL::forTypes<RequiredComponents>([&tmp](auto t){
+					tmp[Config::template componentBit<MPL_TYPE(t)>()] = true;
 				});
-				MPL::forTypes<RequiredTags>([&](auto t){
-					key[Config::template tagBit<MPL_TYPE(t)>()] = true;
+				MPL::forTypes<RequiredTags>([&tmp](auto t){
+					tmp[Config::template tagBit<MPL_TYPE(t)>()] = true;
 				});
 				
-				return key;
+				return tmp;
 			}
 		public:
 			using FunctionType = typename SystemUnwrapper<Arguments>::type;
 			
-			static constexpr Key key = initKey();
+			static Key key;
 			const FunctionType function;
 			
-			System(const FunctionType& function) noexcept : function(function){};
+			explicit System(const FunctionType& function) noexcept : function(function){};
 			
-			System(FunctionType&& function) noexcept : function(std::forward<>(function)){};
+			explicit System(FunctionType&& function) noexcept : function(MPL_FWD(function)){};
 	};
+	
+	template<concepts::Config Config, class Signature, class... TArgs>
+	requires concepts::Signature<Signature, Config>
+    typename Config::Key System<Config, Signature, TArgs...>::key = System<Config, Signature, TArgs...>::initKey();
 }

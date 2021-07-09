@@ -25,6 +25,7 @@
 #include <MPL/MPL.hpp>
 #include <vector>
 #include <functional>
+#include <iostream>
 
 namespace c6{
 	template<class T>
@@ -140,7 +141,6 @@ namespace c6{
 			ItemId add(){
 				growIfNeeded();
 				ItemId free(sizeNext++);
-				
 				Item& item = items[free];
 				item.exists = true;
 				onTInit(item.underlying);
@@ -215,7 +215,7 @@ namespace c6{
 					return;
 				}
 				
-				ItemId begin(0), end(0);
+				ItemId begin(0), end(sizeNext - 1);
 				
 				try{
 					while(true){

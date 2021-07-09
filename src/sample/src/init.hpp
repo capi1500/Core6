@@ -22,30 +22,10 @@
 
 #pragma once
 
-#include "config.hpp"
+#include <Core6/ecs/config.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
-namespace c6{
-	template<concepts::Config Config>
-	class EntityComponentSystem;
-	
-	template<concepts::Config Config, class... Args>
-	class EntityFactory{
-			using ECS = EntityComponentSystem<Config>;
-		public:
-			using EntityId = typename ECS::EntityId;
-		private:
-			using Function = std::function<void(ECS&, EntityId, Args...)>;
-			
-			Function function;
-		protected:
-			void spawn(ECS& entityManager, EntityId id, Args... args) const{
-				function(entityManager, id, args...);
-			}
-			
-			friend class EntityComponentSystem<Config>;
-		public:
-			explicit EntityFactory(const Function& function) : function(function){}
-			explicit EntityFactory(Function&& function) : function(std::forward<Function>(function)){}
-	};
-}
 
+class Movable{};
+
+using ecsConfig = c6::Config<c6::ComponentList<sf::Sprite>, c6::TagList<Movable>>;
