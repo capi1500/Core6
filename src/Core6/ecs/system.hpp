@@ -38,7 +38,7 @@ namespace c6{
 			
 			template<class... Args>
 			struct AddReference<MPL::TypeList<Args...>>{
-				using type = MPL::TypeList<Args& ...>;
+				using type = MPL::TypeList<Args&...>;
 			};
 			
 			using Key = typename Config::Key;
@@ -58,7 +58,7 @@ namespace c6{
 			struct SystemUnwrapper;
 			template<class... Args>
 			struct SystemUnwrapper<MPL::TypeList<Args...>>{
-				using type = std::function<void(/*const ECS&, EntityId, */Args...)>;
+				using type = std::function<void(Args...)>;
 			};
 			
 			static Key initKey() noexcept{
@@ -75,13 +75,24 @@ namespace c6{
 			}
 		public:
 			using FunctionType = typename SystemUnwrapper<Arguments>::type;
-			
-			static Key key;
+			using FunctionTypeWithECS = typename SystemUnwrapper<MPL::Concat<MPL::TypeList<ECS&, EntityId>, Arguments>>::type;
+		private:
 			const FunctionType function;
+			const FunctionTypeWithECS functionWithEcs;
+		public:
+			static Key key;
+			
+			template<class... Args>
+			requires std::is_same_v<MPL::TypeList<Args&...>, Arguments>
+			void call(ECS& ecs, EntityId id, Args&... args) const{
+				if(function)
+					function(args...);
+				else
+					functionWithEcs(ecs, id, args...);
+			}
 			
 			explicit System(const FunctionType& function) noexcept : function(function){};
-			
-			explicit System(FunctionType&& function) noexcept : function(MPL_FWD(function)){};
+			explicit System(const FunctionTypeWithECS & function) noexcept : functionWithEcs(function){};
 	};
 	
 	template<concepts::Config Config, class Signature, class... TArgs>

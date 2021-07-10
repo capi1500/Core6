@@ -25,7 +25,6 @@
 #include <MPL/MPL.hpp>
 #include <vector>
 #include <functional>
-#include <iostream>
 
 namespace c6{
 	template<class T>
@@ -138,7 +137,7 @@ namespace c6{
 					function(i, args...);
 			}
 			
-			ItemId add(){
+			virtual ItemId add(){
 				growIfNeeded();
 				ItemId free(sizeNext++);
 				Item& item = items[free];
@@ -232,6 +231,7 @@ namespace c6{
 							invalidateHandle(end);
 							if(end <= begin)
 								throw ItemId(begin);
+							end--;
 						}
 						
 						std::swap(items[end], items[begin]);

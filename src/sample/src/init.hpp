@@ -27,5 +27,9 @@
 
 
 class Movable{};
+class Special{};
 
-using ecsConfig = c6::Config<c6::ComponentList<sf::Sprite>, c6::TagList<Movable>>;
+using ecsConfig = c6::Config<c6::ComponentList<sf::Sprite, std::string>, c6::TagList<Movable, Special>>;
+using ECS = c6::EntityComponentSystem<ecsConfig>;
+using EntityId = ECS::EntityId;
+using Entity = ECS::Handle;

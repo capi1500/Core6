@@ -22,29 +22,24 @@
 
 #pragma once
 
-#include "config.hpp"
+struct C1{
+	int i;
+};
+class C2{
+	public:
+		int i;
+};
+class C3{
+	public:
+		std::string name;
+};
 
-namespace c6{
-	template<concepts::Config Config>
-	class EntityComponentSystem;
-	
-	template<concepts::Config Config, class... Args>
-	class EntityFactory{
-			using ECS = EntityComponentSystem<Config>;
-		public:
-			using EntityId = typename ECS::EntityId;
-		private:
-			using Function = std::function<void(ECS&, EntityId, Args&&...)>;
-			
-			Function function;
-		protected:
-			void spawn(ECS& entityManager, EntityId id, Args&&... args) const{
-				function(entityManager, id, std::forward<Args>(args)...);
-			}
-			
-			friend class EntityComponentSystem<Config>;
-		public:
-			explicit EntityFactory(const Function& function) : function(function){}
-	};
-}
+struct T1{};
+struct T2{};
 
+struct N1{};
+struct N2{};
+
+using Components = c6::ComponentList<C1, C2, C3>;
+using Tags = c6::TagList<T1, T2>;
+using Config = c6::Config<Components, Tags>;

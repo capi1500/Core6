@@ -27,7 +27,7 @@
 #include <MPL/MPL.hpp>
 #include <forward_list>
 #include <Core6/utils/shuffledList.hpp>
-#include <iostream>
+#include <Core6/ecs/impl/entityState.hpp>
 #include "config.hpp"
 #include "system.hpp"
 #include "Core6/ecs/impl/componentManager.hpp"
@@ -58,79 +58,92 @@ namespace c6{
 			struct ExpandCallHelper;
 			
 			template<concepts::Signature<Config> Sig, class Function, class... Args>
-			void expandSignatureCall(DataId entity, const Function& function, Args... args){
+			void expandSignatureCall(EntityId entity, const Function& function, Args... args){
 				using RequiredComponents = MPL::Filter<IsComponentPredicate, Sig>;
 				
 				using ExpandedCall = MPL::Rename<ExpandCallHelper, RequiredComponents>;
 				
-				ExpandedCall::template call<Function, Args...>(*this, entity, function, args...);
+				ExpandedCall::template call<Function, Args...>(*this, entity, ShuffledList::getItem(entity).dataId, function, args...);
 			}
 			
 			template<class... Components>
 			struct ExpandCallHelper{
 				template<class Function, class... Args>
-				static void call(EntityComponentSystem<Config>& entityManager, DataId entity, const Function& function, Args... args){
-					function.function(/*entityManager,
-			                entity,
-			                */entityManager.componentManager.template
-			                        getComponent<Components>(entity)...,
+				static void call(EntityComponentSystem<Config>& entityManager, const EntityId& entity, const DataId& dataId, const Function& function, Args... args){
+					function.template call<Components..., Args...>(
+							entityManager,
+							entity,
+							entityManager.componentManager.template getComponent<Components>(dataId)...,
 					        args...
 	                );
 				}
 			};
-			
-			
-			
 		public:
-			template<concepts::Signature<Config> Signature, class... Args>
+			void refreshNoShrink() noexcept override{
+				ShuffledList::execute([this](const EntityId& i){
+					if(hasComponent<EntityState>(i) && !getComponent<EntityState>(i).exists){
+						ShuffledList::remove(i);
+					}
+				});
+				ShuffledList::refreshNoShrink();
+			}
+			
+			template<class... Args, concepts::Signature<Config> Signature>
 			void execute(const System<Config, Signature, Args...>& system, Args... args){
 				using Sys = System<Config, Signature, Args...>;
-				ShuffledList::execute([this, &system, &args...](EntityId i){
+				ShuffledList::execute([this, &system, &args...](const EntityId& i){
 					Entity& entity = ShuffledList::getItem(i);
 					if(entity.exists && (Sys::key & entity.underlying) == Sys::key)
-						expandSignatureCall<Signature, Sys, Args...>(entity.dataId, system, args...);
+						expandSignatureCall<Signature, Sys, Args...>(i, system, args...);
 				});
 			}
 			
+			EntityId add(){
+				EntityId id = ShuffledList::add();
+				addComponent<EntityState>(id);
+				return id;
+			}
+			
 			template<class... Args>
-			EntityId addFromFactory(const EntityFactory<Config, Args...>& factory, Args... args){
-				EntityId id = this->add();
-				factory.spawn(*this, id, args...);
+			EntityId addFromFactory(const EntityFactory<Config, Args...>& factory, Args&&... args){
+				EntityId id = add();
+				factory.spawn(*this, id, std::forward<Args>(args)...);
 				return id;
 			}
 			
 			template<class... Args>
 			[[nodiscard]]
-			Handle addWithHandleFromFactory(const EntityFactory<Config, Args...>& factory, Args... args){
+			Handle addWithHandleFromFactory(const EntityFactory<Config, Args...>& factory, Args&&... args){
 				Handle handle = this->addWithHandle();
-				factory.spawn(*this, ShuffledList::getItemId(handle), args...);
+				factory.spawn(*this, ShuffledList::getItemId(handle), std::forward<Args>(args)...);
 				return handle;
 			}
 			
 			template<concepts::Tag<Config> T>
 			[[nodiscard]]
-			bool hasTag(EntityId id) const noexcept{
+			bool hasTag(const EntityId& id) const noexcept{
 				return ShuffledList::get(id)[Config::template tagBit<T>()];
 			}
 			
 			template<concepts::Tag<Config> T>
-			void addTag(EntityId id) noexcept{
+			void addTag(const EntityId& id) noexcept{
 				ShuffledList::get(id)[Config::template tagBit<T>()] = true;
 			}
 			
 			template<concepts::Tag<Config> T>
-			void deleteTag(EntityId id) noexcept{
+			void deleteTag(const EntityId& id) noexcept{
 				ShuffledList::get(id)[Config::template tagBit<T>()] = false;
 			}
 			
 			template<concepts::Component<Config> T>
 			[[nodiscard]]
-			bool hasComponent(EntityId id) const noexcept{
+			bool hasComponent(const EntityId& id) const noexcept{
 				return ShuffledList::get(id)[Config::template componentBit<T>()];
 			}
 			
 			template<concepts::Component<Config> T, class... Args>
-			auto& addComponent(EntityId id, const Args&... args) noexcept{
+			requires std::is_constructible_v<T, Args...>
+			auto& addComponent(const EntityId& id, const Args&... args) noexcept{
 				ShuffledList::get(id)[Config::template componentBit<T>()] = true;
 				auto& c = componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId);
 				c = T(args...);
@@ -139,51 +152,52 @@ namespace c6{
 			}
 			
 			template<concepts::Component<Config> T>
-			auto& getComponent(EntityId id){
+			auto& getComponent(const EntityId& id){
 				return componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId);
 			}
 			
 			template<concepts::Component<Config> T>
-			void deleteComponent(EntityId id) noexcept{
+			void deleteComponent(const EntityId& id) noexcept{
 				ShuffledList::get(id)[Config::template componentBit<T>] = false;
 			}
 			
 			template<concepts::Tag<Config> T>
 			[[nodiscard]]
 			bool hasTag(const Handle& handle) const noexcept{
-				return hasTag<T>(getHandleData(handle).itemId);
+				return hasTag<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			template<concepts::Tag<Config> T>
 			void addTag(const Handle& handle) noexcept{
-				addTag<T>(getHandleData(handle).itemId);
+				addTag<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			template<concepts::Tag<Config> T>
 			void deleteTag(const Handle& handle) noexcept{
-				deleteTag<T>(getHandleData(handle).itemId);
+				deleteTag<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			template<concepts::Component<Config> T>
 			[[nodiscard]]
 			bool hasComponent(const Handle& handle) const noexcept{
-				return hasComponent<T>(getHandleData(handle).itemId);
+				return hasComponent<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			template<concepts::Component<Config> T, class... Args>
+			requires std::is_constructible_v<T, Args...>
 			auto& addComponent(const Handle& handle, const Args&... args) noexcept{
-				return addComponent<T>(getHandleData(handle).itemId, args...);
+				return addComponent<T>(ShuffledList::getHandleData(handle).itemId, args...);
 			}
 			
 			template<concepts::Component<Config> T>
 			[[nodiscard]]
 			auto& getComponent(const Handle& handle){
-				return getComponent<T>(getHandleData(handle).itemId);
+				return getComponent<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			template<concepts::Component<Config> T>
 			void deleteComponent(const Handle& handle) noexcept{
-				deleteComponent<T>(getHandleData(handle).itemId);
+				deleteComponent<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
 			EntityComponentSystem() : ShuffledList([](Key& key){key.reset();}){}

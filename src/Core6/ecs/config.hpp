@@ -31,10 +31,10 @@ namespace c6{
 	 * @tparam TComponentList - list of components
 	 * @tparam TTagList - list of tags
 	 */
-	template<class TComponentList, class TTagList/*, class TSignatureList*/>
+	template<class TComponentList, class TTagList>
 	class Config{
 		public:
-			using ComponentList = TComponentList;
+			using ComponentList = MPL::PushBack<TComponentList, EntityState>;
 			using TagList = TTagList;
 			
 			using ThisType = Config<ComponentList, TagList>;
@@ -52,7 +52,7 @@ namespace c6{
 			template<class Sig>
 			class IsSignature{
 					template<class T>
-					using IsInvalidFilter = std::integral_constant<bool, !(ThisType::isTag<T>() || ThisType::isComponent<T>())>;
+					using IsInvalidFilter = std::integral_constant<bool, !(ThisType::template isTag<T>() || ThisType::template isComponent<T>())>;
 				public:
 					static constexpr bool value = MPL::Filter<IsInvalidFilter, Sig>::size == 0;
 			};
@@ -150,7 +150,6 @@ namespace c6{
 	}
 	
 	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<class... Ts> using SignatureList = MPL::TypeList<Ts...>;
 	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
 	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
 }

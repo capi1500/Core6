@@ -24,28 +24,7 @@
 
 #include <gtest/gtest.h>
 #include <Core6/ecs/config.hpp>
-
-struct C1{
-	int i;
-};
-class C2{
-	public:
-		int i;
-};
-class C3{
-	public:
-		std::string name;
-};
-
-struct T1{};
-struct T2{};
-
-struct N1{};
-struct N2{};
-
-using Components = c6::ComponentList<C1, C2, C3>;
-using Tags = c6::TagList<T1, T2>;
-using Config = c6::Config<Components, Tags>;
+#include "ecsInit.hpp"
 
 class ConfigTest : public testing::Test{
 

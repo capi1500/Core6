@@ -22,29 +22,12 @@
 
 #pragma once
 
-#include "config.hpp"
-
 namespace c6{
-	template<concepts::Config Config>
-	class EntityComponentSystem;
-	
-	template<concepts::Config Config, class... Args>
-	class EntityFactory{
-			using ECS = EntityComponentSystem<Config>;
-		public:
-			using EntityId = typename ECS::EntityId;
-		private:
-			using Function = std::function<void(ECS&, EntityId, Args&&...)>;
-			
-			Function function;
-		protected:
-			void spawn(ECS& entityManager, EntityId id, Args&&... args) const{
-				function(entityManager, id, std::forward<Args>(args)...);
-			}
-			
-			friend class EntityComponentSystem<Config>;
-		public:
-			explicit EntityFactory(const Function& function) : function(function){}
+	struct EntityState{
+		bool exists = true;
+		bool alive = true;
+		bool active = true;
+		bool visible = true;
 	};
 }
 
