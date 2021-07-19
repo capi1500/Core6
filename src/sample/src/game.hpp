@@ -22,9 +22,16 @@
 
 #pragma once
 
-namespace c6{
-	class Game{
-	
-	};
-}
+#include <Core6/application.hpp>
+#include "init.hpp"
+
+class Game : public c6::Application<ecsConfig>{
+	protected:
+		void init() override;
+		void clean() override;
+	public:
+		c6::PhysicsConfig physicsConfig;
+		Game();
+};
+
 

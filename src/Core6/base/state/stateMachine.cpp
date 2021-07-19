@@ -27,9 +27,9 @@
 namespace c6{
 	State* StateMachine::getCurrentState(){
 		processEvents();
-		if(pushdownAutomata.empty())
+		if(pushDownAutomata.empty())
 			throw std::runtime_error("No active State in StateMachine");
-		return pushdownAutomata.top();
+		return pushDownAutomata.top();
 	}
 	
 	void StateMachine::add(State* newState) noexcept{
@@ -52,33 +52,33 @@ namespace c6{
 			[this](const StateEvent& event){
 				switch(event.getType()){
 					case StateEvent::Add:
-						if(!pushdownAutomata.empty())
-							pushdownAutomata.top()->deactivate();
-						pushdownAutomata.push(event.getNewState());
-						pushdownAutomata.top()->activate();
+						if(!pushDownAutomata.empty())
+							pushDownAutomata.top()->deactivate();
+						pushDownAutomata.push(event.getNewState());
+						pushDownAutomata.top()->activate();
 						break;
 					case StateEvent::Pop:
-						if(pushdownAutomata.size() < event.getRemoveCount())
+						if(pushDownAutomata.size() < event.getRemoveCount())
 							throw std::runtime_error("Cannot remove States from StateMachine: not enough states");
 						for(unsigned i = 0; i < event.getRemoveCount(); i++){
-							delete pushdownAutomata.top();
-							pushdownAutomata.pop();
+							delete pushDownAutomata.top();
+							pushDownAutomata.pop();
 						}
-						if(!pushdownAutomata.empty())
-							pushdownAutomata.top()->activate();
+						if(!pushDownAutomata.empty())
+							pushDownAutomata.top()->activate();
 						break;
 					case StateEvent::Replace:
-						if(pushdownAutomata.empty())
+						if(pushDownAutomata.empty())
 							throw std::runtime_error("Cannot replace States in StateMachine: StateMachine is empty");
-						delete pushdownAutomata.top();
-						pushdownAutomata.pop();
-						pushdownAutomata.push(event.getNewState());
-						pushdownAutomata.top()->activate();
+						delete pushDownAutomata.top();
+						pushDownAutomata.pop();
+						pushDownAutomata.push(event.getNewState());
+						pushDownAutomata.top()->activate();
 						break;
 					case StateEvent::Clear:
-						while(!pushdownAutomata.empty()){
-							delete pushdownAutomata.top();
-							pushdownAutomata.pop();
+						while(!pushDownAutomata.empty()){
+							delete pushDownAutomata.top();
+							pushDownAutomata.pop();
 						}
 						break;
 				}

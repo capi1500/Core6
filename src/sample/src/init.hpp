@@ -23,13 +23,11 @@
 #pragma once
 
 #include <Core6/ecs/config.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-
 
 class Movable{};
 class Special{};
 
-using ecsConfig = c6::Config<c6::ComponentList<sf::Sprite, std::string>, c6::TagList<Movable, Special>>;
+using ecsConfig = c6::Config<c6::ComponentList<std::string>, c6::TagList<Movable, Special>>;
 using ECS = c6::EntityComponentSystem<ecsConfig>;
 using EntityId = ECS::EntityId;
 using Entity = ECS::Handle;

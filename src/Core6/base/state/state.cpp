@@ -23,11 +23,15 @@
 #include "state.hpp"
 
 namespace c6{
+	StateMachine& State::getStateMachine() noexcept{
+		return stateMachine;
+	}
+	
 	const StateMachine& State::getStateMachine() const noexcept{
 		return stateMachine;
 	}
 	
-	State::State(const StateMachine& stateMachine) noexcept : Activable(false), stateMachine(stateMachine){
+	State::State(StateMachine& stateMachine) noexcept : Activable(false), stateMachine(stateMachine){
 	
 	}
 }

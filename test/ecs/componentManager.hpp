@@ -24,7 +24,7 @@
 
 #include <gtest/gtest.h>
 #include "config.hpp"
-#include <Core6/ecs/impl/componentManager.hpp>
+#include <Core6/ecs/componentManager.hpp>
 
 class ComponentManagerTest : public testing::Test{
 	public:

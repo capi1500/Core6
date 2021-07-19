@@ -27,10 +27,9 @@
 #include <MPL/MPL.hpp>
 #include <forward_list>
 #include <Core6/utils/shuffledList.hpp>
-#include <Core6/ecs/impl/entityState.hpp>
 #include "config.hpp"
 #include "system.hpp"
-#include "Core6/ecs/impl/componentManager.hpp"
+#include "componentManager.hpp"
 #include "entityFactory.hpp"
 
 namespace c6{
@@ -70,7 +69,7 @@ namespace c6{
 			struct ExpandCallHelper{
 				template<class Function, class... Args>
 				static void call(EntityComponentSystem<Config>& entityManager, const EntityId& entity, const DataId& dataId, const Function& function, Args... args){
-					function.template call<Components..., Args...>(
+					function.template call<Components&..., Args...>(
 							entityManager,
 							entity,
 							entityManager.componentManager.template getComponent<Components>(dataId)...,
@@ -81,7 +80,7 @@ namespace c6{
 		public:
 			void refreshNoShrink() noexcept override{
 				ShuffledList::execute([this](const EntityId& i){
-					if(hasComponent<EntityState>(i) && !getComponent<EntityState>(i).exists){
+					if(hasComponent<component::EntityState>(i) && !getComponent<component::EntityState>(i).exists){
 						ShuffledList::remove(i);
 					}
 				});
@@ -100,7 +99,7 @@ namespace c6{
 			
 			EntityId add(){
 				EntityId id = ShuffledList::add();
-				addComponent<EntityState>(id);
+				addComponent<component::EntityState>(id);
 				return id;
 			}
 			
@@ -145,10 +144,7 @@ namespace c6{
 			requires std::is_constructible_v<T, Args...>
 			auto& addComponent(const EntityId& id, const Args&... args) noexcept{
 				ShuffledList::get(id)[Config::template componentBit<T>()] = true;
-				auto& c = componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId);
-				c = T(args...);
-				
-				return c;
+				return componentManager.template getComponent<T>(ShuffledList::getItem(id).dataId) = T(args...);
 			}
 			
 			template<concepts::Component<Config> T>

@@ -23,13 +23,13 @@
 #include "loggable.hpp"
 
 namespace c6{
-	void Loggable::message(const std::string& what, Message::MessageType type){
+	void Loggable::message(const std::string& what, Message::MessageType type) noexcept{
 		if(console != nullptr){
 			console->send(Message(what, type));
 		}
 	}
 	
-	void Loggable::attachConsole(Console& console){
+	void Loggable::attachConsole(Console& console) noexcept{
 		this->console = &console;
 	}
 	
@@ -37,7 +37,7 @@ namespace c6{
 		console = nullptr;
 	}
 	
-	Loggable::Loggable() : console(nullptr){
+	Loggable::Loggable() noexcept : console(nullptr){
 	
 	}
 	

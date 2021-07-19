@@ -24,6 +24,7 @@
 
 #include <MPL/MPL.hpp>
 #include <bitset>
+#include "components.hpp"
 
 namespace c6{
 	/**
@@ -34,10 +35,10 @@ namespace c6{
 	template<class TComponentList, class TTagList>
 	class Config{
 		public:
-			using ComponentList = MPL::PushBack<TComponentList, EntityState>;
+			using ComponentList = MPL::Concat<TComponentList, MPL::TypeList<component::EntityState, component::Drawable, component::Transformable, component::Physic>>;
 			using TagList = TTagList;
 			
-			using ThisType = Config<ComponentList, TagList>;
+			using ThisType = Config<TComponentList, TagList>;
 			
 			template<class T>
 			static constexpr bool isComponent() noexcept{
@@ -148,8 +149,4 @@ namespace c6{
 		template<class T, class Config>
 		concept ComponentOrTag = helper::IsComponentOrTag<Config, T>::value;
 	}
-	
-	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
-	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
 }

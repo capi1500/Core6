@@ -32,7 +32,7 @@ namespace c6{
 	
 	class StateMachine : public SimpleListener<StateEvent>, public Emitter<StateEvent>{
 		private:
-			std::stack<State*> pushdownAutomata;
+			std::stack<State*> pushDownAutomata;
 		public:
 			State* getCurrentState();
 			
@@ -42,7 +42,7 @@ namespace c6{
 			void clear() noexcept;
 			
 			StateMachine() noexcept;
-			~StateMachine() noexcept;
+			~StateMachine() noexcept override;
 	};
 }
 

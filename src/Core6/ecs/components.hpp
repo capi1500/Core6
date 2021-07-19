@@ -20,37 +20,29 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_PHYSICSCONFIG_HPP
-#define CORE6_PHYSICSCONFIG_HPP
+#pragma once
 
-#include <concepts>
-#include <box2d/b2_math.h>
-#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <box2d/b2_body.h>
 
 namespace c6{
-	struct PhysicsConfig{
-		static const float scaleFactor;
-		static const b2Vec2 gravity;
-		static const unsigned velocityIterations;
-		static const unsigned positionIterations;
-		
-		static b2Vec2 pixelToMeter(const sf::Vector2f& pixel){
-			return b2Vec2(pixel.x / scaleFactor, pixel.y / scaleFactor);
-		}
-		
-		static sf::Vector2f meterToPixel(const b2Vec2& meter){
-			return sf::Vector2f(meter.x * scaleFactor, meter.y * scaleFactor);
-		}
-	};
+	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
+	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
+	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
 	
-	namespace concepts{
-		template<class T> concept PhysicsConfig = requires{
-			{T::scaleFactor} -> std::convertible_to<float>;
-			{T::gravity} -> std::convertible_to<b2Vec2>;
-			{T::velocityIterations} -> std::convertible_to<unsigned>;
-			{T::positionIterations} -> std::convertible_to<unsigned>;
+	namespace component{
+		struct EntityState{
+			bool exists = true;
+			bool alive = true;
+			bool active = true;
+			bool visible = true;
 		};
+		using Drawable = std::shared_ptr<sf::Drawable>;
+		using Transformable = std::shared_ptr<sf::Transformable>;
+		using Physic = std::shared_ptr<b2Body>;
+	}
+	namespace tag{
+	
 	}
 }
-
-#endif //CORE6_PHYSICSCONFIG_HPP

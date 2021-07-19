@@ -22,9 +22,82 @@
 
 #pragma once
 
+#include <utility>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/System/Time.hpp>
+#include <SFML/Window/Event.hpp>
+#include <box2d/b2_world.h>
+
+#include <Core6/framework.hpp>
+#include <Core6/base/state/state.hpp>
+#include <Core6/ecs/entityComponentSystem.hpp>
+#include <Core6/ecs/systems.hpp>
+#include "physicsConfig.hpp"
+
 namespace c6{
-	class Scene{
-	
+	template<concepts::Config ecsConfig>
+	class Scene : public State, public Listener<sf::Event>{
+		private:
+			EntityComponentSystem<ecsConfig> ecs;
+			const PhysicsConfig& physicsConfig;
+			b2World physicWorld;
+		protected:
+			[[nodiscard]]
+			EntityComponentSystem<ecsConfig>& getECS() noexcept{
+				return ecs;
+			}
+			
+			[[nodiscard]]
+			const EntityComponentSystem<ecsConfig>& getECS() const noexcept{
+				return ecs;
+			}
+			
+			[[nodiscard]]
+			const PhysicsConfig& getPhysicsConfig() const noexcept{
+				return physicsConfig;
+			}
+			
+			[[nodiscard]]
+			b2World& getPhysicWorld() noexcept{
+				return physicWorld;
+			}
+			
+			[[nodiscard]]
+			const b2World& getPhysicWorld() const noexcept{
+				return physicWorld;
+			}
+		public:
+			Scene(StateMachine& stateMachine, const PhysicsConfig& physicsConfig) noexcept :
+					State(stateMachine),
+					physicsConfig(physicsConfig),
+					physicWorld(physicsConfig.gravity){
+				Framework::getInputHandler().addListener(this);
+			}
+			
+			~Scene() override{
+				if(isActive())
+					Framework::getInputHandler().removeListener(this);
+			}
+			
+			void activate() noexcept override{
+				Activable::activate();
+				Framework::getInputHandler().addListener(this);
+			}
+			
+			void deactivate() noexcept override{
+				Activable::deactivate();
+				Framework::getInputHandler().removeListener(this);
+			}
+			
+			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){
+				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::draw<ecsConfig>, target, states);
+			}
+			
+			virtual void update(const sf::Time& time){
+				physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
+				ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
+			}
 	};
 }
 

@@ -34,11 +34,13 @@ namespace c6{
 	 */
 	class State : public Activable, public NonCopyable, public NonMovable{
 		private:
-			const StateMachine& stateMachine;
+			StateMachine& stateMachine;
 		protected:
-			const StateMachine& getStateMachine() const noexcept;
+			[[nodiscard]] StateMachine& getStateMachine() noexcept;
+			[[nodiscard]] const StateMachine& getStateMachine() const noexcept;
 		public:
-			State(const StateMachine& stateMachine) noexcept;
+			explicit State(StateMachine& stateMachine) noexcept;
+			virtual ~State() = default;
 	};
 }
 

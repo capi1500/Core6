@@ -30,8 +30,8 @@ namespace c6{
 		private:
 			bool active;
 		public:
-			void activate() noexcept;
-			void deactivate() noexcept;
+			virtual void activate() noexcept;
+			virtual void deactivate() noexcept;
 			bool isActive() const noexcept;
 			
 			Activable() noexcept = default;

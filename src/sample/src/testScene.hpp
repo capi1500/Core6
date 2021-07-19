@@ -20,20 +20,16 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "graphic.hpp"
+#pragma once
 
-namespace c6{
-	namespace widget{
-		namespace component{
-			void Graphic::draw(sf::RenderTarget& target, sf::RenderStates states) const{
-				states.transform.combine(getTransform());
-				if(currentFrame != nullptr)
-					target.draw(*currentFrame, states);
-			}
-			
-			Graphic::Graphic(){
-				currentFrame = nullptr;
-			}
-		}
-	}
-}
+#include <Core6/scene.hpp>
+#include <Core6/systems/renderer.hpp>
+#include <Core6/systems/inputHandler.hpp>
+#include <Core6/ecs/components.hpp>
+#include "init.hpp"
+
+class TestScene : public c6::Scene<ecsConfig>{
+	public:
+		TestScene(c6::StateMachine& stateMachine, const c6::PhysicsConfig& physicsConfig);
+		void onNotify(const sf::Event& event) noexcept override;
+};

@@ -21,3 +21,27 @@
 */
 
 #include "game.hpp"
+#include "testScene.hpp"
+
+Game::Game() : Application(c6::ConsoleBuilder().useMessageType(c6::Message::Info)
+                                               .useMessageType(c6::Message::Error)
+                                               .useMessageType(c6::Message::Debug)
+                                               .useMessageType(c6::Message::Loading)
+                                               .create()),
+                           physicsConfig(30,
+                                         b2Vec2(0, 10),
+                                         8,
+                                         3){
+	
+}
+
+void Game::init(){
+	Application::init();
+	c6::Framework::getRenderer().getWindow().create(sf::VideoMode(500, 500), "test");
+	getScenes().add(new TestScene(getScenes(), physicsConfig));
+}
+
+void Game::clean(){
+	c6::Framework::getRenderer().getWindow().close();
+	Application::clean();
+}

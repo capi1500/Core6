@@ -28,8 +28,12 @@
 #include <Core6/base/interfaces/loggable.hpp>
 
 namespace c6{
-	class Renderer : public sf::RenderWindow, public Loggable{
-	
+	class Renderer : public Loggable{
+		private:
+			sf::RenderWindow* window = nullptr;
+		public:
+			sf::RenderWindow& getWindow() noexcept;
+			void clean();
 	};
 }
 

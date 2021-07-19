@@ -26,7 +26,7 @@
 #include <Core6/systems/renderer.hpp>
 #include <Core6/systems/resourceManager.hpp>
 #include <Core6/systems/soundboard.hpp>
-#include <Core6/systems/console.hpp>
+#include <Core6/systems/inputHandler.hpp>
 
 namespace c6{
 	class Framework : public Singleton<Framework>{
@@ -34,16 +34,12 @@ namespace c6{
 			Renderer renderer;
 			ResourceManager resources;
 			Soundboard soundboard;
+			InputHandler inputHandler;
 		public:
-			static Renderer& getRenderer() noexcept{
-				return get().renderer;
-			}
-			static ResourceManager& getResourceManager() noexcept{
-				return get().resources;
-			}
-			static Soundboard& getSoundboard() noexcept{
-				return get().soundboard;
-			}
+			static Renderer& getRenderer() noexcept;
+			static ResourceManager& getResourceManager() noexcept;
+			static Soundboard& getSoundboard() noexcept;
+			static InputHandler& getInputHandler() noexcept;
 	};
 }
 

@@ -83,8 +83,8 @@ namespace c6{
 			static Key key;
 			
 			template<class... Args>
-			requires std::is_same_v<MPL::TypeList<Args&...>, Arguments>
-			void call(ECS& ecs, EntityId id, Args&... args) const{
+			requires std::is_same_v<MPL::TypeList<Args...>, Arguments>
+			void call(ECS& ecs, EntityId id, Args... args) const{
 				if(function)
 					function(args...);
 				else

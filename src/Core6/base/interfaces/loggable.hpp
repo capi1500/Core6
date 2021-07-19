@@ -29,12 +29,12 @@ namespace c6{
 		private:
 			Console* console;
 		protected:
-			void message(const std::string& what, Message::MessageType type);
+			void message(const std::string& what, Message::MessageType type) noexcept;
 		public:
-			void attachConsole(Console& console);
+			void attachConsole(Console& console) noexcept;
 			void dettachConsole() noexcept;
 	
-			Loggable();
+			Loggable() noexcept;
 			explicit Loggable(Console& console) noexcept;
 			virtual ~Loggable() noexcept;
 	};

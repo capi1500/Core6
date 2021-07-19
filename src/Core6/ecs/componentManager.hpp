@@ -20,27 +20,33 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_GRAPHIC_HPP
-#define CORE6_GRAPHIC_HPP
+#pragma once
 
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <Core6/widgets/misc/frame9.hpp>
+#include <tuple>
+#include <vector>
+#include <MPL/MPL.hpp>
+#include "Core6/ecs/config.hpp"
 
 namespace c6{
-	namespace widget{
-		namespace component{
-			class Graphic : public sf::Drawable, public sf::Transformable{
-				protected:
-					void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-				public:
-					Frame9* currentFrame;
-					
-					Graphic();
-			};
-		}
-	}
+	template<concepts::Config Config>
+	class ComponentManager{
+			using ComponentList = typename Config::ComponentList;
+			template<class... Ts>
+			using TupleOfVectors = std::tuple<std::vector<Ts>...>;
+			using Components = MPL::Rename<TupleOfVectors, ComponentList>;
+		private:
+			Components components;
+		public:
+			void resize(size_t size){
+				MPL::forTuple([this, size](auto& v){
+					v.resize(size);
+				}, components);
+			}
+			
+			template<concepts::Component<Config> T>
+			T& getComponent(std::size_t i) noexcept{
+				return std::get<std::vector<T>>(components)[i];
+			}
+	};
 }
 
-#endif //CORE6_GRAPHIC_HPP

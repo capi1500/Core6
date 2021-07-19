@@ -59,7 +59,7 @@ namespace c6{
 			
 			/**
 			 * Adds listener to the emmiter's notify list.<br>
-			 * Unless manually erased, the emmiter will destroy added listener during it's destruction.
+			 * Unless manually erased, the emmiter will clean added listener during it's destruction.
 			 * @param listener
 			 */
 			void addListener(Listener<Event>* listener) noexcept{
