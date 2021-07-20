@@ -21,7 +21,7 @@
 */
 
 #include "game.hpp"
-#include "testScene.hpp"
+#include "pong.hpp"
 
 Game::Game() : Application(c6::ConsoleBuilder().useMessageType(c6::Message::Info)
                                                .useMessageType(c6::Message::Error)
@@ -29,7 +29,7 @@ Game::Game() : Application(c6::ConsoleBuilder().useMessageType(c6::Message::Info
                                                .useMessageType(c6::Message::Loading)
                                                .create()),
                            physicsConfig(30,
-                                         b2Vec2(0, 10),
+                                         b2Vec2(0, 0),
                                          8,
                                          3){
 	
@@ -37,8 +37,9 @@ Game::Game() : Application(c6::ConsoleBuilder().useMessageType(c6::Message::Info
 
 void Game::init(){
 	Application::init();
-	c6::Framework::getRenderer().getWindow().create(sf::VideoMode(500, 500), "test");
-	getScenes().add(new TestScene(getScenes(), physicsConfig));
+	c6::Framework::getRenderer().getWindow().create(sf::VideoMode(800, 500), "test");
+	c6::Framework::getRenderer().getWindow().setFramerateLimit(60);
+	getScenes().add(new Pong(getScenes(), physicsConfig));
 }
 
 void Game::clean(){

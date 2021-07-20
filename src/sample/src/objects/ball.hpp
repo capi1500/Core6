@@ -22,14 +22,6 @@
 
 #pragma once
 
-#include <Core6/scene.hpp>
-#include <Core6/systems/renderer.hpp>
-#include <Core6/systems/inputHandler.hpp>
-#include <Core6/ecs/components.hpp>
-#include "init.hpp"
-
-class TestScene : public c6::Scene<ecsConfig>{
-	public:
-		TestScene(c6::StateMachine& stateMachine, const c6::PhysicsConfig& physicsConfig);
-		void onNotify(const sf::Event& event) noexcept override;
+class Ball{
 };
+

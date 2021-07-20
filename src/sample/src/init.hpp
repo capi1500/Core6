@@ -23,11 +23,10 @@
 #pragma once
 
 #include <Core6/ecs/config.hpp>
+#include <src/objects/player.hpp>
+#include <src/objects/ball.hpp>
 
-class Movable{};
-class Special{};
-
-using ecsConfig = c6::Config<c6::ComponentList<std::string>, c6::TagList<Movable, Special>>;
+using ecsConfig = c6::Config<c6::ComponentList<Player>, c6::TagList<Ball>>;
 using ECS = c6::EntityComponentSystem<ecsConfig>;
 using EntityId = ECS::EntityId;
 using Entity = ECS::Handle;

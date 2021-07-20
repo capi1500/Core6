@@ -22,14 +22,22 @@
 
 #pragma once
 
-#include <Core6/application.hpp>
+#include <Core6/scene.hpp>
+#include <Core6/systems/renderer.hpp>
+#include <Core6/systems/inputHandler.hpp>
+#include <Core6/ecs/components.hpp>
 #include "init.hpp"
 
-class Game : public c6::Application<ecsConfig>{
-	protected:
-		void init() override;
-		void clean() override;
+class Pong : public c6::Scene<ecsConfig>{
+	private:
+		ECS::Handle player1;
+		ECS::Handle player2;
+		ECS::Handle ball;
+		
+		c6::System<ecsConfig, c6::Signature<Player, c6::component::Physic>, const sf::Time&> movePalletes;
 	public:
-		c6::PhysicsConfig physicsConfig;
-		Game();
+		Pong(c6::StateMachine& stateMachine, const c6::PhysicsConfig& physicsConfig);
+		void onNotify(const sf::Event& event) noexcept override;
+		
+		void update(const sf::Time& time) override;
 };

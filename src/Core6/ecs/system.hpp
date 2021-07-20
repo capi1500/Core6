@@ -91,8 +91,8 @@ namespace c6{
 					functionWithEcs(ecs, id, args...);
 			}
 			
-			explicit System(const FunctionType& function) noexcept : function(function){};
-			explicit System(const FunctionTypeWithECS & function) noexcept : functionWithEcs(function){};
+			System(const FunctionType& function) noexcept : function(function){};
+			System(const FunctionTypeWithECS & function) noexcept : functionWithEcs(function){};
 	};
 	
 	template<concepts::Config Config, class Signature, class... TArgs>
