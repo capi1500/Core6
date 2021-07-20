@@ -21,3 +21,15 @@
 */
 
 #include "renderer.hpp"
+
+namespace c6{
+	sf::RenderWindow& Renderer::getWindow() noexcept{
+		if(window == nullptr)
+			window = new sf::RenderWindow();
+		return *window;
+	}
+	
+	void Renderer::clean(){
+		delete window;
+	}
+}

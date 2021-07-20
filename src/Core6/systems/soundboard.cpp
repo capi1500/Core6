@@ -21,3 +21,13 @@
 */
 
 #include "soundboard.hpp"
+
+namespace c6{
+	void Soundboard::refreshNoShrink() noexcept{
+		execute([this](ShuffledList<sf::Sound>::ItemId id){
+			if(get(id).getStatus() == sf::SoundSource::Stopped)
+				remove(id);
+		});
+		ShuffledList::refreshNoShrink();
+	}
+}

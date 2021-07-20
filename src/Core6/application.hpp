@@ -20,76 +20,89 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_APPLICATION_HPP
-#define CORE6_APPLICATION_HPP
+#pragma once
 
-#include <Core6/framework.hpp>
-#include <Core6/systems/console.hpp>
 #include <SFML/System/Clock.hpp>
-#include <Core6/state/finiteStateMachine.hpp>
-#include <Core6/scene.hpp>
-#include <Core6/plugin/plugin.hpp>
-#include <Core6/config.hpp>
+#include <Core6/systems/console.hpp>
+#include <Core6/framework.hpp>
+#include <Core6/systems/inputHandler.hpp>
+#include <iostream>
+#include "scene.hpp"
 
 namespace c6{
-	/**
-	 * @brief
-	 * class managing running the app. It listens for sf::Events.
-	 *
-	 *
-	 */
 	template<concepts::Config Config>
-	class Application : public Listener<sf::Event>{
+	class Application{
+		private:
+			sf::Clock clock;
+			Console console = ConsoleBuilder().create();
+			StateMachine scenes;
+			
+			bool active = true;
+			
+			Scene<Config>* getScene(){
+				return dynamic_cast<Scene<Config>*>(scenes.getCurrentState());
+			}
 		protected:
-			using Framework = Framework<Config>;
-			using Scene = Scene<Config>;
-			
-			sf::Clock m_clock;
-			FiniteStateMachine m_finiteStateMachine;
-			std::vector<Plugin*> m_plugins;
-			bool m_active;
-			
-			Scene* getScene(){
-				return dynamic_cast<Scene*>(m_finiteStateMachine.getCurrentState());
+			StateMachine& getScenes(){
+				return scenes;
 			}
 			
-			void loadPlugins(const Path& path){
-				auto loadPlugin = [this](const std::string name){
-					m_plugins.push_back(new Plugin());
-					m_plugins.back()->load(name);
-				};
-				path.execute(loadPlugin, "true", ".dll");
+			virtual void init(){
+				Framework::getInputHandler().addListener(new SimpleListener<sf::Event>(
+						[this](const sf::Event& event){
+							if(event.type == sf::Event::Closed)
+								close();
+						}
+				));
+			}
+			
+			virtual void close(){
+				active = false;
+			}
+			
+			virtual void handleEvents([[maybe_unused]] Scene<Config>* scene){
+				Framework::getInputHandler().handleEvents(&Framework::getRenderer().getWindow());
+			}
+			
+			virtual void update(Scene<Config>* scene, const sf::Time& time){
+				scene->update(time);
+			}
+			
+			virtual void draw(Scene<Config>* scene, sf::RenderStates states, sf::Color background){
+				Framework::getRenderer().getWindow().clear(background);
+				scene->draw(Framework::getRenderer().getWindow(), states);
+				Framework::getRenderer().getWindow().display();
+			}
+			
+			virtual void clean(){
+				Framework::getRenderer().clean();
 			}
 		public:
-			void onSignal(const sf::Event& signal) override{
-				if(signal.type == sf::Event::Closed)
-					m_active = false;
+			Application() = default;
+			explicit Application(Console console) : console(console){
+				Framework::getRenderer().attachConsole(this->console);
+				Framework::getResourceManager().attachConsole(this->console);
+				Framework::getSoundboard().attachConsole(this->console);
 			}
 			
-			virtual void run() = 0;
-			virtual void init(){
-				m_active = true;
-				Framework::getInputHandler().add(this);
+			~Application(){
+				scenes.clear();
+				scenes.processEvents();
 			}
 			
-			virtual ~Application(){
-				Console::send(Message("Closing Application", MessageType::Debug));
-				Console::send(Message("Clearing Finite State Machine", MessageType::Debug));
-				m_finiteStateMachine.clear();
-				m_finiteStateMachine.processEvents();
-				Console::send(Message("All finite states closed", MessageType::Debug));
-				Console::send(Message("Destroing templates", MessageType::Debug));
-				EntryPoint::destroy();
-				Console::send(Message("Templates destroyed", MessageType::Debug));
-				Console::send(Message("Unloadign plugins", MessageType::Debug));
-				for(auto& p : m_plugins){
-					delete p;
-					p = nullptr;
+			void run(){
+				init();
+				sf::Time time;
+				Scene<Config>* scene;
+				while(active){
+					time = clock.restart();
+					scene = getScene();
+					handleEvents(scene);
+					update(scene, time);
+					draw(scene,sf::RenderStates(), sf::Color::Black);
 				}
-				m_plugins.clear();
-				Console::send(Message("Plugins unloaded", MessageType::Debug));
+				clean();
 			}
 	};
 }
 
-#endif //CORE6_APPLICATION_HPP

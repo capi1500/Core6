@@ -20,217 +20,152 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Core6/utils/path.hpp>
-#include <Core6/framework.hpp>
+#include <iostream>
 #include "resourceManager.hpp"
-#include "console.hpp"
 
 namespace c6{
-	void ResourceManager::addTexture(const std::string& name) noexcept{
-		m_texture.lock();
-		m_texture.get()[name].loadFromFile(name);
-		m_texture.unlock();
+	void ResourceManager::addTexture(const Path& path) noexcept{
+		message("Loading texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
+		if(textures[path.getPath()].loadFromFile(path.getPath()))
+			message("Loaded texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
+		else
+			message("Cannot load texture " + path.getPath() + " from path: " + path.getPath(), Message::Error);
+	}
+	
+	void ResourceManager::addTexture(const std::string& name, const Path& path) noexcept{
+		message("Loading texture " + name + " from path: " + path.getPath(), Message::Loading);
+		if(textures[name].loadFromFile(path.getPath()))
+			message("Loaded texture " + name + " from path: " + path.getPath(), Message::Loading);
+		else
+			message("Cannot load texture " + name + " from path: " + path.getPath(), Message::Error);
 	}
 	
 	void ResourceManager::removeTexture(const std::string& name) noexcept{
-		m_texture.lock();
-		m_texture.get().erase(name);
-		m_texture.unlock();
+		textures.erase(name);
 	}
 	
 	const sf::Texture& ResourceManager::getTexture(const std::string& name) const noexcept{
-		while(true){
-			m_texture.lock();
-			if(m_texture().count(name) != 0){
-				const sf::Texture& out = m_texture().at(name);
-				m_texture.unlock();
-				return out;
-			}
-			m_texture.unlock();
-		}
+		return textures.at(name);
 	}
 	
-	void ResourceManager::addSound(const std::string& name) noexcept{
-		m_sound.lock();
-		m_sound.get()[name].loadFromFile(name);
-		m_sound.unlock();
+	bool ResourceManager::hasTexture(const std::string& name) const noexcept{
+		return textures.contains(name);
+	}
+	
+	void ResourceManager::addSound(const Path& path) noexcept{
+		sounds[path.getPath()].loadFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addSound(const std::string& name, const Path& path) noexcept{
+		sounds[name].loadFromFile(path.getPath());
 	}
 	
 	void ResourceManager::removeSound(const std::string& name) noexcept{
-		m_sound.lock();
-		m_sound.get().erase(name);
-		m_sound.unlock();
+		sounds.erase(name);
 	}
 	
 	const sf::SoundBuffer& ResourceManager::getSound(const std::string& name) const noexcept{
-		while(true){
-			m_sound.lock();
-			if(m_sound().count(name) != 0){
-				const sf::SoundBuffer& out = m_sound().at(name);
-				m_sound.unlock();
-				return out;
-			}
-			m_sound.unlock();
-		}
+		return sounds.at(name);
 	}
 	
-	void ResourceManager::addShader(const std::string& name, const sf::Shader::Type type) noexcept{
-		m_shader.lock();
-		m_shader.get()[name].loadFromFile(name, type);
-		m_shader.unlock();
+	bool ResourceManager::hasSound(const std::string& name) const noexcept{
+		return sounds.contains(name);
+	}
+	
+	void ResourceManager::addShader(const Path& path, sf::Shader::Type type) noexcept{
+		shaders[path.getPath()].loadFromFile(path.getPath(), type);
+	}
+	
+	void ResourceManager::addShader(const std::string& name, const Path& path, const sf::Shader::Type type) noexcept{
+		shaders[name].loadFromFile(path.getPath(), type);
 	}
 	
 	void ResourceManager::removeShader(const std::string& name) noexcept{
-		m_shader.lock();
-		m_shader.get().erase(name);
-		m_shader.unlock();
+		shaders.erase(name);
 	}
 	
 	const sf::Shader& ResourceManager::getShader(const std::string& name) const noexcept{
-		while(true){
-			m_shader.lock();
-			if(m_shader().count(name) != 0){
-				const sf::Shader& out = m_shader().at(name);
-				m_shader.unlock();
-				return out;
-			}
-			m_shader.unlock();
-		}
+		return shaders.at(name);
 	}
 	
-	void ResourceManager::addFont(const std::string& name) noexcept{
-		m_fonts.lock();
-		m_fonts.get()[name].loadFromFile(name);
-		m_fonts.unlock();
+	bool ResourceManager::hasShader(const std::string& name) const noexcept{
+		return shaders.contains(name);
+	}
+	
+	void ResourceManager::addFont(const Path& path) noexcept{
+		fonts[path.getPath()].loadFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addFont(const std::string& name, const Path& path) noexcept{
+		fonts[name].loadFromFile(path.getPath());
 	}
 	
 	void ResourceManager::removeFont(const std::string& name) noexcept{
-		m_fonts.lock();
-		m_fonts.get().erase(name);
-		m_fonts.unlock();
+		fonts.erase(name);
 	}
 	
 	const sf::Font& ResourceManager::getFont(const std::string& name) const noexcept{
-		while(true){
-			m_fonts.lock();
-			if(m_fonts().count(name) != 0){
-				const sf::Font& out = m_fonts().at(name);
-				m_fonts.unlock();
-				return out;
-			}
-			m_fonts.unlock();
-		}
+		return fonts.at(name);
 	}
 	
-	void ResourceManager::texturesFromPath(const Path& path) noexcept{
-		Console::send(Message("Loading textures from " + path.getPath(), MessageType::Loading));
+	bool ResourceManager::hasFont(const std::string& name) const noexcept{
+		return fonts.contains(name);
+	}
+	
+	void ResourceManager::addMusic(const Path& path) noexcept{
+		music[path.getPath()].openFromFile(path.getPath());
+	}
+	
+	void ResourceManager::addMusic(const std::string& name, const Path& path) noexcept{
+		music[name].openFromFile(path.getPath());
+	}
+	
+	void ResourceManager::removeMusic(const std::string& name) noexcept{
+		music[name].stop();
+		music.erase(name);
+	}
+	
+	const sf::Music& ResourceManager::getMusic(const std::string& name) const noexcept{
+		return music.at(name);
+	}
+	
+	bool ResourceManager::hasMusic(const std::string& name) const noexcept{
+		return music.contains(name);
+	}
+	
+	void ResourceManager::loadTextures(const Path& path) noexcept{
 		for(auto ext : {"bmp", "png", "tga", "jpg", "gif", "psd", "hdr", "pic"}){
 			path.execute([&](const std::string& path){
-				Console::send(Message("Loading texture '" + path + "'", MessageType::Loading));
 				addTexture(path);
 			}, true, std::string(".") + ext);
 		}
 	}
 	
-	void ResourceManager::soundsFromPath(const Path& path) noexcept{
-		Console::send(Message("Loading sounds from " + path.getPath(), MessageType::Loading));
+	void ResourceManager::loadSounds(const Path& path) noexcept{
 		for(auto ext : {"wav", "ogg", "flac"}){
 			path.execute([&](const std::string& path){
-				Console::send(Message("Loading sound '" + path + "'", MessageType::Loading));
 				addSound(path);
 			}, true, std::string(".") + ext);
 		}
 	}
 	
-	void ResourceManager::shadersFromPath(const Path& path) noexcept{
-		Console::send(Message("Loading shaders from " + path.getPath(), MessageType::Loading));
+	void ResourceManager::loadShaders(const Path& path) noexcept{
 		path.execute([&](const std::string& path){
-			Console::send(Message("Loading fragment shader '" + path + "'", MessageType::Loading));
 			addShader(path, sf::Shader::Fragment);
 		}, true, ".frag");
 		path.execute([&](const std::string& path){
-			Console::send(Message("Loading vertex shader '" + path + "'", MessageType::Loading));
 			addShader(path, sf::Shader::Vertex);
 		}, true, ".vert");
 		path.execute([&](const std::string& path){
-			Console::send(Message("Loading geometry shader '" + path + "'", MessageType::Loading));
 			addShader(path, sf::Shader::Geometry);
 		}, true, ".geom");
 	}
 	
-	void ResourceManager::fontsFromPath(const Path& path) noexcept{
+	void ResourceManager::loadFonts(const Path& path) noexcept{
 		for(auto ext : {"ttf", "otf", "cff", "pfb", "pfm", "afm", "aat", "sil", "fon", "bdf", "pfr", }){
 			path.execute([&](const std::string& path){
-				Console::send(Message("Loading sound '" + path + "'", MessageType::Loading));
 				addFont(path);
 			}, true, std::string(".") + ext);
 		}
-	}
-	
-	void ResourceManager::loadTextures(const Path& path) noexcept{
-		m_queue.lock();
-		m_queue.get().push({path, Texture});
-		m_queue.unlock();
-	}
-	
-	void ResourceManager::loadSounds(const Path& path) noexcept{
-		m_queue.lock();
-		m_queue.get().push({path, Sound});
-		m_queue.unlock();
-	}
-	
-	void ResourceManager::loadShaders(const Path& path) noexcept{
-		m_queue.lock();
-		m_queue.get().push({path, Shader});
-		m_queue.unlock();
-	}
-	
-	void ResourceManager::loadFonts(const Path& path) noexcept{
-		m_queue.lock();
-		m_queue.get().push({path, Font});
-		m_queue.unlock();
-	}
-	
-	void ResourceManager::threadFunction() noexcept{
-		while(true){
-			m_working.lock();
-			if(not m_working()){
-				m_working.unlock();
-				return;
-			}
-			m_working.unlock();
-			
-			m_queue.lock();
-			if(not m_queue().empty()){
-				Path p = m_queue().front().first;
-				Type t = m_queue().front().second;
-				m_queue().pop();
-				m_queue.unlock();
-				
-				if(t == Texture)
-					texturesFromPath(p);
-				else if(t == Sound)
-					soundsFromPath(p);
-				else if(t == Shader)
-					shadersFromPath(p);
-				else if(t == Font)
-					fontsFromPath(p);
-			}
-			else
-				m_queue.unlock();
-		}
-	}
-	
-	ResourceManager::ResourceManager() : m_thread([&]{threadFunction();}){
-		m_working.lock();
-		m_working() = true;
-		m_working.unlock();
-	}
-	
-	ResourceManager::~ResourceManager(){
-		m_working.lock();
-		m_working() = false;
-		m_working.unlock();
-		m_thread.join();
 	}
 }

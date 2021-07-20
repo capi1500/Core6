@@ -23,19 +23,45 @@
 #ifndef CORE6_CONSOLE_HPP
 #define CORE6_CONSOLE_HPP
 
-#include <Core6/signal/message.hpp>
+#include <Core6/base/listener/emitter.hpp>
+#include <Core6/base/listener/listener.hpp>
+#include <Core6/base/interfaces/builder.hpp>
+#include <string>
 
 namespace c6{
+	struct Message{
+		enum MessageType{
+			Info,
+			Debug,
+			Error,
+			Loading
+		};
+		
+		const std::string what;
+		const MessageType type;
+		Message(const std::string& what, MessageType type) noexcept;
+	};
+	
 	class Console{
 		private:
-			static bool m_info;
-			static bool m_debug;
-			static bool m_error;
-			static bool m_loader;
+			bool info;
+			bool debug;
+			bool error;
+			bool loader;
 		public:
-			static void useMessageType(MessageType type) noexcept;
-			
-			static void send(const Message& message) noexcept;
+			void send(const Message& message) const noexcept;
+			Console(bool mInfo, bool mDebug, bool mError, bool mLoader) noexcept;
+	};
+	
+	class ConsoleBuilder : public Builder<Console>{
+		private:
+			bool info = false;
+			bool debug = false;
+			bool error = false;
+			bool loader = false;
+		public:
+			ConsoleBuilder& useMessageType(Message::MessageType type) noexcept;
+			Console create() override;
 	};
 }
 

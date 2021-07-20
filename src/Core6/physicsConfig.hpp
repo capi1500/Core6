@@ -20,37 +20,30 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_PHYSICSCONFIG_HPP
-#define CORE6_PHYSICSCONFIG_HPP
+#pragma once
 
-#include <concepts>
 #include <box2d/b2_math.h>
-#include <SFML/System/Vector2.hpp>
 
 namespace c6{
 	struct PhysicsConfig{
-		static const float scaleFactor;
-		static const b2Vec2 gravity;
-		static const unsigned velocityIterations;
-		static const unsigned positionIterations;
+		const float scaleFactor;
+		const b2Vec2 gravity;
+		const unsigned velocityIterations;
+		const unsigned positionIterations;
 		
-		static b2Vec2 pixelToMeter(const sf::Vector2f& pixel){
+		b2Vec2 pixelToMeter(const sf::Vector2f& pixel) const noexcept{
 			return b2Vec2(pixel.x / scaleFactor, pixel.y / scaleFactor);
 		}
 		
-		static sf::Vector2f meterToPixel(const b2Vec2& meter){
+		sf::Vector2f meterToPixel(const b2Vec2& meter) const noexcept{
 			return sf::Vector2f(meter.x * scaleFactor, meter.y * scaleFactor);
 		}
+		
+		PhysicsConfig(const float scaleFactor, const b2Vec2& gravity, const unsigned int velocityIterations, const unsigned int positionIterations) :
+				scaleFactor(scaleFactor),
+				gravity(gravity),
+				velocityIterations(velocityIterations),
+				positionIterations(positionIterations){}
 	};
-	
-	namespace concepts{
-		template<class T> concept PhysicsConfig = requires{
-			{T::scaleFactor} -> std::convertible_to<float>;
-			{T::gravity} -> std::convertible_to<b2Vec2>;
-			{T::velocityIterations} -> std::convertible_to<unsigned>;
-			{T::positionIterations} -> std::convertible_to<unsigned>;
-		};
-	}
 }
 
-#endif //CORE6_PHYSICSCONFIG_HPP

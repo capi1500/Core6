@@ -20,8 +20,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_PATH_HPP
-#define CORE6_PATH_HPP
+#pragma once
 
 #include <experimental/filesystem>
 
@@ -33,43 +32,46 @@ namespace c6{
 	 */
 	class Path{
 		private:
-			fs::path m_path;
+			fs::path path;
 			
-			std::string toString(fs::path p) const;
+			[[nodiscard]]
+			static std::string toString(fs::path p) noexcept;
 		public:
 			/**
-			 * @brief Check wheter path is a file
-			 * @param ext - (optional) checks if a file has extention [ext]
-			 * @return returns true if path is a file (with extention [ext])
+			 * @brief Check whether path is a file
+			 * @param ext - (optional) checks if a file has extension [ext]
+			 * @return returns true if path is a file (with extension [ext])
 			 */
-			bool isFile(const std::string& ext = "") const;
+			[[nodiscard]]
+			bool isFile(const std::string& ext = "") const noexcept;
 			
 			/**
-			 * @brief Checks wheter path is a directory
+			 * @brief Checks whether path is a directory
 			 * @return returns true if path is a directory
 			 */
-			bool isDirectory() const;
+			[[nodiscard]]
+			bool isDirectory() const noexcept;
 			
 			/**
 			 * @brief Executes function on file(s) with extension [ext]
 			 * @tparam F - function type, must provide 'operator ()' that takes one argument (path to file) 'std::string' or 'const std::string&' and return void.
-			 * @param f - function to execute on file(s), see template parameter above for more informations
+			 * @param f - function to execute on file(s), see template parameter above for more information
 			 * @param recursive - (optional, default = false) when true and if path is directory, execute [f] recursively
 			 * @param ext - (optional) executes [f] only on files with [ext] extension
 			 */
 			template<class F>
 			requires std::is_invocable_v<F, std::string>
 			void execute(F f, bool recursive = false, const std::string& ext = "") const{
-				if(not m_path.empty()){
+				if(not path.empty()){
 					if(isDirectory()){
 						if(recursive){
-							for(auto& p : fs::recursive_directory_iterator(m_path)){
+							for(auto& p : fs::recursive_directory_iterator(path)){
 								if(Path(p.path().string()).isFile(ext))
 									f(toString(p.path()));
 							}
 						}
 						else{
-							for(auto& p : fs::directory_iterator(m_path)){
+							for(auto& p : fs::directory_iterator(path)){
 								if(Path(p.path().string()).isFile(ext))
 									f(toString(p.path()));
 							}
@@ -84,14 +86,19 @@ namespace c6{
 			 * @bried get path
 			 * @return path as string
 			 */
-			const std::string getPath() const;
+			[[nodiscard]]
+			const std::string getPath() const noexcept;
 			
 			/**
 			 * @brief Creates path from string
 			 * @param path - path in string
 			 */
-			Path(const std::string& path);
+			Path(const std::string& path) noexcept;
+			
+			/**
+			 * @brief Creates path from string
+			 * @param path - path in string
+			 */
+			Path(const char* path) noexcept;
 	};
 }
-
-#endif //CORE6_PATH_HPP

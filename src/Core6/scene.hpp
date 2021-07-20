@@ -20,90 +20,84 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_SCENE_HPP
-#define CORE6_SCENE_HPP
+#pragma once
 
-#include <Core6/state/finiteState.hpp>
-#include <Core6/camera.hpp>
-#include <Core6/signal/listener.hpp>
+#include <utility>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/Window/Window.hpp>
-#include <Core6/agent/agentGroup.hpp>
-#include "framework.hpp"
-#include <Core6/agent/components.hpp>
-#include <Core6/config.hpp>
-#include <Core6/framework.hpp>
 #include <box2d/b2_world.h>
 
+#include <Core6/framework.hpp>
+#include <Core6/base/state/state.hpp>
+#include <Core6/ecs/entityComponentSystem.hpp>
+#include <Core6/ecs/systems.hpp>
+#include "physicsConfig.hpp"
+
 namespace c6{
-	/**
-	 * @brief Class managing storing, updating and drawing Agents.
-	 */
-	template<concepts::Config TConfig>
-	class Scene : public AgentGroup<TConfig>, public FiniteState, public Listener<sf::Event>{
-			using Config = TConfig;
-			using AgentGroup = AgentGroup<Config>;
-			using Framework = Framework<Config>;
-			using PhysicsConfig = typename Config::PhysicsConfig;
+	template<concepts::Config ecsConfig>
+	class Scene : public State, public Listener<sf::Event>{
 		private:
-			Camera m_camera;
-			b2World m_physicWorld;
+			EntityComponentSystem<ecsConfig> ecs;
+			const PhysicsConfig& physicsConfig;
+			b2World physicWorld;
+		protected:
+			[[nodiscard]]
+			EntityComponentSystem<ecsConfig>& getECS() noexcept{
+				return ecs;
+			}
 			
-			void resize(size_t size){
-				while(size >= Group::count())
-					this->template addToBack(new Group);
-			};
+			[[nodiscard]]
+			const EntityComponentSystem<ecsConfig>& getECS() const noexcept{
+				return ecs;
+			}
+			
+			[[nodiscard]]
+			const PhysicsConfig& getPhysicsConfig() const noexcept{
+				return physicsConfig;
+			}
+			
+			[[nodiscard]]
+			b2World& getPhysicWorld() noexcept{
+				return physicWorld;
+			}
+			
+			[[nodiscard]]
+			const b2World& getPhysicWorld() const noexcept{
+				return physicWorld;
+			}
 		public:
-			const b2World& getWorld() const{
-				return m_physicWorld;
+			Scene(StateMachine& stateMachine, const PhysicsConfig& physicsConfig) noexcept :
+					State(stateMachine),
+					physicsConfig(physicsConfig),
+					physicWorld(physicsConfig.gravity){
+				Framework::getInputHandler().addListener(this);
 			}
 			
-			b2World& getWorld(){
-				return m_physicWorld;
+			~Scene() override{
+				if(isActive())
+					Framework::getInputHandler().removeListener(this);
 			}
 			
-			/**
-			 * @brief draw all stored Agents
-			 */
-			void draw() override{
-				Framework::getRenderer().lock();
-				Framework::getRenderer().get().setView(m_camera);
-				Framework::getRenderer().get().clear();
-				AgentGroup::draw();
-				Framework::getRenderer().get().display();
-				Framework::getRenderer().unlock();
-			};
-			
-			void onSignal(const sf::Event& signal) override{
-				if(isActive()){
-					Listener::onSignal(signal);
-				}
-			};
-			
-			void update(const sf::Time& time) override{
-				AgentGroup::update(time);
-				m_physicWorld.Step(time.asSeconds(), PhysicsConfig::velocityIterations, PhysicsConfig::positionIterations);
+			void activate() noexcept override{
+				Activable::activate();
+				Framework::getInputHandler().addListener(this);
 			}
 			
-			/**
-			 * @brief constructor of scene
-			 */
-			Scene(FiniteStateMachine& finiteStateMachine, const std::function<void(const sf::Event&)>& f) : FiniteState(finiteStateMachine), Listener<sf::Event>(f), m_physicWorld(PhysicsConfig::gravity){
-				Framework::getInputHandler().add(this);
-			};
-			
-			/**
-			 * @brief constructor of scene
-			 */
-			Scene(FiniteStateMachine& finiteStateMachine) : FiniteState(finiteStateMachine), Listener<sf::Event>(), m_physicWorld(PhysicsConfig::gravity){
-				Framework::getInputHandler().add(this);
+			void deactivate() noexcept override{
+				Activable::deactivate();
+				Framework::getInputHandler().removeListener(this);
 			}
 			
-			~Scene(){
-				Framework::getInputHandler().remove(this);
-			};
+			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){
+				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::draw<ecsConfig>, target, states);
+			}
+			
+			virtual void update(const sf::Time& time){
+				physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
+				ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
+			}
 	};
 }
 
-
-#endif //CORE6_SCENE_HPP

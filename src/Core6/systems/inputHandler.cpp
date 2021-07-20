@@ -20,28 +20,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Core6/systems/console.hpp>
-#include <Core6/utils/commonFunctions.hpp>
-#include <iostream>
 #include "inputHandler.hpp"
 
 namespace c6{
-	void InputHandler::handleInput(){
-		if(m_window != nullptr){
-			sf::Event event;
-			while(m_window->pollEvent(event)){
-				send(event);
-				//Console::send(sfEventToMessage(event));
-			}
-			processEvents();
+	void InputHandler::handleEvents(sf::Window* window){
+		sf::Event event;
+		while(window->pollEvent(event)){
+			notify(event);
 		}
-	}
-	
-	void InputHandler::registerWindow(sf::Window* window){
-		m_window = window;
-	}
-	
-	InputHandler::~InputHandler(){
-		m_window = nullptr;
+		processEvents();
 	}
 }

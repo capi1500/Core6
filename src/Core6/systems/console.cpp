@@ -25,36 +25,40 @@
 #include "console.hpp"
 
 namespace c6{
-	bool Console::m_info = false;
-	bool Console::m_debug = false;
-	bool Console::m_error = false;
-	bool Console::m_loader = false;
+	Message::Message(const std::string& what, Message::MessageType type) noexcept : what(std::move(what)), type(type){}
 	
-	void Console::useMessageType(MessageType type) noexcept{
-		switch(type){
-			case MessageType::Info:
-				m_info = true;
-				break;
-			case MessageType::Debug:
-				m_debug = true;
-				break;
-			case MessageType::Error:
-				m_error = true;
-				break;
-			case MessageType::Loading:
-				m_loader = true;
-				break;
-		}
+	void Console::send(const Message& message) const noexcept{
+		if(error && message.type == Message::MessageType::Error)
+			std::cerr << "ERROR: " + message.what << "\n";
+		else if(debug && message.type == Message::MessageType::Debug)
+			std::clog << "DEBUG: " + message.what << "\n";
+		else if(loader && message.type == Message::MessageType::Loading)
+			std::clog << "LOADING: " + message.what << "\n";
+		else if(info && message.type == Message::MessageType::Info)
+			std::cout << "INFO: " + message.what << "\n";
 	}
 	
-	void Console::send(const Message& signal) noexcept{
-		if(signal.getType() == MessageType::Error and m_error)
-			std::cerr << signal.write() << "\n";
-		else if(signal.getType() == MessageType::Debug and m_debug)
-			std::clog << signal.write() << "\n";
-		else if(signal.getType() == MessageType::Info and m_info)
-			std::cout << signal.write() << "\n";
-		else if(signal.getType() == MessageType::Loading and m_loader)
-			std::clog << signal.write() << "\n";
+	Console::Console(bool mInfo, bool mDebug, bool mError, bool mLoader) noexcept : info(mInfo), debug(mDebug), error(mError), loader(mLoader){}
+	
+	Console ConsoleBuilder::create(){
+		return Console(info, debug, error, loader);
+	}
+	
+	ConsoleBuilder& ConsoleBuilder::useMessageType(Message::MessageType type) noexcept{
+		switch(type){
+			case Message::MessageType::Info:
+				info = true;
+				break;
+			case Message::MessageType::Debug:
+				debug = true;
+				break;
+			case Message::MessageType::Error:
+				error = true;
+				break;
+			case Message::MessageType::Loading:
+				loader = true;
+				break;
+		}
+		return *this;
 	}
 }

@@ -11,9 +11,9 @@ namespace MPL{
         public:                                                                     \
             inline mName() = default;                                               \
             inline mName(const mName& mX) = default;                                \
-            inline mName(mName&& mX) = default;                                     \
+            inline mName(mName&& mX) noexcept = default;                            \
             inline mName& operator=(const mName& rhs) = default;                    \
-            inline mName& operator=(mName&& rhs) = default;                         \
+            inline mName& operator=(mName&& rhs) noexcept = default;                \
             inline constexpr explicit mName(mUnderlying mX) noexcept : value{mX} {} \
             inline constexpr mName& operator=(mUnderlying rhs) noexcept{            \
                 value = rhs;                                                        \

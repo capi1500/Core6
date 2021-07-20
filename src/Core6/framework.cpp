@@ -21,3 +21,21 @@
 */
 
 #include "framework.hpp"
+
+namespace c6{
+	Renderer& c6::Framework::getRenderer() noexcept{
+		return get().renderer;
+	}
+	
+	ResourceManager& c6::Framework::getResourceManager() noexcept{
+		return get().resources;
+	}
+	
+	Soundboard& c6::Framework::getSoundboard() noexcept{
+		return get().soundboard;
+	}
+	
+	InputHandler& Framework::getInputHandler() noexcept{
+		return get().inputHandler;
+	}
+}

@@ -23,11 +23,14 @@
 #ifndef CORE6_STORAGE_HPP
 #define CORE6_STORAGE_HPP
 
-#include <Core6/utils/commonFunctions.hpp>
 #include <unordered_map>
+#include <functional>
 
 namespace c6{
-	template<concepts::Hashable Key, class Type>
+	template<class Key, class Type>
+	requires requires(Key key){
+		{std::hash<Key>{}(key)} -> std::convertible_to<std::size_t>;
+	}
 	class Storage : public std::unordered_map<Key, Type>{
 	
 	};

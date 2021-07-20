@@ -20,29 +20,16 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_SOUNDBOARD_HPP
-#define CORE6_SOUNDBOARD_HPP
+#pragma once
 
-#include <Core6/utils/storage.hpp>
-#include <SFML/Audio/Music.hpp>
-#include <string>
+#include <SFML/Audio/Sound.hpp>
+#include <Core6/utils/shuffledList.hpp>
+#include <Core6/base/interfaces/loggable.hpp>
 
 namespace c6{
-	namespace base{
-		class Soundboard : public Storage<std::string, sf::Music>{
-		
-		};
-	}
-	
-	namespace concepts{
-		template<class T> concept Soundboard = requires{
-			std::is_base_of_v<base::Soundboard, T>;
-		};
-	}
-	
-	class Soundboard : public base::Soundboard{
-	
+	class Soundboard : public ShuffledList<sf::Sound>, public Loggable{
+		public:
+			void refreshNoShrink() noexcept override;
 	};
 }
 
-#endif //CORE6_SOUNDBOARD_HPP
