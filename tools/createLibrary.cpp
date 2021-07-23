@@ -51,10 +51,6 @@ int main(){
 	system("xcopy ..\\libraries\\win\\Box2D\\bin ..\\src\\sample\\bin\\ /Y /q");
 	system("xcopy ..\\Core6\\bin ..\\src\\sample\\bin\\ /Y /q");
 	
-	system("echo Building test binary");
-	system("cmake --build ..\\cmake_files\\ --target Core6debugLib");
-	system("xcopy ..\\cmake_files\\libCore6debugLib.dll ..\\src\\sample\\bin /Y /q");
-	
 	system("echo Building executable");
 	system("cmake --build ..\\cmake_files\\ --target Core6debug");
 	#elif unix

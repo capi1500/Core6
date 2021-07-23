@@ -37,10 +37,6 @@ namespace c6{
 		console = nullptr;
 	}
 	
-	Loggable::Loggable() noexcept : console(nullptr){
-	
-	}
-	
 	Loggable::Loggable(Console& console) noexcept{
 		attachConsole(console);
 	}

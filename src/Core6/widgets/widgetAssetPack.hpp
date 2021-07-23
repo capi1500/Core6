@@ -22,14 +22,22 @@
 
 #pragma once
 
-#include <Core6/application.hpp>
-#include "init.hpp"
+#include <string>
 
-class Game : public c6::Application<ecsConfig>{
-	protected:
-		void init() override;
-		void clean() override;
-	public:
-		c6::PhysicsConfig physicsConfig;
-		Game();
-};
+namespace c6{
+	class WidgetAssetPack{
+		public:
+			class Frame9{
+				private:
+					std::string textureName[3][3];
+				public:
+					std::string* operator [] (size_t id){
+						return textureName[id];
+					}
+					const std::string* operator [] (size_t id) const{
+						return textureName[id];
+					}
+			};
+	};
+}
+

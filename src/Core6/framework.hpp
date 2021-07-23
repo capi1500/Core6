@@ -27,19 +27,20 @@
 #include <Core6/systems/resourceManager.hpp>
 #include <Core6/systems/soundboard.hpp>
 #include <Core6/systems/inputHandler.hpp>
+#include <Core6/base/lazy.hpp>
 
 namespace c6{
 	class Framework : public Singleton<Framework>{
 		private:
-			Renderer renderer;
-			ResourceManager resources;
-			Soundboard soundboard;
-			InputHandler inputHandler;
+			Lazy<Renderer> renderer;
+			Lazy<ResourceManager> resources;
+			Lazy<Soundboard> soundboard;
+			Lazy<InputHandler> inputHandler;
 		public:
-			static Renderer& getRenderer() noexcept;
-			static ResourceManager& getResourceManager() noexcept;
-			static Soundboard& getSoundboard() noexcept;
-			static InputHandler& getInputHandler() noexcept;
+			static Lazy<Renderer>& getRenderer() noexcept;
+			static Lazy<ResourceManager>& getResourceManager() noexcept;
+			static Lazy<Soundboard>& getSoundboard() noexcept;
+			static Lazy<InputHandler>& getInputHandler() noexcept;
 	};
 }
 

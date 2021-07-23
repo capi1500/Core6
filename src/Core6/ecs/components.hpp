@@ -25,6 +25,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <box2d/b2_body.h>
+#include <memory>
 
 namespace c6{
 	template<class... Ts> using Signature = MPL::TypeList<Ts...>;

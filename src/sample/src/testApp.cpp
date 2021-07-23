@@ -20,29 +20,25 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "game.hpp"
-#include "pong.hpp"
+#include "testApp.hpp"
+#include "widgetScene.hpp"
 
-Game::Game() : Application(c6::ConsoleBuilder().useMessageType(c6::Message::Info)
-                                               .useMessageType(c6::Message::Error)
-                                               .useMessageType(c6::Message::Debug)
-                                               .useMessageType(c6::Message::Loading)
-                                               .create()),
-                           physicsConfig(30,
-                                         b2Vec2(0, 0),
-                                         8,
-                                         3){
-	
-}
-
-void Game::init(){
+void TestApp::init(){
 	Application::init();
-	c6::Framework::getRenderer().getWindow().create(sf::VideoMode(800, 500), "test");
-	c6::Framework::getRenderer().getWindow().setFramerateLimit(60);
-	getScenes().add(new Pong(getScenes(), physicsConfig));
+	c6::Framework::getRenderer()->create(sf::VideoMode(600, 500), "Test App");
+	getScenes().add(new WidgetScene(getScenes()));
 }
 
-void Game::clean(){
-	c6::Framework::getRenderer().getWindow().close();
-	Application::clean();
+void TestApp::close(){
+	Application::close();
+	c6::Framework::getRenderer()->close();
+}
+
+TestApp::TestApp() : c6::Application<ecsConfig>(c6::ConsoleBuilder()
+																	.useMessageType(c6::Message::Loading)
+																	.useMessageType(c6::Message::Debug)
+																	.useMessageType(c6::Message::Error)
+																	.useMessageType(c6::Message::Info)
+																	.create()){
+	
 }

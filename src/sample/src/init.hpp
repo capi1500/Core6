@@ -23,10 +23,9 @@
 #pragma once
 
 #include <Core6/ecs/config.hpp>
-#include <src/objects/player.hpp>
-#include <src/objects/ball.hpp>
+#include <Core6/widgets/frame9.hpp>
 
-using ecsConfig = c6::Config<c6::ComponentList<Player>, c6::TagList<Ball>>;
-using ECS = c6::EntityComponentSystem<ecsConfig>;
-using EntityId = ECS::EntityId;
-using Entity = ECS::Handle;
+using Components = c6::ComponentList<>;
+using Tags = c6::TagList<>;
+
+using ecsConfig = c6::Config<Components, Tags>;

@@ -40,7 +40,9 @@ namespace c6{
 	class Scene : public State, public Listener<sf::Event>{
 		private:
 			EntityComponentSystem<ecsConfig> ecs;
-			const PhysicsConfig& physicsConfig;
+			
+			bool usesPhysics;
+			PhysicsConfig physicsConfig;
 			b2World physicWorld;
 		protected:
 			[[nodiscard]]
@@ -68,26 +70,35 @@ namespace c6{
 				return physicWorld;
 			}
 		public:
-			Scene(StateMachine& stateMachine, const PhysicsConfig& physicsConfig) noexcept :
+			Scene(StateMachine& stateMachine, PhysicsConfig physicsConfig) noexcept :
 					State(stateMachine),
+					usesPhysics(true),
 					physicsConfig(physicsConfig),
 					physicWorld(physicsConfig.gravity){
-				Framework::getInputHandler().addListener(this);
+				Framework::getInputHandler()->addListener(this);
+			}
+			
+			Scene(StateMachine& stateMachine) noexcept :
+					State(stateMachine),
+					usesPhysics(false),
+					physicsConfig(PhysicsConfig(0, b2Vec2_zero, 0, 0)),
+					physicWorld(b2Vec2_zero){
+				Framework::getInputHandler()->addListener(this);
 			}
 			
 			~Scene() override{
 				if(isActive())
-					Framework::getInputHandler().removeListener(this);
+					Framework::getInputHandler()->removeListener(this);
 			}
 			
 			void activate() noexcept override{
 				Activable::activate();
-				Framework::getInputHandler().addListener(this);
+				Framework::getInputHandler()->addListener(this);
 			}
 			
 			void deactivate() noexcept override{
 				Activable::deactivate();
-				Framework::getInputHandler().removeListener(this);
+				Framework::getInputHandler()->removeListener(this);
 			}
 			
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){
@@ -95,8 +106,14 @@ namespace c6{
 			}
 			
 			virtual void update(const sf::Time& time){
-				physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
-				ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
+				if(usesPhysics){
+					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
+					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
+				}
+			}
+			
+			void onNotify([[maybe_unused]] const sf::Event& event) noexcept override{
+			
 			}
 	};
 }

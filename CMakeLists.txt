@@ -34,10 +34,9 @@ include_directories(src/sample)
 
 # add targets
 
-add_library(Core6 SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/interfaces/builder.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/interfaces/activable.cpp src/Core6/base/interfaces/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/base/interfaces/factory.hpp src/Core6/utils/storage.hpp src/Core6/utils/path.cpp src/Core6/utils/path.hpp src/Core6/utils/shuffledList.hpp src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/componentManager.hpp src/Core6/ecs/entityFactory.hpp src/Core6/systems/renderer.cpp src/Core6/systems/renderer.hpp src/Core6/systems/resourceManager.cpp src/Core6/systems/resourceManager.hpp src/Core6/systems/inputHandler.cpp src/Core6/systems/inputHandler.hpp src/Core6/systems/soundboard.cpp src/Core6/systems/soundboard.hpp src/Core6/systems/console.cpp src/Core6/systems/console.hpp src/Core6/framework.hpp src/Core6/base/interfaces/loggable.cpp src/Core6/base/interfaces/loggable.hpp src/Core6/concurrent/concurrent.hpp src/Core6/application.hpp src/Core6/scene.hpp src/Core6/concurrent/job.cpp src/Core6/concurrent/job.hpp src/Core6/concurrent/jobPool.cpp src/Core6/concurrent/jobPool.hpp src/Core6/physicsConfig.hpp src/Core6/ecs/components.hpp src/Core6/ecs/systems.hpp src/Core6/framework.cpp)
+add_library(Core6 SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/interfaces/builder.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/interfaces/activable.cpp src/Core6/base/interfaces/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/base/interfaces/factory.hpp src/Core6/utils/storage.hpp src/Core6/utils/path.cpp src/Core6/utils/path.hpp src/Core6/utils/shuffledList.hpp src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/componentManager.hpp src/Core6/ecs/entityFactory.hpp src/Core6/systems/renderer.cpp src/Core6/systems/renderer.hpp src/Core6/systems/resourceManager.cpp src/Core6/systems/resourceManager.hpp src/Core6/systems/inputHandler.cpp src/Core6/systems/inputHandler.hpp src/Core6/systems/soundboard.cpp src/Core6/systems/soundboard.hpp src/Core6/systems/console.cpp src/Core6/systems/console.hpp src/Core6/framework.hpp src/Core6/base/interfaces/loggable.cpp src/Core6/base/interfaces/loggable.hpp src/Core6/concurrent/concurrent.hpp src/Core6/application.hpp src/Core6/scene.hpp src/Core6/concurrent/job.cpp src/Core6/concurrent/job.hpp src/Core6/concurrent/jobPool.cpp src/Core6/concurrent/jobPool.hpp src/Core6/physicsConfig.hpp src/Core6/ecs/components.hpp src/Core6/ecs/systems.hpp src/Core6/framework.cpp src/Core6/widgets/widgetAssetPack.cpp src/Core6/widgets/widgetAssetPack.hpp src/Core6/widgets/frame9.cpp src/Core6/widgets/frame9.hpp src/Core6/base/lazy.hpp src/Core6/base/interfaces/provider.hpp src/Core6/base/interfaces/destroyer.hpp)
 
-add_library(Core6debugLib SHARED src/sample/src/game.cpp src/sample/src/game.hpp src/sample/src/init.hpp src/sample/src/pong.cpp src/sample/src/pong.hpp src/sample/src/objects/player.hpp src/sample/src/objects/ball.hpp)
-add_executable(Core6debug src/sample/src/main.cpp)
+add_executable(Core6debug src/sample/src/main.cpp src/sample/src/main.cpp src/sample/src/testApp.cpp src/sample/src/testApp.hpp src/sample/src/init.hpp src/sample/src/widgetScene.cpp src/sample/src/widgetScene.hpp)
 
 add_executable(tests test/main.cpp test/base/listener/listener.hpp test/base/listener/emitter.hpp test/ecs/entityManager.hpp test/ecs/config.hpp test/ecs/componentManager.hpp test/ecs/ecsInit.hpp)
 add_executable(CreateCore6lib tools/createLibrary.cpp)
@@ -51,21 +50,15 @@ target_compile_options(Core6 PRIVATE -Wall -Wextra)
 target_compile_options(CreateCore6lib PRIVATE -Wall -Wextra)
 target_compile_options(tests PRIVATE -Wall -Wextra)
 
-target_compile_options(Core6debugLib PRIVATE -Wall -Wextra)
 target_compile_options(Core6debug PRIVATE -Wall -Wextra)
 
 # link libraries
 target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
 target_link_libraries(Core6 stdc++fs)
 
-target_link_libraries(Core6debugLib sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
-target_link_libraries(Core6debugLib ${CMAKE_HOME_DIRECTORY}/src/sample/bin/libbox2d.${SHRD_EXT})
-target_link_libraries(Core6debugLib ${CMAKE_HOME_DIRECTORY}/src/sample/bin/libCore6.${SHRD_EXT})
-
 target_link_libraries(Core6debug sfml-graphics sfml-window sfml-system sfml-audio sfml-network)
 target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/src/sample/bin/libbox2d.${SHRD_EXT})
 target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/src/sample/bin/libCore6.${SHRD_EXT})
-target_link_libraries(Core6debug ${CMAKE_HOME_DIRECTORY}/src/sample/bin/libCore6debugLib.${SHRD_EXT})
 
 target_link_libraries(tests ${CMAKE_HOME_DIRECTORY}/cmake_files/libgtest.${SHRD_EXT})
 target_link_libraries(tests sfml-graphics sfml-window sfml-system sfml-audio sfml-network)

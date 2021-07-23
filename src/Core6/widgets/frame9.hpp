@@ -22,12 +22,26 @@
 
 #pragma once
 
-#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include "widgetAssetPack.hpp"
 
-class Player{
-	public:
-		sf::Keyboard::Key up;
-		sf::Keyboard::Key down;
-		int points;
-};
+namespace c6{
+	class Frame9 : public sf::Drawable, public sf::Transformable{
+		private:
+			sf::Sprite sprite;
+			sf::Texture texture;
+			const WidgetAssetPack::Frame9* assetPack;
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		public:
+			void resize(sf::Vector2u size);
+			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack);
+			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			
+			Frame9(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			explicit Frame9(const WidgetAssetPack::Frame9& newAssetPack);
+			Frame9();
+	};
+}
 

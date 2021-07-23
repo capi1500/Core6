@@ -22,6 +22,14 @@
 
 #pragma once
 
-class Ball{
+#include "init.hpp"
+#include <Core6/application.hpp>
+
+class TestApp : public c6::Application<ecsConfig>{
+	protected:
+		void init() override;
+		void close() override;
+	public:
+		TestApp();
 };
 

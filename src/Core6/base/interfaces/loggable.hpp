@@ -27,14 +27,14 @@
 namespace c6{
 	class Loggable{
 		private:
-			Console* console;
+			Console* console = nullptr;
 		protected:
 			void message(const std::string& what, Message::MessageType type) noexcept;
 		public:
 			void attachConsole(Console& console) noexcept;
 			void dettachConsole() noexcept;
 	
-			Loggable() noexcept;
+			Loggable() noexcept = default;
 			explicit Loggable(Console& console) noexcept;
 			virtual ~Loggable() noexcept;
 	};

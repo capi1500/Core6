@@ -48,7 +48,10 @@ namespace c6{
 			}
 			
 			virtual void init(){
-				Framework::getInputHandler().addListener(new SimpleListener<sf::Event>(
+				Framework::getRenderer()->attachConsole(this->console);
+				Framework::getResourceManager()->attachConsole(this->console);
+				Framework::getSoundboard()->attachConsole(this->console);
+				Framework::getInputHandler()->addListener(new SimpleListener<sf::Event>(
 						[this](const sf::Event& event){
 							if(event.type == sf::Event::Closed)
 								close();
@@ -61,7 +64,7 @@ namespace c6{
 			}
 			
 			virtual void handleEvents([[maybe_unused]] Scene<Config>* scene){
-				Framework::getInputHandler().handleEvents(&Framework::getRenderer().getWindow());
+				Framework::getInputHandler()->handleEvents(Framework::getRenderer().get());
 			}
 			
 			virtual void update(Scene<Config>* scene, const sf::Time& time){
@@ -69,26 +72,22 @@ namespace c6{
 			}
 			
 			virtual void draw(Scene<Config>* scene, sf::RenderStates states, sf::Color background){
-				Framework::getRenderer().getWindow().clear(background);
-				scene->draw(Framework::getRenderer().getWindow(), states);
-				Framework::getRenderer().getWindow().display();
+				Framework::getRenderer()->clear(background);
+				scene->draw(*Framework::getRenderer().get(), states);
+				Framework::getRenderer()->display();
 			}
 			
 			virtual void clean(){
-				Framework::getRenderer().clean();
+				scenes.clear();
+				scenes.processEvents();
+				Framework::getRenderer().destroy();
+				Framework::getResourceManager().destroy();
+				Framework::getInputHandler().destroy();
+				Framework::getSoundboard().destroy();
 			}
 		public:
 			Application() = default;
-			explicit Application(Console console) : console(console){
-				Framework::getRenderer().attachConsole(this->console);
-				Framework::getResourceManager().attachConsole(this->console);
-				Framework::getSoundboard().attachConsole(this->console);
-			}
-			
-			~Application(){
-				scenes.clear();
-				scenes.processEvents();
-			}
+			explicit Application(Console console) : console(console){}
 			
 			void run(){
 				init();

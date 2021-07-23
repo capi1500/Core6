@@ -20,9 +20,9 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "game.hpp"
+#include "testApp.hpp"
 
 int main(){
-	Game game;
-	game.run();
+	TestApp app;
+	app.run();
 }

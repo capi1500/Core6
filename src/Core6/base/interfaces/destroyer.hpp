@@ -20,8 +20,41 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "renderer.hpp"
+#pragma once
+
+#include <functional>
 
 namespace c6{
-
+	template<class T>
+	class Destroyer{
+		protected:
+			virtual void destroy(T* ptr) = 0;
+		public:
+			void operator () (T* ptr){
+				destroy(ptr);
+			}
+			virtual ~Destroyer() = default;
+	};
+	
+	template<class T>
+	class DestroyerInline : public Destroyer<T>{
+		private:
+			std::function<void(T*)> destroyer;
+		protected:
+			void destroy(T* ptr) override{
+				destroyer(ptr);
+			}
+		public:
+			DestroyerInline(std::function<void(T*)> destroyer) : destroyer(destroyer){}
+	};
+	
+	template<class T>
+	requires std::is_trivially_destructible_v<T*>
+	class DestroyerSimple : public Destroyer<T>{
+		protected:
+			void destroy(T* ptr) override{
+				delete ptr;
+			}
+	};
 }
+
