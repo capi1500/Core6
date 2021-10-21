@@ -33,18 +33,29 @@ namespace c6{
 			using ECS = EntityComponentSystem<Config>;
 		public:
 			using EntityId = typename ECS::EntityId;
+		protected:
+			virtual void spawn(ECS& entityManager, EntityId id, Args&&... args) const = 0;
+			
+			friend class EntityComponentSystem<Config>;
+	};
+	
+	template<concepts::Config Config, class... Args>
+	class EntityFactoryInline : public EntityFactory<Config, Args...>{
+			using ECS = EntityComponentSystem<Config>;
+		public:
+			using EntityId = typename ECS::EntityId;
 		private:
 			using Function = std::function<void(ECS&, EntityId, Args&&...)>;
 			
 			Function function;
 		protected:
-			void spawn(ECS& entityManager, EntityId id, Args&&... args) const{
+			void spawn(ECS& entityManager, EntityId id, Args&&... args) const final{
 				function(entityManager, id, std::forward<Args>(args)...);
 			}
 			
 			friend class EntityComponentSystem<Config>;
 		public:
-			explicit EntityFactory(const Function& function) : function(function){}
+			explicit EntityFactoryInline(const Function& function) : function(function){}
 	};
 }
 

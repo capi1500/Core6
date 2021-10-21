@@ -20,19 +20,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#include "sequentialAnimation.hpp"
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
+namespace c6{
 
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::SpriteAnimation animation;
-		c6::System<ecsConfig, c6::Signature<Tag>, const sf::Time&> updateAnimation;
-		c6::System<ecsConfig, c6::Signature<c6::component::Transformable>, const sf::Time&> move;
-	public:
-		WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
-
+}

@@ -24,7 +24,7 @@
 
 #include <SFML/Audio/Sound.hpp>
 #include <Core6/utils/shuffledList.hpp>
-#include <Core6/base/interfaces/loggable.hpp>
+#include <Core6/base/loggable.hpp>
 
 namespace c6{
 	class Soundboard : public ShuffledList<sf::Sound>, public Loggable{

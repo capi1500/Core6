@@ -20,30 +20,44 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "path.hpp"
+#include "button.hpp"
 
 namespace c6{
-	bool Path::isFile(const std::string& ext) const noexcept{
-		if(!ext.empty() and path.extension() != ext)
-			return false;
-		return fs::is_regular_file(path);
+	/*
+	void Button::onNotify(const sf::Event& event) noexcept{
+		switch(state){
+			case Default:
+				
+				break;
+			case DefaultHover:
+				
+				break;
+			case AfterClicked:
+				
+				break;
+			case Clicked:
+				
+				break;
+			case ClickedHover:
+				
+				break;
+			case AfterUnclicked:
+				
+				break;
+			case Disabled:
+				
+				break;
+			case DisabledHover:
+				
+				break;
+		}
 	}
 	
-	bool Path::isDirectory() const noexcept{
-		return fs::is_directory(path);
-	}
+	Button::Button() : state(Default), isHover([this](sf::Vector2i mouse){
+		return frame9.getGlobalBounds().contains(mouse.x, mouse.y);
+	}){}
 	
-	Path::Path(const std::string& path) noexcept : path(path){}
-	
-	Path::Path(const char* path) noexcept : path(path){}
-	
-	std::string Path::toString(fs::path p) noexcept{
-		std::string out = p.string();
-		std::replace(out.begin(), out.end(), '\\', '/');
-		return out;
-	}
-	
-	const std::string Path::getPath() const noexcept{
-		return toString(path);
-	}
+	void Button::setAssetPack(const WidgetAssetPack::Button& assetPack){
+		Button::assetPack = assetPack;
+	}*/
 }

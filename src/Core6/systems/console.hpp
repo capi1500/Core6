@@ -25,7 +25,7 @@
 
 #include <Core6/base/listener/emitter.hpp>
 #include <Core6/base/listener/listener.hpp>
-#include <Core6/base/interfaces/builder.hpp>
+#include <Core6/base/builder.hpp>
 #include <string>
 
 namespace c6{

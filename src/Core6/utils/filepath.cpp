@@ -20,24 +20,30 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
-
-#include <string>
+#include "filepath.hpp"
 
 namespace c6{
-	class WidgetAssetPack{
-		public:
-			class Frame9{
-				private:
-					std::string textureName[3][3];
-				public:
-					std::string* operator [] (size_t id){
-						return textureName[id];
-					}
-					const std::string* operator [] (size_t id) const{
-						return textureName[id];
-					}
-			};
-	};
+	bool Filepath::isFile(const std::string& ext) const noexcept{
+		if(!ext.empty() and path.extension() != ext)
+			return false;
+		return fs::is_regular_file(path);
+	}
+	
+	bool Filepath::isDirectory() const noexcept{
+		return fs::is_directory(path);
+	}
+	
+	Filepath::Filepath(const std::string& path) noexcept : path(path){}
+	
+	Filepath::Filepath(const char* path) noexcept : path(path){}
+	
+	std::string Filepath::toString(fs::path p) noexcept{
+		std::string out = p.string();
+		std::replace(out.begin(), out.end(), '\\', '/');
+		return out;
+	}
+	
+	const std::string Filepath::getPath() const noexcept{
+		return toString(path);
+	}
 }
-

@@ -22,17 +22,29 @@
 
 #pragma once
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include "widgetAssetPack.hpp"
 
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::SpriteAnimation animation;
-		c6::System<ecsConfig, c6::Signature<Tag>, const sf::Time&> updateAnimation;
-		c6::System<ecsConfig, c6::Signature<c6::component::Transformable>, const sf::Time&> move;
-	public:
-		WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
+namespace c6{
+	class Frame9 : public sf::Drawable, public sf::Transformable{
+		private:
+			sf::Sprite sprite;
+			sf::Texture texture;
+			const WidgetAssetPack::Frame9* assetPack;
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		public:
+			void resize(sf::Vector2u size);
+			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack);
+			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			
+			sf::FloatRect getLocalBounds() const;
+			sf::FloatRect getGlobalBounds() const;
+			
+			Frame9(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			explicit Frame9(const WidgetAssetPack::Frame9& newAssetPack);
+			Frame9();
+	};
+}
 

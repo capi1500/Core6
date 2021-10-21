@@ -30,7 +30,7 @@ namespace c6{
 	/**
 	 * @brief wrapper around std::filesystem, represents a path to file/directory
 	 */
-	class Path{
+	class Filepath{
 		private:
 			fs::path path;
 			
@@ -66,13 +66,13 @@ namespace c6{
 					if(isDirectory()){
 						if(recursive){
 							for(auto& p : fs::recursive_directory_iterator(path)){
-								if(Path(p.path().string()).isFile(ext))
+								if(Filepath(p.path().string()).isFile(ext))
 									f(toString(p.path()));
 							}
 						}
 						else{
 							for(auto& p : fs::directory_iterator(path)){
-								if(Path(p.path().string()).isFile(ext))
+								if(Filepath(p.path().string()).isFile(ext))
 									f(toString(p.path()));
 							}
 						}
@@ -93,12 +93,12 @@ namespace c6{
 			 * @brief Creates path from string
 			 * @param path - path in string
 			 */
-			Path(const std::string& path) noexcept;
+			Filepath(const std::string& path) noexcept;
 			
 			/**
 			 * @brief Creates path from string
 			 * @param path - path in string
 			 */
-			Path(const char* path) noexcept;
+			Filepath(const char* path) noexcept;
 	};
 }

@@ -41,31 +41,21 @@ namespace c6{
 		allocatedJobs = 0;
 	}
 	
-	Job* JobPool::createJob(Job::Function jobFunction){
+	Job* JobPool::createJob(Job::Function jobFunction, Job* parent){
 		Job* job = allocate();
 		if(job == nullptr)
 			return nullptr;
-		new(job) Job(jobFunction);
+		new(job) Job(jobFunction, parent);
 		return job;
-	}
-	
-	Job* JobPool::createJob(Job::Function jobFunction, Job* parent){
-		return nullptr;
-	}
-	
-	template<class Data>
-	Job* JobPool::createJob(Job::Function jobFunction, const Data& data){
-		return nullptr;
 	}
 	
 	template<class Data>
 	Job* JobPool::createJob(Job::Function jobFunction, const Data& data, Job* parent){
-		return nullptr;
-	}
-	
-	template<class Function>
-	Job* JobPool::createClosureJob(Function function){
-		return nullptr;
+		Job* job = allocate();
+		if(job == nullptr)
+			return nullptr;
+		new(job) Job(jobFunction, data, parent);
+		return job;
 	}
 	
 	template<class Function>

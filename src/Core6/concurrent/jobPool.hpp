@@ -40,16 +40,11 @@ namespace c6{
 			bool full() const;
 			void clear();
 			
-			Job* createJob(Job::Function jobFunction);
-			Job* createJob(Job::Function jobFunction, Job* parent);
+			Job* createJob(Job::Function jobFunction, Job* parent = nullptr);
 			template<class Data>
-			Job* createJob(Job::Function jobFunction, const Data& data);
-			template<class Data>
-			Job* createJob(Job::Function jobFunction, const Data& data, Job* parent);
+			Job* createJob(Job::Function jobFunction, const Data& data, Job* parent = nullptr);
 			template<class Function>
-			Job* createClosureJob(Function function);
-			template<class Function>
-			Job* createClosureJob(Function function, Job* parent);
+			Job* createClosureJob(Function function, Job* parent = nullptr);
 	};
 }
 

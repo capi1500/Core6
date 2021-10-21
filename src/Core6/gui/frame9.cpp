@@ -85,6 +85,14 @@ namespace c6{
 		resize(size);
 	}
 	
+	sf::FloatRect Frame9::getLocalBounds() const{
+		return sprite.getLocalBounds();
+	}
+	
+	sf::FloatRect Frame9::getGlobalBounds() const{
+		return getTransform().transformRect(sprite.getGlobalBounds());
+	}
+	
 	Frame9::Frame9(const c6::WidgetAssetPack::Frame9& assetPack, const sf::Vector2u& size) : assetPack(nullptr){
 		setAssetPack(assetPack, size);
 	}

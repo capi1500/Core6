@@ -23,6 +23,7 @@
 #pragma once
 
 #include <utility>
+
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Time.hpp>

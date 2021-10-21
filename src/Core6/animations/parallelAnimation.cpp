@@ -20,19 +20,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#include "parallelAnimation.hpp"
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
-
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::SpriteAnimation animation;
-		c6::System<ecsConfig, c6::Signature<Tag>, const sf::Time&> updateAnimation;
-		c6::System<ecsConfig, c6::Signature<c6::component::Transformable>, const sf::Time&> move;
-	public:
-		WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
+namespace c6{
+	void ParallelAnimation::sync(const sf::Time& time){
+		for(auto* animation : animations){
+			animation->sync(time);
+		}
+	}
+	
+	std::vector<Animation*>& ParallelAnimation::getAnimations(){
+		return animations;
+	}
+	
+	const std::vector<Animation*>& ParallelAnimation::getAnimations() const{
+		return animations;
+	}
+}
 

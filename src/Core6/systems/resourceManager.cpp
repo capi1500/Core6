@@ -24,7 +24,7 @@
 #include "resourceManager.hpp"
 
 namespace c6{
-	void ResourceManager::addTexture(const Path& path) noexcept{
+	void ResourceManager::addTexture(const Filepath& path) noexcept{
 		message("Loading texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
 		if(textures[path.getPath()].loadFromFile(path.getPath()))
 			message("Loaded texture " + path.getPath() + " from path: " + path.getPath(), Message::Loading);
@@ -32,7 +32,7 @@ namespace c6{
 			message("Cannot load texture " + path.getPath() + " from path: " + path.getPath(), Message::Error);
 	}
 	
-	void ResourceManager::addTexture(const std::string& name, const Path& path) noexcept{
+	void ResourceManager::addTexture(const std::string& name, const Filepath& path) noexcept{
 		message("Loading texture " + name + " from path: " + path.getPath(), Message::Loading);
 		if(textures[name].loadFromFile(path.getPath()))
 			message("Loaded texture " + name + " from path: " + path.getPath(), Message::Loading);
@@ -52,11 +52,11 @@ namespace c6{
 		return textures.contains(name);
 	}
 	
-	void ResourceManager::addSound(const Path& path) noexcept{
+	void ResourceManager::addSound(const Filepath& path) noexcept{
 		sounds[path.getPath()].loadFromFile(path.getPath());
 	}
 	
-	void ResourceManager::addSound(const std::string& name, const Path& path) noexcept{
+	void ResourceManager::addSound(const std::string& name, const Filepath& path) noexcept{
 		sounds[name].loadFromFile(path.getPath());
 	}
 	
@@ -72,11 +72,11 @@ namespace c6{
 		return sounds.contains(name);
 	}
 	
-	void ResourceManager::addShader(const Path& path, sf::Shader::Type type) noexcept{
+	void ResourceManager::addShader(const Filepath& path, sf::Shader::Type type) noexcept{
 		shaders[path.getPath()].loadFromFile(path.getPath(), type);
 	}
 	
-	void ResourceManager::addShader(const std::string& name, const Path& path, const sf::Shader::Type type) noexcept{
+	void ResourceManager::addShader(const std::string& name, const Filepath& path, const sf::Shader::Type type) noexcept{
 		shaders[name].loadFromFile(path.getPath(), type);
 	}
 	
@@ -92,11 +92,11 @@ namespace c6{
 		return shaders.contains(name);
 	}
 	
-	void ResourceManager::addFont(const Path& path) noexcept{
+	void ResourceManager::addFont(const Filepath& path) noexcept{
 		fonts[path.getPath()].loadFromFile(path.getPath());
 	}
 	
-	void ResourceManager::addFont(const std::string& name, const Path& path) noexcept{
+	void ResourceManager::addFont(const std::string& name, const Filepath& path) noexcept{
 		fonts[name].loadFromFile(path.getPath());
 	}
 	
@@ -112,11 +112,11 @@ namespace c6{
 		return fonts.contains(name);
 	}
 	
-	void ResourceManager::addMusic(const Path& path) noexcept{
+	void ResourceManager::addMusic(const Filepath& path) noexcept{
 		music[path.getPath()].openFromFile(path.getPath());
 	}
 	
-	void ResourceManager::addMusic(const std::string& name, const Path& path) noexcept{
+	void ResourceManager::addMusic(const std::string& name, const Filepath& path) noexcept{
 		music[name].openFromFile(path.getPath());
 	}
 	
@@ -133,7 +133,7 @@ namespace c6{
 		return music.contains(name);
 	}
 	
-	void ResourceManager::loadTextures(const Path& path) noexcept{
+	void ResourceManager::loadTextures(const Filepath& path) noexcept{
 		for(auto ext : {"bmp", "png", "tga", "jpg", "gif", "psd", "hdr", "pic"}){
 			path.execute([&](const std::string& path){
 				addTexture(path);
@@ -141,7 +141,7 @@ namespace c6{
 		}
 	}
 	
-	void ResourceManager::loadSounds(const Path& path) noexcept{
+	void ResourceManager::loadSounds(const Filepath& path) noexcept{
 		for(auto ext : {"wav", "ogg", "flac"}){
 			path.execute([&](const std::string& path){
 				addSound(path);
@@ -149,7 +149,7 @@ namespace c6{
 		}
 	}
 	
-	void ResourceManager::loadShaders(const Path& path) noexcept{
+	void ResourceManager::loadShaders(const Filepath& path) noexcept{
 		path.execute([&](const std::string& path){
 			addShader(path, sf::Shader::Fragment);
 		}, true, ".frag");
@@ -161,7 +161,7 @@ namespace c6{
 		}, true, ".geom");
 	}
 	
-	void ResourceManager::loadFonts(const Path& path) noexcept{
+	void ResourceManager::loadFonts(const Filepath& path) noexcept{
 		for(auto ext : {"ttf", "otf", "cff", "pfb", "pfm", "afm", "aat", "sil", "fon", "bdf", "pfr", }){
 			path.execute([&](const std::string& path){
 				addFont(path);

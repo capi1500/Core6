@@ -20,4 +20,20 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "widgetAssetPack.hpp"
+#pragma once
+
+#include <vector>
+#include "animation.hpp"
+
+namespace c6{
+	class ParallelAnimation : public Animation{
+		private:
+			std::vector<Animation*> animations;
+		protected:
+			void sync(const sf::Time& time) override;
+		public:
+			std::vector<Animation*>& getAnimations();
+			const std::vector<Animation*>& getAnimations() const;
+	};
+}
+

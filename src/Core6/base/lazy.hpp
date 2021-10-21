@@ -24,31 +24,29 @@
 
 #include <concepts>
 #include <exception>
-#include <Core6/base/interfaces/provider.hpp>
-#include <Core6/base/interfaces/destroyer.hpp>
+#include <Core6/utils/callback.hpp>
 
 namespace c6{
-	template<class T, class P = ProviderInline<T*>, class D = DestroyerSimple<T>>
-	requires (std::is_base_of_v<Provider<T*>, P> && std::is_base_of_v<Destroyer<T>, D>)
+	template<class T>
 	class Lazy{
 		private:
 			T* obj = nullptr;
-			P provider;
-			D destroyer;
+			Callback<T*> provider;
+			Callback<void, T*> destroyer;
 		public:
 			Lazy() noexcept
-			requires (std::is_default_constructible_v<T> && std::is_same_v<ProviderInline<T*>, P>)
-			        : provider([](){return new T();}), destroyer(){}
+			requires std::is_default_constructible_v<T>
+					: provider([](){return new T();}), destroyer([](T* ptr){delete ptr;}){}
 			
-			explicit Lazy(P provider) noexcept
-			requires std::is_default_constructible_v<D>
-			        : provider(provider), destroyer(){}
+			explicit Lazy(Callback<T*> provider) noexcept
+			requires std::is_trivially_destructible_v<T>
+					: provider(std::move(provider)), destroyer([](T* ptr){delete ptr;}){}
 			
-			explicit Lazy(D destroyer) noexcept
-			requires std::is_default_constructible_v<P>
-			        : provider(), destroyer(destroyer){}
+			explicit Lazy(Callback<void, T*> destroyer) noexcept
+			requires std::is_default_constructible_v<T>
+					: provider([](){return new T();}), destroyer(std::move(destroyer)){}
 			
-			Lazy(P provider, D destroyer) : provider(provider), destroyer(destroyer) {}
+			Lazy(Callback<T> provider, Callback<void, T*> destroyer) : provider(std::move(provider)), destroyer(std::move(destroyer)) {}
 			
 			~Lazy(){
 				destroy();

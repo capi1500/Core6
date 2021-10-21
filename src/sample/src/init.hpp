@@ -23,9 +23,11 @@
 #pragma once
 
 #include <Core6/ecs/config.hpp>
-#include <Core6/widgets/frame9.hpp>
+#include <SFML/Graphics.hpp>
 
-using Components = c6::ComponentList<>;
-using Tags = c6::TagList<>;
+struct Tag{};
+
+using Components = c6::ComponentList<std::shared_ptr<sf::Sprite>>;
+using Tags = c6::TagList<Tag>;
 
 using ecsConfig = c6::Config<Components, Tags>;

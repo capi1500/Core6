@@ -23,7 +23,7 @@
 #pragma once
 
 #include <optional>
-#include "../interfaces/builder.hpp"
+#include "Core6/base/builder.hpp"
 
 namespace c6{
 	class State;

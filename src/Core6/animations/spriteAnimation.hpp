@@ -22,26 +22,42 @@
 
 #pragma once
 
-#include <SFML/Graphics/Sprite.hpp>
+#include <vector>
 #include <SFML/Graphics/Texture.hpp>
-#include "widgetAssetPack.hpp"
+#include <SFML/Graphics/Sprite.hpp>
+#include "animation.hpp"
 
 namespace c6{
-	class Frame9 : public sf::Drawable, public sf::Transformable{
-		private:
-			sf::Sprite sprite;
-			sf::Texture texture;
-			const WidgetAssetPack::Frame9* assetPack;
-		protected:
-			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	class SpriteAnimation : public Animation{
 		public:
-			void resize(sf::Vector2u size);
-			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack);
-			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			struct Frame{
+				const sf::Texture& texture;
+				sf::IntRect rect;
+				Frame(const sf::Texture& texture);
+				Frame(const sf::Texture& texture, sf::IntRect rect);
+			};
+		private:
+			sf::Sprite* sprite = nullptr;
+			std::vector<Frame> frames;
+			sf::Time frameTime = sf::milliseconds(100);
+			std::size_t currentFrame = 0;
 			
-			Frame9(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
-			explicit Frame9(const WidgetAssetPack::Frame9& newAssetPack);
-			Frame9();
+			void updateCycleDuration() noexcept;
+			void setCycleDuration(sf::Time cycleDuration) noexcept;
+		protected:
+			void sync(const sf::Time& time) override;
+		public:
+			SpriteAnimation() noexcept;
+			explicit SpriteAnimation(sf::Sprite* sprite) noexcept;
+			
+			void bindSprite(sf::Sprite* sprite) noexcept;
+			void addFrame(const sf::Texture& texture) noexcept;
+			void addFrame(const sf::Texture& texture, sf::IntRect intRect) noexcept;
+			void setFrameTime(const sf::Time& frameTime) noexcept;
+			const sf::Time& getFrameTime() const;
+			
+			std::vector<Frame>& getFrames();
+			const std::vector<Frame>& getFrames() const;
 	};
 }
 

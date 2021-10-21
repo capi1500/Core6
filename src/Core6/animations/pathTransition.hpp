@@ -22,17 +22,18 @@
 
 #pragma once
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include "animation.hpp"
 
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::SpriteAnimation animation;
-		c6::System<ecsConfig, c6::Signature<Tag>, const sf::Time&> updateAnimation;
-		c6::System<ecsConfig, c6::Signature<c6::component::Transformable>, const sf::Time&> move;
-	public:
-		WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
+namespace c6{
+	class PathTransition : public Animation{
+		private:
+			sf::Transformable* transformable = nullptr;
+		protected:
+			void sync(const sf::Time& time) override;
+	};
+}
+
 

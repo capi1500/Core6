@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../interfaces/activable.hpp"
+#include "Core6/base/activable.hpp"
 #include <algorithm>
 #include "../nonMovable.hpp"
 #include "../nonCopyable.hpp"

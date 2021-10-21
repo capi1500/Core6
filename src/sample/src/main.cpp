@@ -22,6 +22,12 @@
 
 #include "testApp.hpp"
 
+/* TODO
+ * - Finish Job Pools
+ * - Finish animations
+ * - Finish widgets
+ */
+
 int main(){
 	TestApp app;
 	app.run();

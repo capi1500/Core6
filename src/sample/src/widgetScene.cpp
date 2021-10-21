@@ -20,31 +20,42 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <Core6/widgets/widgetAssetPack.hpp>
+#include <Core6/animations/spriteAnimation.hpp>
+#include <iostream>
 #include "widgetScene.hpp"
 
-WidgetScene::WidgetScene(c6::StateMachine& stateMachine) : Scene(stateMachine){
+WidgetScene::WidgetScene(c6::StateMachine& stateMachine) : Scene(stateMachine),
+														   updateAnimation([this](const sf::Time& time){
+															   animation.update(time);
+														   }),
+														   move([](c6::component::Transformable& transformable, const sf::Time& time){
+															   if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+																   transformable->move(0, -time.asSeconds() * 50);
+															   if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+																   transformable->move(0, time.asSeconds() * 50);
+															   if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+																   transformable->move(-time.asSeconds() * 50, 0);
+															   if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+																   transformable->move(time.asSeconds() * 50, 0);
+														   }){
 	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb/");
 	
-	c6::WidgetAssetPack::Frame9 frame9assetPack;
-	frame9assetPack[0][0] = "../assets/textures/rgb/white.png";
-	frame9assetPack[0][1] = "../assets/textures/rgb/green.png";
-	frame9assetPack[0][2] = "../assets/textures/rgb/black.png";
+	std::shared_ptr<sf::Sprite> sprite = std::make_shared<sf::Sprite>();
+	sprite->setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
 	
-	frame9assetPack[1][0] = "../assets/textures/rgb/green.png";
-	frame9assetPack[1][1] = "../assets/textures/rgb/blue.png";
-	frame9assetPack[1][2] = "../assets/textures/rgb/red.png";
+	animation.bindSprite(sprite.get());
+	animation.addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
+	animation.addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/green.png"));
+	animation.play();
 	
-	frame9assetPack[2][0] = "../assets/textures/rgb/magenta.png";
-	frame9assetPack[2][1] = "../assets/textures/rgb/red.png";
-	frame9assetPack[2][2] = "../assets/textures/rgb/white.png";
-	
-	std::shared_ptr<c6::Frame9> frame9 = std::make_shared<c6::Frame9>(frame9assetPack);
-	frame9->resize({2, 1});
-	frame9->move(300, 300);
-	
-	auto frame = getECS().add();
-	getECS().addComponent<c6::component::Drawable>(frame, frame9);
-	getECS().addComponent<c6::component::Transformable>(frame, frame9);
+	auto entity = getECS().add();
+	getECS().addComponent<c6::component::Drawable>(entity, sprite);
+	getECS().addComponent<c6::component::Transformable>(entity, sprite);
 	getECS().refresh();
+}
+
+void WidgetScene::update(const sf::Time& time){
+	Scene::update(time);
+	getECS().execute<const sf::Time&>(move, time);
+	animation.update(time);
 }

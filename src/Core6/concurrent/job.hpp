@@ -62,6 +62,11 @@ namespace c6{
 			const Data& getData() const{
 				return *reinterpret_cast<const Data*>(padding.data());
 			}
+			
+			template<class T, class... Args>
+			void constructData(Args&&... args){
+				new(padding.data())T(std::forward<Args>(args)...);
+			}
 	};
 }
 
