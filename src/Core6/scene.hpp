@@ -111,6 +111,7 @@ namespace c6{
 					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
 					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
 				}
+				ecs.template execute<const sf::Time&>(system::updateAnimation<ecsConfig>, time);
 			}
 			
 			void onNotify([[maybe_unused]] const sf::Event& event) noexcept override{

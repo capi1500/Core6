@@ -21,13 +21,10 @@
 */
 
 #include <Core6/animations/spriteAnimation.hpp>
-#include <iostream>
+#include <Core6/ecs/entityBuilder.hpp>
 #include "widgetScene.hpp"
 
 WidgetScene::WidgetScene(c6::StateMachine& stateMachine) : Scene(stateMachine),
-														   updateAnimation([this](const sf::Time& time){
-															   animation.update(time);
-														   }),
 														   move([](c6::component::Transformable& transformable, const sf::Time& time){
 															   if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 																   transformable->move(0, -time.asSeconds() * 50);
@@ -40,22 +37,34 @@ WidgetScene::WidgetScene(c6::StateMachine& stateMachine) : Scene(stateMachine),
 														   }){
 	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb/");
 	
-	std::shared_ptr<sf::Sprite> sprite = std::make_shared<sf::Sprite>();
-	sprite->setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
+	c6::EntityBuilder<ecsConfig>()
+	        .attach<sf::Sprite>(c6::Provider<sf::Sprite>(
+					[]{
+						sf::Sprite sprite;
+						sprite.setPosition(100, 100);
+						sprite.setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/blue.png"));
+						return sprite;
+					}))
+			.spawn(getECS());
 	
-	animation.bindSprite(sprite.get());
-	animation.addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
-	animation.addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/green.png"));
-	animation.play();
+	c6::EntityBuilder<ecsConfig>()
+			.attach<sf::Sprite>()
+			.attach<c6::component::Animation, sf::Sprite>(c6::Callback<c6::component::Animation, sf::Sprite&>(
+					[](sf::Sprite& sprite){
+						std::shared_ptr<c6::SpriteAnimation> animation = std::make_shared<c6::SpriteAnimation>();
+						animation->bindSprite(&sprite);
+						animation->addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
+						animation->addFrame(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/green.png"));
+						animation->play();
+						return animation;
+					}))
+			.addTag<MovesWASD>()
+			.spawn(getECS());
 	
-	auto entity = getECS().add();
-	getECS().addComponent<c6::component::Drawable>(entity, sprite);
-	getECS().addComponent<c6::component::Transformable>(entity, sprite);
 	getECS().refresh();
 }
 
 void WidgetScene::update(const sf::Time& time){
 	Scene::update(time);
 	getECS().execute<const sf::Time&>(move, time);
-	animation.update(time);
 }

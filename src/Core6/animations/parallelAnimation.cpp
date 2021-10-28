@@ -24,17 +24,33 @@
 
 namespace c6{
 	void ParallelAnimation::sync(const sf::Time& time){
-		for(auto* animation : animations){
-			animation->sync(time);
+		for(std::reference_wrapper<Animation>& animation : animations){
+			animation.get().sync(time);
 		}
 	}
 	
-	std::vector<Animation*>& ParallelAnimation::getAnimations(){
+	std::vector<std::reference_wrapper<Animation>>& ParallelAnimation::getAnimations() noexcept{
 		return animations;
 	}
 	
-	const std::vector<Animation*>& ParallelAnimation::getAnimations() const{
+	const std::vector<std::reference_wrapper<Animation>>& ParallelAnimation::getAnimations() const noexcept{
 		return animations;
+	}
+	
+	void ParallelAnimation::addAnimation(Animation& animation){
+		animations.push_back(std::ref(animation));
+	}
+	
+	void ParallelAnimation::setAnimation(std::size_t i, Animation& animation){
+		animations[i] = std::ref(animation);
+	}
+	
+	Animation& ParallelAnimation::getAnimation(std::size_t i) const{
+		return animations[i].get();
+	}
+	
+	void ParallelAnimation::removeAnimation(std::size_t i){
+		animations.erase(animations.begin() + i);
 	}
 }
 

@@ -31,6 +31,7 @@ namespace c6{
 	namespace signature{
 		using Draw = Signature<component::EntityState, component::Drawable>;
 		using SyncPhysicsWithGraphics = Signature<component::Transformable, component::Physic>;
+		using UpdateAnimation = Signature<component::Animation>;
 	}
 	namespace system{
 		template<concepts::Config Config>
@@ -47,6 +48,13 @@ namespace c6{
 				[](component::Transformable& transformable, component::Physic& physic, const PhysicsConfig& physicsConfig){
 					transformable->setPosition(physicsConfig.meterToPixel(physic->GetPosition()));
 					transformable->setRotation(180 * physic->GetAngle() / b2_pi);
+				}
+		);
+		
+		template<concepts::Config Config>
+		auto updateAnimation = System<Config, signature::UpdateAnimation, const sf::Time&>(
+				[](component::Animation& animation, const sf::Time& time){
+					animation->update(time);
 				}
 		);
 	}

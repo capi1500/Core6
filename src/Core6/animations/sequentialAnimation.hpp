@@ -22,11 +22,25 @@
 
 #pragma once
 
+#include <functional>
 #include "animation.hpp"
 
 namespace c6{
 	class SequentialAnimation : public Animation{
-	
+		private:
+			std::vector<std::reference_wrapper<Animation>> animations;
+		protected:
+			void sync(const sf::Time& time) override;
+		public:
+			[[nodiscard]]
+			std::vector<std::reference_wrapper<Animation>>& getAnimations() noexcept;
+			[[nodiscard]]
+			const std::vector<std::reference_wrapper<Animation>>& getAnimations() const noexcept;
+			
+			void addAnimation(Animation& animation) noexcept;
+			[[nodiscard]]
+			Animation& getAnimation(std::size_t i) const noexcept;
+			void removeAnimation(std::size_t i) noexcept;
 	};
 }
 

@@ -23,5 +23,29 @@
 #include "sequentialAnimation.hpp"
 
 namespace c6{
-
+	void SequentialAnimation::sync(const sf::Time& time){
+		for(std::reference_wrapper<Animation>& animation : animations){
+			animation.get().sync(time);
+		}
+	}
+	
+	std::vector<std::reference_wrapper<Animation>>& SequentialAnimation::getAnimations() noexcept{
+		return animations;
+	}
+	
+	const std::vector<std::reference_wrapper<Animation>>& SequentialAnimation::getAnimations() const noexcept{
+		return animations;
+	}
+	
+	void SequentialAnimation::addAnimation(Animation& animation) noexcept{
+		animations.push_back(std::ref(animation));
+	}
+	
+	Animation& SequentialAnimation::getAnimation(std::size_t i) const noexcept{
+		return animations[i].get();
+	}
+	
+	void SequentialAnimation::removeAnimation(std::size_t i) noexcept{
+		animations.erase(animations.begin() + i);
+	}
 }

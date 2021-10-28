@@ -22,15 +22,9 @@
 
 #pragma once
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
-
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::System<ecsConfig, c6::Signature<MovesWASD, c6::component::Transformable>, const sf::Time&> move;
-	public:
-		explicit WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
+namespace c6{
+	class MoveTransition{
+	
+	};
+}
 

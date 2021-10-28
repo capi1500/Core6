@@ -85,12 +85,13 @@ namespace c6{
 	
 	void Animation::jumpTo(sf::Time time) noexcept{
 		frame = time;
+		sync(time);
 	}
 	
 	void Animation::stop() noexcept{
 		if(status != Stopped){
 			elapsedTime = sf::Time::Zero;
-			frame = sf::Time::Zero;
+			jumpTo(sf::Time::Zero);
 			cyclesFinished = 0;
 			status = Stopped;
 		}

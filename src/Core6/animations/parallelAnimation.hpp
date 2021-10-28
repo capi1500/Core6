@@ -23,17 +23,26 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 #include "animation.hpp"
 
 namespace c6{
 	class ParallelAnimation : public Animation{
 		private:
-			std::vector<Animation*> animations;
+			std::vector<std::reference_wrapper<Animation>> animations;
 		protected:
 			void sync(const sf::Time& time) override;
 		public:
-			std::vector<Animation*>& getAnimations();
-			const std::vector<Animation*>& getAnimations() const;
+			[[nodiscard]]
+			std::vector<std::reference_wrapper<Animation>>& getAnimations() noexcept;
+			[[nodiscard]]
+			const std::vector<std::reference_wrapper<Animation>>& getAnimations() const noexcept;
+			
+			void addAnimation(Animation& animation);
+			void setAnimation(std::size_t i, Animation& animation);
+			[[nodiscard]]
+			Animation& getAnimation(std::size_t i) const;
+			void removeAnimation(std::size_t i);
 	};
 }
 

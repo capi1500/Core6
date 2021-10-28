@@ -26,6 +26,9 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <box2d/b2_body.h>
 #include <memory>
+#include <Core6/animations/animation.hpp>
+#include <SFML/Window/Event.hpp>
+#include <Core6/utils/callback.hpp>
 
 namespace c6{
 	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
@@ -42,6 +45,8 @@ namespace c6{
 		using Drawable = std::shared_ptr<sf::Drawable>;
 		using Transformable = std::shared_ptr<sf::Transformable>;
 		using Physic = std::shared_ptr<b2Body>;
+		using Animation = std::shared_ptr<Animation>;
+		using EventHandler = Consumer<sf::Event>;
 	}
 	namespace tag{
 	

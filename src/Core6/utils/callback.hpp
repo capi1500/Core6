@@ -51,11 +51,11 @@ namespace c6{
 			 */
 			Callback(Function function) noexcept : function(std::move(function)){}
 			
-			inline R call(Args... args){
+			inline R call(Args... args) const{
 				return function(args...);
 			}
 			
-			inline R operator () (Args... args){
+			inline R operator () (Args... args) const{
 				return call(args...);
 			}
 			
@@ -93,5 +93,8 @@ namespace c6{
 	
 	template<class T>
 	using Consumer = Callback<void, T>;
+
+	template<class T>
+	using Transmuter = Callback<void, T&>;
 }
 
