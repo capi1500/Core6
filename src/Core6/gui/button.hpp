@@ -56,25 +56,25 @@ namespace c6{
 			ClickBehavior clickBehavior;
 			sf::Time deltaTime;
 			
-			Callback<bool, sf::Vector2i> isHover;
+			Function<bool, sf::Vector2i> isHover;
 			
-			Callback<void> switchToDefault;
-			Callback<void, sf::Vector2i> switchToDefaultHover;
-			Callback<void, sf::Vector2i> switchToAfterClicked;
-			Callback<void> switchToClicked;
-			Callback<void, sf::Vector2i> switchToClickedHover;
-			Callback<void, sf::Vector2i> switchToAfterUnclicked;
-			Callback<void> switchToDisabled;
-			Callback<void, sf::Vector2i> switchToDisabledHover;
+			Function<void> switchToDefault;
+			Function<void, sf::Vector2i> switchToDefaultHover;
+			Function<void, sf::Vector2i> switchToAfterClicked;
+			Function<void> switchToClicked;
+			Function<void, sf::Vector2i> switchToClickedHover;
+			Function<void, sf::Vector2i> switchToAfterUnclicked;
+			Function<void> switchToDisabled;
+			Function<void, sf::Vector2i> switchToDisabledHover;
 			
-			Callback<void> switchFromDefault;
-			Callback<void> switchFromDefaultHover;
-			Callback<void> switchFromAfterClicked;
-			Callback<void> switchFromClicked;
-			Callback<void> switchFromClickedHover;
-			Callback<void> switchFromAfterUnclicked;
-			Callback<void> switchFromDisabled;
-			Callback<void> switchFromDisabledHover;
+			Function<void> switchFromDefault;
+			Function<void> switchFromDefaultHover;
+			Function<void> switchFromAfterClicked;
+			Function<void> switchFromClicked;
+			Function<void> switchFromClickedHover;
+			Function<void> switchFromAfterUnclicked;
+			Function<void> switchFromDisabled;
+			Function<void> switchFromDisabledHover;
 		public:
 			Button();
 			

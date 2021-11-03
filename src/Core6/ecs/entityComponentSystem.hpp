@@ -34,6 +34,9 @@
 
 namespace c6{
 	template<concepts::Config Config>
+	class EntityBuilder;
+	
+	template<concepts::Config Config>
 	class EntityComponentSystem : public ShuffledList<typename Config::Key>{
 			using Key = typename Config::Key;
 		public:
@@ -78,6 +81,8 @@ namespace c6{
 				}
 			};
 		public:
+			EntityComponentSystem() : ShuffledList([](Key& key){key.reset();}){}
+			
 			void refreshNoShrink() noexcept override{
 				ShuffledList::execute([this](const EntityId& i){
 					if(hasComponent<component::EntityState>(i) && !getComponent<component::EntityState>(i).exists){
@@ -117,7 +122,8 @@ namespace c6{
 				factory.spawn(*this, ShuffledList::getItemId(handle), std::forward<Args>(args)...);
 				return handle;
 			}
-			
+		
+		private:
 			template<concepts::Tag<Config> T>
 			[[nodiscard]]
 			bool hasTag(const EntityId& id) const noexcept{
@@ -196,7 +202,7 @@ namespace c6{
 				deleteComponent<T>(ShuffledList::getHandleData(handle).itemId);
 			}
 			
-			EntityComponentSystem() : ShuffledList([](Key& key){key.reset();}){}
+			friend class EntityBuilder<Config>;
 	};
 }
 

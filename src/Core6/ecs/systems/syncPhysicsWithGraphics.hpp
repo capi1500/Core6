@@ -22,15 +22,21 @@
 
 #pragma once
 
-#include "init.hpp"
-#include <Core6/scene.hpp>
-#include <Core6/animations/spriteAnimation.hpp>
+#include "../config.hpp"
+#include "../system.hpp"
+#include "../../physicsConfig.hpp"
 
-class WidgetScene : public c6::Scene<ecsConfig>{
-	private:
-		c6::System<ecsConfig, c6::Signature<MovesWASD, c6::component::Transformable>, const sf::Time&> move;
-	public:
-		explicit WidgetScene(c6::StateMachine& stateMachine);
-		void update(const sf::Time& time) override;
-};
-
+namespace c6{
+	namespace signature{
+		using SyncPhysicsWithGraphics = Signature<component::Transformable, component::Physic>;
+	}
+	namespace system{
+		template<concepts::Config Config>
+		auto syncPhysicsWithGraphics = System<Config, signature::SyncPhysicsWithGraphics, const PhysicsConfig&>(
+				[](component::Transformable& transformable, component::Physic& physic, const PhysicsConfig& physicsConfig){
+					transformable->setPosition(physicsConfig.meterToPixel(physic->GetPosition()));
+					transformable->setRotation(180 * physic->GetAngle() / b2_pi);
+				}
+		);
+	}
+}

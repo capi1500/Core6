@@ -20,28 +20,25 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#pragma once
+#include "platformer.hpp"
+#include "scenes/mainMenu.hpp"
 
-#include <MPL/MPL.hpp>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <box2d/b2_body.h>
-#include <memory>
-#include "components/entityState.hpp"
+void Platformer::init(){
+	Application::init();
+	c6::Framework::getRenderer()->create(sf::VideoMode(600, 500), "Platformer");
+	getScenes().add(new MainMenu(*this, getScenes()));
+}
 
-namespace c6{
-	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
-	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
+void Platformer::close(){
+	Application::close();
+	c6::Framework::getRenderer()->close();
+}
+
+Platformer::Platformer() : c6::Application<ecsConfig>(c6::ConsoleBuilder()
+																	.useMessageType(c6::Message::Loading)
+																	.useMessageType(c6::Message::Debug)
+																	.useMessageType(c6::Message::Error)
+																	.useMessageType(c6::Message::Info)
+																	.create()){
 	
-	namespace component{
-		using Drawable = std::shared_ptr<sf::Drawable>;
-		using Transformable = std::shared_ptr<sf::Transformable>;
-		using Physic = std::shared_ptr<b2Body>;
-		
-		using DefaultComponents = MPL::TypeList<EntityState,
-		                                        Drawable,
-		                                        Transformable,
-		                                        Physic>;
-	}
 }

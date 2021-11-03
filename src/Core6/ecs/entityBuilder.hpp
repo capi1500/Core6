@@ -36,128 +36,158 @@ namespace c6{
 			using ECS = EntityComponentSystem<Config>;
 			using EntityId = typename ECS::EntityId;
 			using Handle = typename ECS::Handle;
-			
-			template<class... Ts>
-			using TupleOfPairs = std::tuple<std::pair<bool, Ts>...>;
-			
-			using DefaultComponentList = typename Config::ComponentList;
-			using AdditionallComponentList = MPL::TypeList<std::shared_ptr<sf::Sprite>>;
-			using TagsList = typename Config::TagList;
-			
-			template<class Component>
-			using IsDefaultComponent = MPL::Contains<Component, DefaultComponentList>;
-			template<class Component>
-			using IsAdditionalComponent = MPL::Contains<Component, AdditionallComponentList>;
-			template<class Component>
-			static inline constexpr bool IsComponent = IsDefaultComponent<Component>::value || IsAdditionalComponent<Component>::value || std::is_same_v<Component, sf::Sprite>;
-			template<class Tag>
-			static inline constexpr bool IsTag = Config::template isTag<Tag>();
-			
-			using DefaultComponents = MPL::Rename<TupleOfPairs, DefaultComponentList>;
-			using AdditionallComponents = MPL::Rename<TupleOfPairs, AdditionallComponentList>;
-			using Tags = MPL::Rename<TupleOfPairs, TagsList>;
 		private:
-			DefaultComponents defaultComponents;
-			AdditionallComponents additionalComponents;
-			Tags tags;
-			
-			template<class Component>
-			requires IsComponent<Component>
-			bool isUsed(){
-				if constexpr(IsDefaultComponent<Component>::value)
-					return std::get<std::pair<bool, Component>>(defaultComponents).first;
-				else if constexpr(IsAdditionalComponent<Component>::value)
-					return std::get<std::pair<bool, Component>>(additionalComponents).first;
-			}
-			
-			template<class Component>
-			requires IsComponent<Component>
-			bool setUsed(){
-				if constexpr(IsDefaultComponent<Component>::value)
-					std::get<std::pair<bool, Component>>(defaultComponents).first = true;
-				else if constexpr(IsAdditionalComponent<Component>::value)
-					std::get<std::pair<bool, Component>>(additionalComponents).first = true;
-				return false;
-			}
+			ECS& ecs;
+			bool isHandle;
+			union{
+				Handle handle;
+				EntityId id;
+			};
 		public:
-			Handle spawnWithHandle(ECS& ecs){
-				Handle h = ecs.addWithHandle();
-				MPL::forTuple([this, &h, &ecs](auto& t){
-					ecs.template addComponent<typeof(t.second)>(h, t.second);
-				}, defaultComponents);
-				MPL::forTuple([this, &h, &ecs](auto& t){
-					if(t.first){
-						ecs.template addTag<typeof(t.second)>(h);
-					}
-				}, tags);
-				return h;
-			}
+			EntityBuilder(ECS& ecs, EntityId id) noexcept : ecs(ecs), isHandle(false), id(std::move(id)) {}
+			EntityBuilder(ECS& ecs, Handle handle) noexcept : ecs(ecs), isHandle(true), handle(std::move(handle)) {}
 			
-			EntityId spawn(ECS& ecs){
-				EntityId e = ecs.add();
-				MPL::forTuple([this, &e, &ecs](auto& t){
-					if(t.first){
-						ecs.template addComponent<typeof(t.second)>(e, t.second);
-					}
-				}, defaultComponents);
-				MPL::forTuple([this, &e, &ecs](auto& t){
-					if(t.first){
-						ecs.template addTag<typeof(t.second)>(e);
-					}
-				}, tags);
-				return e;
+			// getters and setters
+			
+			template<class Component>
+			requires concepts::Component<Component, Config>
+			Component& get(){
+				if(isHandle)
+					return ecs.template getComponent<Component>(handle);
+				return ecs.template getComponent<Component>(id);
 			}
 			
 			template<class Component>
-			requires IsComponent<Component>
+			requires concepts::Component<std::shared_ptr<Component>, Config>
 			Component& get(){
-				if constexpr (std::is_same_v<Component, sf::Sprite>){
-					return *(get<std::shared_ptr<sf::Sprite>>().get());
-				}
-				else if constexpr(IsDefaultComponent<Component>::value)
-					return std::get<std::pair<bool, Component>>(defaultComponents).second;
-				else if constexpr(IsAdditionalComponent<Component>::value)
-					return std::get<std::pair<bool, Component>>(additionalComponents).second;
+				return *(get<std::shared_ptr<Component>>().get());
+			}
+			
+			template<class Component>
+			requires concepts::Component<Component, Config>
+			[[nodiscard]]
+			bool has() const {
+				if(isHandle)
+					return ecs.template hasComponent<Component>(handle);
+				return ecs.template hasComponent<Component>(id);
+			}
+			
+			template<class Component>
+			requires concepts::Component<std::shared_ptr<Component>, Config>
+			[[nodiscard]]
+			bool has() const{
+				return has<std::shared_ptr<Component>>();
 			}
 			
 			template<class Tag>
-			requires IsTag<Tag>
-	        This& addTag(){
-				std::get<std::pair<bool, Tag>>(tags).first = true;
+			requires concepts::Tag<Tag, Config>
+			[[nodiscard]]
+			bool has() const {
+				if(isHandle)
+					return ecs.template hasTag<Tag>(handle);
+				return ecs.template hasTag<Tag>(id);
+			}
+			
+			// attaching components and tags
+			
+			template<class Tag>
+			requires concepts::Tag<Tag, Config>
+			This& attach(){
+				if(isHandle)
+					ecs.template addTag<Tag>(handle);
+				ecs.template addTag<Tag>(id);
+				return *this;
+			}
+			
+			template<class Component, class... Args>
+			requires concepts::Component<Component, Config>
+			This& attach(Args... args){
+				if(isHandle)
+					ecs.template addComponent<Component>(handle, args...);
+				else
+					ecs.template addComponent<Component>(id, args...);
+				return *this;
+			}
+			
+			template<class Component, class... Args>
+			requires concepts::Component<std::shared_ptr<Component>, Config>
+			This& attach(Args... args){
+				return attach<std::shared_ptr<Component>>(std::make_shared<Component>(args...));
+			}
+			
+			template<class Component, class Provided, class... Args>
+			requires (concepts::Component<std::shared_ptr<Component>, Config> && std::is_base_of_v<Component, Provided> && !std::is_same_v<Component, Provided>)
+			This& attach(Args... args){
+				return attach<std::shared_ptr<Component>>(std::make_shared<Provided>(args...));
+			}
+			
+			template<class Component, class... Args>
+			requires concepts::Component<Component, Config>
+			This& attach(const Function<Component, Args&...>& provider){
+				return attach<Component>(std::move(provider(get<Args>()...)));
+			}
+			
+			template<class Component, class... Args>
+			requires concepts::Component<std::shared_ptr<Component>, Config>
+			This& attach(const Function<Component, Args&...>& provider){
+				return attach<std::shared_ptr<Component>>(std::make_shared<Component>(provider(get<Args>()...)));
+			}
+			
+			template<class Component, class Provided, class... Args>
+			requires (concepts::Component<std::shared_ptr<Component>, Config> && std::is_base_of_v<Component, Provided> && !std::is_same_v<Component, Provided>)
+			This& attach(const Function<Provided, Args&...>& provider){
+				return attach<std::shared_ptr<Component>>(std::make_shared<Provided>(provider(get<Args>()...)));
+			}
+			
+			// detaching components and tags
+			
+			template<class Tag>
+			requires concepts::Tag<Tag, Config>
+			This& detach(){
+				if(isHandle)
+					ecs.template deleteTag<Tag>(handle);
+				ecs.template deleteTag<Tag>(id);
 				return *this;
 			}
 			
 			template<class Component>
-			requires IsComponent<Component>
-			This& attach(){
-				attach<Component>(Callback<Component>([]{
-					return Component();
-				}));
+			requires concepts::Component<Component, Config>
+			This& detach(){
+				if(isHandle)
+					ecs.template deleteComponent<Component>(handle);
+				else
+					ecs.template deleteComponent<Component>(id);
 				return *this;
 			}
 			
-			template<class Component, class... Args>
-			requires (IsComponent<Component> && !std::is_same_v<Component, sf::Sprite>)
-			This& attach(const Callback<Component, Args&...>& provider){
-				get<Component>() = provider(get<Args>()...);
-				setUsed<Component>();
+			template<class Component>
+			requires concepts::Component<std::shared_ptr<Component>, Config>
+			This& detach(){
+				return detach<std::shared_ptr<Component>>();
+			}
+			
+			// special treatment of derivatives from sf::Drawable
+			
+			template<class Component>
+			requires std::is_base_of_v<sf::Drawable, Component>
+			This& attach(std::shared_ptr<Component> ptr){
+				attach<std::shared_ptr<sf::Drawable>>(ptr);
+				if constexpr(std::is_base_of_v<sf::Transformable, Component>){
+					attach<std::shared_ptr<sf::Transformable>>(ptr);
+				}
 				return *this;
 			}
 			
-			// special treatment of sf::Sprite
+			template<class Component>
+			requires std::is_base_of_v<sf::Drawable, Component>
+			This& attach(Component component){
+				return attach<Component>(std::make_shared<Component>(component));
+			}
+			
 			template<class Component, class... Args>
-			requires std::is_same_v<Component, sf::Sprite>
-			This& attach(const Callback<sf::Sprite, Args&...>& provider){
-				get<std::shared_ptr<sf::Sprite>>() = std::make_shared<sf::Sprite>(provider(get<Args>()...));
-				attach<c6::component::Drawable>(Callback<c6::component::Drawable>([this]{
-					return get<std::shared_ptr<sf::Sprite>>();
-				}));
-				attach<c6::component::Transformable>(Callback<c6::component::Transformable>([this]{
-					return get<std::shared_ptr<sf::Sprite>>();
-				}));
-				setUsed<std::shared_ptr<sf::Sprite>>();
-				return *this;
+			requires std::is_base_of_v<sf::Drawable, Component>
+			This& attach(const Function<Component, Args&...>& provider){
+				return attach<Component>(std::make_shared<Component>(provider(get<Args>()...)));
 			}
 	};
 }
-

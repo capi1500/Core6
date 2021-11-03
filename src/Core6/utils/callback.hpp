@@ -26,75 +26,46 @@
 
 namespace c6{
 	/**
-	 * @brief Callback is a function wrapper that can be chained with other callbacks as well as composed.
+	 * @brief Function is a function wrapper that can be chained with other callbacks as well as composed.
 	 * @tparam R return type
 	 * @tparam Args argument types
 	 */
 	template<class R, class... Args>
-	class Callback{
-		public:
-			using Function = std::function<R(Args...)>;
-		private:
-			Function function;
-		public:
-			/**
-			 * @brief If R is void then creates a callback that does nothing
-			 */
-			Callback() noexcept requires std::is_same_v<R, void> : function([](Args... args){}){}
-			/**
-			 * @brief If R is constructible from Args then creates a callback that creates R from args
-			 */
-			Callback() noexcept requires std::is_constructible_v<R, Args...> : function([](Args... args){return R(args...);}){}
-			/**
-			 * @brief Creates a callback from a std::function
-			 * @param function function
-			 */
-			Callback(Function function) noexcept : function(std::move(function)){}
-			
-			inline R call(Args... args) const{
-				return function(args...);
-			}
-			
-			inline R operator () (Args... args) const{
-				return call(args...);
-			}
-			
-			template<class R2, class... Args2>
-			inline Callback<R2, Args..., Args2...> chain(const Callback<R2, Args2...>& callNext) noexcept{
-				return [this, &callNext](Args... args, Args2... args2){
-					function(args...);
-					return callNext(args2...);
-				};
-			}
-			
-			template<class R2, class... Args2>
-			inline Callback<R2, Args..., Args2...> operator | (const Callback<R2, Args2...>& callNext) noexcept{
-				return chain(callNext);
-			}
-			
-			template<class R2>
-			inline Callback<R2, Args...> compose(const Callback<R2, R>& compose) noexcept{
-				return [this, &compose](Args... args){
-					return compose(function(args...));
-				};
-			}
-			
-			template<class R2>
-			inline Callback<R2, Args...> operator * (const Callback<R2, R>& compose) noexcept{
-				return this->compose(compose);
-			}
-	};
+	using Function = std::function<R(Args...)>;
+	
+	using Callback = std::function<void()>;
 	
 	template<class R>
-	using Provider = Callback<R>;
+	using Provider = Function<R>;
 	
 	template<class T>
-	using Destroyer = Callback<void, T*>;
+	using Destroyer = Function<void, T*>;
 	
 	template<class T>
-	using Consumer = Callback<void, T>;
+	using Consumer = Function<void, T>;
 
 	template<class T>
-	using Transmuter = Callback<void, T&>;
+	using Transmuter = Function<void, T&>;
+	
+	template<class R, class... Args, class R2, class... Args2>
+	inline auto operator | (const std::function<R(Args...)>& f, const std::function<R2(Args2...)>& g){
+		return [&f, &g](Args... args, Args2... args2){
+			f(args...);
+			if constexpr(!std::is_same_v<R2, void>)
+				return g(args2...);
+			g(args2...);
+			return;
+		};
+	}
+	
+	template<class R, class R2, class... Args>
+	inline auto operator * (const std::function<R(R2)>& f, const std::function<R2(Args...)>& g){
+		return [&f, &g](Args... args){
+			if constexpr(!std::is_same_v<R, void>)
+				return f(g(args...));
+			f(g(args...));
+			return;
+		};
+	}
 }
 

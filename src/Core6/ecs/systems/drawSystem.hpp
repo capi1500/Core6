@@ -22,14 +22,22 @@
 
 #pragma once
 
-#include "init.hpp"
-#include <Core6/application.hpp>
+#include "../config.hpp"
+#include "../system.hpp"
+#include <SFML/Graphics/RenderTarget.hpp>
 
-class TestApp : public c6::Application<ecsConfig>{
-	protected:
-		void init() override;
-		void close() override;
-	public:
-		TestApp();
-};
-
+namespace c6{
+	namespace signature{
+		using Draw = Signature<component::EntityState, component::Drawable>;
+	}
+	namespace system{
+		template<concepts::Config Config>
+		auto draw = System<Config, signature::Draw, sf::RenderTarget&, sf::RenderStates>(
+				[](component::EntityState& entityState, component::Drawable& drawable, sf::RenderTarget& renderTarget, sf::RenderStates renderStates){
+					if(entityState.visible){
+						renderTarget.draw(*drawable, renderStates);
+					}
+				}
+		);
+	}
+}

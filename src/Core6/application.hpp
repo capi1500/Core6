@@ -59,22 +59,21 @@ namespace c6{
 				));
 			}
 			
-			virtual void close(){
-				active = false;
+			virtual void handleEvents([[maybe_unused]] Scene<Config>& scene){
+				if(Framework::getRenderer().isCreated())
+					Framework::getInputHandler()->handleEvents(Framework::getRenderer().get());
 			}
 			
-			virtual void handleEvents([[maybe_unused]] Scene<Config>* scene){
-				Framework::getInputHandler()->handleEvents(Framework::getRenderer().get());
+			virtual void update(Scene<Config>& scene, const sf::Time& time){
+				scene.update(time);
 			}
 			
-			virtual void update(Scene<Config>* scene, const sf::Time& time){
-				scene->update(time);
-			}
-			
-			virtual void draw(Scene<Config>* scene, sf::RenderStates states, sf::Color background){
-				Framework::getRenderer()->clear(background);
-				scene->draw(*Framework::getRenderer().get(), states);
-				Framework::getRenderer()->display();
+			virtual void draw(Scene<Config>& scene, sf::RenderStates states, sf::Color background){
+				if(Framework::getRenderer().isCreated() && Framework::getRenderer()->isOpen()){
+					Framework::getRenderer()->clear(background);
+					scene.draw(*Framework::getRenderer().get(), states);
+					Framework::getRenderer()->display();
+				}
 			}
 			
 			virtual void clean(){
@@ -96,11 +95,15 @@ namespace c6{
 				while(active){
 					time = clock.restart();
 					scene = getScene();
-					handleEvents(scene);
-					update(scene, time);
-					draw(scene,sf::RenderStates(), sf::Color::Black);
+					handleEvents(*scene);
+					update(*scene, time);
+					draw(*scene,sf::RenderStates(), sf::Color::Black);
 				}
 				clean();
+			}
+			
+			virtual void close(){
+				active = false;
 			}
 	};
 }

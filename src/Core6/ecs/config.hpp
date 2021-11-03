@@ -35,12 +35,7 @@ namespace c6{
 	template<class TComponentList, class TTagList>
 	class Config{
 		public:
-			using DefaultComponents = MPL::TypeList<component::EntityState,
-												   component::Drawable,
-												   component::Transformable,
-												   component::Physic,
-												   component::Animation>;
-			using ComponentList = MPL::Concat<TComponentList, DefaultComponents>;
+			using ComponentList = MPL::Concat<TComponentList, component::DefaultComponents>;
 			using TagList = TTagList;
 			
 			using ThisType = Config<TComponentList, TagList>;
@@ -109,7 +104,6 @@ namespace c6{
 			typename T::ComponentList;
 			typename T::TagList;
 			typename T::Key;
-			typename T::DefaultComponents;
 			{T::template isComponent<helper::Obj>()} -> std::same_as<bool>;
 			{T::template isTag<helper::Obj>()} -> std::same_as<bool>;
 			{T::template isSignature<helper::Obj>()} -> std::same_as<bool>;

@@ -22,26 +22,7 @@
 
 #pragma once
 
-#include <MPL/MPL.hpp>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <box2d/b2_body.h>
-#include <memory>
-#include "components/entityState.hpp"
-
-namespace c6{
-	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
-	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
+class Pause{
 	
-	namespace component{
-		using Drawable = std::shared_ptr<sf::Drawable>;
-		using Transformable = std::shared_ptr<sf::Transformable>;
-		using Physic = std::shared_ptr<b2Body>;
-		
-		using DefaultComponents = MPL::TypeList<EntityState,
-		                                        Drawable,
-		                                        Transformable,
-		                                        Physic>;
-	}
-}
+};
+

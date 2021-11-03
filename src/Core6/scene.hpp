@@ -33,19 +33,32 @@
 #include <Core6/framework.hpp>
 #include <Core6/base/state/state.hpp>
 #include <Core6/ecs/entityComponentSystem.hpp>
-#include <Core6/ecs/systems.hpp>
+#include <Core6/ecs/systems/drawSystem.hpp>
+#include <Core6/ecs/systems/syncPhysicsWithGraphics.hpp>
 #include "physicsConfig.hpp"
 
 namespace c6{
 	template<concepts::Config ecsConfig>
+	class Application;
+	
+	template<concepts::Config ecsConfig>
 	class Scene : public State, public Listener<sf::Event>{
 		private:
+			Application<ecsConfig>& application;
 			EntityComponentSystem<ecsConfig> ecs;
 			
 			bool usesPhysics;
 			PhysicsConfig physicsConfig;
 			b2World physicWorld;
 		protected:
+			Application<ecsConfig>& getApplication() noexcept{
+				return application;
+			}
+			
+			const Application<ecsConfig>& getApplication() const noexcept{
+				return application;
+			}
+			
 			[[nodiscard]]
 			EntityComponentSystem<ecsConfig>& getECS() noexcept{
 				return ecs;
@@ -71,16 +84,18 @@ namespace c6{
 				return physicWorld;
 			}
 		public:
-			Scene(StateMachine& stateMachine, PhysicsConfig physicsConfig) noexcept :
+			Scene(Application<ecsConfig>& application, StateMachine& stateMachine, PhysicsConfig physicsConfig) noexcept :
 					State(stateMachine),
+					application(application),
 					usesPhysics(true),
 					physicsConfig(physicsConfig),
 					physicWorld(physicsConfig.gravity){
 				Framework::getInputHandler()->addListener(this);
 			}
 			
-			Scene(StateMachine& stateMachine) noexcept :
+			Scene(Application<ecsConfig>& application, StateMachine& stateMachine) noexcept :
 					State(stateMachine),
+					application(application),
 					usesPhysics(false),
 					physicsConfig(PhysicsConfig(0, b2Vec2_zero, 0, 0)),
 					physicWorld(b2Vec2_zero){
@@ -111,7 +126,6 @@ namespace c6{
 					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
 					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
 				}
-				ecs.template execute<const sf::Time&>(system::updateAnimation<ecsConfig>, time);
 			}
 			
 			void onNotify([[maybe_unused]] const sf::Event& event) noexcept override{

@@ -20,7 +20,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "testApp.hpp"
+#include "platformer.hpp"
 
 /* TODO
  * - Finish Job Pools
@@ -29,6 +29,6 @@
  */
 
 int main(){
-	TestApp app;
+	Platformer app;
 	app.run();
 }

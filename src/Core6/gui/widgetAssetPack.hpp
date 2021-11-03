@@ -80,7 +80,6 @@ namespace c6{
 					const Frame9& getDisabled() const;
 					[[nodiscard]]
 					const Frame9& getDisabledHover() const;
-				
 			};
 	};
 }

@@ -31,22 +31,22 @@ namespace c6{
 	class Lazy{
 		private:
 			T* obj = nullptr;
-			Callback<T*> provider;
-			Callback<void, T*> destroyer;
+			Function<T*> provider;
+			Function<void, T*> destroyer;
 		public:
 			Lazy() noexcept
 			requires std::is_default_constructible_v<T>
 					: provider([](){return new T();}), destroyer([](T* ptr){delete ptr;}){}
 			
-			explicit Lazy(Callback<T*> provider) noexcept
+			explicit Lazy(Function<T*> provider) noexcept
 			requires std::is_trivially_destructible_v<T>
 					: provider(std::move(provider)), destroyer([](T* ptr){delete ptr;}){}
 			
-			explicit Lazy(Callback<void, T*> destroyer) noexcept
+			explicit Lazy(Function<void, T*> destroyer) noexcept
 			requires std::is_default_constructible_v<T>
 					: provider([](){return new T();}), destroyer(std::move(destroyer)){}
 			
-			Lazy(Callback<T> provider, Callback<void, T*> destroyer) : provider(std::move(provider)), destroyer(std::move(destroyer)) {}
+			Lazy(Function<T> provider, Function<void, T*> destroyer) : provider(std::move(provider)), destroyer(std::move(destroyer)) {}
 			
 			~Lazy(){
 				destroy();

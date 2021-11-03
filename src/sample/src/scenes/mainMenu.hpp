@@ -22,26 +22,19 @@
 
 #pragma once
 
-#include <MPL/MPL.hpp>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <box2d/b2_body.h>
-#include <memory>
-#include "components/entityState.hpp"
+#include <src/init.hpp>
+#include <Core6/scene.hpp>
+#include <src/systems/ecsEventHandler.hpp>
 
-namespace c6{
-	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
-	template<class... Ts> using ComponentList = MPL::TypeList<Ts...>;
-	template<class... Ts> using TagList = MPL::TypeList<Ts...>;
-	
-	namespace component{
-		using Drawable = std::shared_ptr<sf::Drawable>;
-		using Transformable = std::shared_ptr<sf::Transformable>;
-		using Physic = std::shared_ptr<b2Body>;
-		
-		using DefaultComponents = MPL::TypeList<EntityState,
-		                                        Drawable,
-		                                        Transformable,
-		                                        Physic>;
-	}
-}
+class MainMenu : public c6::Scene<ecsConfig>{
+	private:
+		c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler{
+				[](c6::Consumer<const sf::Event&>& consumer, const sf::Event& event){
+					consumer(event);
+				}
+		};
+	public:
+		void onNotify(const sf::Event& event) noexcept override;
+		MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
+};
+

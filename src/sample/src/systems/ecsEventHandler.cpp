@@ -20,25 +20,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "testApp.hpp"
-#include "widgetScene.hpp"
-
-void TestApp::init(){
-	Application::init();
-	c6::Framework::getRenderer()->create(sf::VideoMode(600, 500), "Test App");
-	getScenes().add(new WidgetScene(getScenes()));
-}
-
-void TestApp::close(){
-	Application::close();
-	c6::Framework::getRenderer()->close();
-}
-
-TestApp::TestApp() : c6::Application<ecsConfig>(c6::ConsoleBuilder()
-																	.useMessageType(c6::Message::Loading)
-																	.useMessageType(c6::Message::Debug)
-																	.useMessageType(c6::Message::Error)
-																	.useMessageType(c6::Message::Info)
-																	.create()){
-	
-}
+#include "ecsEventHandler.hpp"
+/*
+c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler(
+		[](c6::Consumer<const sf::Event&>& consumer, const sf::Event& event){
+			consumer(event);
+		}
+);*/

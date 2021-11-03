@@ -24,10 +24,9 @@
 
 #include <Core6/ecs/config.hpp>
 #include <SFML/Graphics.hpp>
+#include <Core6/utils/callback.hpp>
 
-struct MovesWASD{};
-
-using Components = c6::ComponentList<std::shared_ptr<sf::Sprite>>;
-using Tags = c6::TagList<MovesWASD>;
+using Components = c6::ComponentList<c6::Consumer<const sf::Event&>>;
+using Tags = c6::TagList<>;
 
 using ecsConfig = c6::Config<Components, Tags>;
