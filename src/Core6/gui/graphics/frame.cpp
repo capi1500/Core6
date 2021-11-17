@@ -20,44 +20,22 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "button.hpp"
+#include "frame.hpp"
 
-namespace c6{
-	/*
-	void Button::onNotify(const sf::Event& event) noexcept{
-		switch(state){
-			case Default:
-				
-				break;
-			case DefaultHover:
-				
-				break;
-			case AfterClicked:
-				
-				break;
-			case Clicked:
-				
-				break;
-			case ClickedHover:
-				
-				break;
-			case AfterUnclicked:
-				
-				break;
-			case Disabled:
-				
-				break;
-			case DisabledHover:
-				
-				break;
-		}
+namespace c6::widgets{
+	Frame::Frame(const sf::FloatRect& rect) noexcept : rect(rect){}
+	
+	Frame::Frame() noexcept = default;
+	
+	sf::FloatRect Frame::getLocalBounds() const{
+		return rect;
 	}
 	
-	Button::Button() : state(Default), isHover([this](sf::Vector2i mouse){
-		return frame9.getGlobalBounds().contains(mouse.x, mouse.y);
-	}){}
+	sf::FloatRect Frame::getGlobalBounds() const{
+		return getGlobalTransform().transformRect(rect);
+	}
 	
-	void Button::setAssetPack(const WidgetAssetPack::Button& assetPack){
-		Button::assetPack = assetPack;
-	}*/
+	void Frame::draw(sf::RenderTarget& target, sf::RenderStates states) const{
+	
+	}
 }

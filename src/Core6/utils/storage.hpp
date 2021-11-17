@@ -20,8 +20,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef CORE6_STORAGE_HPP
-#define CORE6_STORAGE_HPP
+#pragma once
 
 #include <unordered_map>
 #include <functional>
@@ -35,5 +34,3 @@ namespace c6{
 	
 	};
 }
-
-#endif //CORE6_STORAGE_HPP

@@ -24,7 +24,7 @@
 
 #include "config.hpp"
 #include "entityComponentSystem.hpp"
-#include <Core6/utils/callback.hpp>
+#include <Core6/utils/functional.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
 

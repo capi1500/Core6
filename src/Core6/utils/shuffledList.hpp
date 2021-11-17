@@ -138,8 +138,8 @@ namespace c6{
 			}
 			
 			virtual ItemId add(){
-				growIfNeeded();
 				ItemId free(sizeNext++);
+				growIfNeeded();
 				Item& item = items[free];
 				item.exists = true;
 				onTInit(item.underlying);
@@ -154,7 +154,7 @@ namespace c6{
 				HandleData& handleData = handlesData[item.handleDataId];
 				handleData.itemId = id;
 				
-				return Handle(item.handleDataId, handleData.counter);
+				return Handle{item.handleDataId, handleData.counter};
 			}
 			
 			void remove(ItemId id){
@@ -252,7 +252,7 @@ namespace c6{
 				}
 			}
 			
-			ShuffledList(const TInit& onTInit = []([[maybe_unused]]T& t){}) : onTInit(onTInit) {};
+			explicit ShuffledList(const TInit& onTInit = []([[maybe_unused]]T& t){}) : onTInit(onTInit) {};
 			virtual ~ShuffledList() = default;
 	};
 }

@@ -23,7 +23,7 @@
 #pragma once
 
 #include <Core6/ecs/components.hpp>
-#include <Core6/utils/callback.hpp>
+#include <Core6/utils/functional.hpp>
 #include <SFML/Window/Event.hpp>
 #include <Core6/ecs/system.hpp>
 #include <Core6/ecs/entityComponentSystem.hpp>

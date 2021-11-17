@@ -22,15 +22,19 @@
 
 #pragma once
 
-namespace c6{
-	/**
-	 * Implementaion of builder design pattern
-	 * @tparam T - created type
-	 */
-	template<class T>
-	class Builder{
-		public:
-			virtual T create() = 0;
-			virtual ~Builder() = default;
-	};
-}
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <Core6/ecs/config.hpp>
+#include <Core6/ecs/system.hpp>
+#include "../widget.hpp"
+
+namespace c6::system{
+		template<concepts::Config Config>
+		auto DrawWidget = System<Config, Signature<component::EntityState, Widget<Config>>, sf::RenderTarget&, sf::RenderStates>(
+				[](component::EntityState& entityState, Widget<Config>& widget, sf::RenderTarget& renderTarget, sf::RenderStates renderStates){
+					if(widget.hasGraphics() && entityState.visible){
+						renderStates.transform.combine(widget.getGraphics().getGlobalTransform());
+						renderTarget.draw(widget.getGraphics(), renderStates);
+					}
+				}
+		);
+	}

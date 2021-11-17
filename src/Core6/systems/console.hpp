@@ -25,7 +25,6 @@
 
 #include <Core6/base/listener/emitter.hpp>
 #include <Core6/base/listener/listener.hpp>
-#include <Core6/base/builder.hpp>
 #include <string>
 
 namespace c6{
@@ -53,7 +52,7 @@ namespace c6{
 			Console(bool mInfo, bool mDebug, bool mError, bool mLoader) noexcept;
 	};
 	
-	class ConsoleBuilder : public Builder<Console>{
+	class ConsoleBuilder{
 		private:
 			bool info = false;
 			bool debug = false;
@@ -61,7 +60,7 @@ namespace c6{
 			bool loader = false;
 		public:
 			ConsoleBuilder& useMessageType(Message::MessageType type) noexcept;
-			Console create() override;
+			Console create();
 	};
 }
 

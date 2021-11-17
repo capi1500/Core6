@@ -19,5 +19,18 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+#include "empty.hpp"
 
-#include "callback.hpp"
+namespace c6::widgets{
+	sf::FloatRect Empty::getLocalBounds() const{
+		return sf::FloatRect();
+	}
+	
+	sf::FloatRect Empty::getGlobalBounds() const{
+		return sf::FloatRect();
+	}
+	
+	void Empty::draw([[maybe_unused]] sf::RenderTarget& target, [[maybe_unused]] sf::RenderStates states) const{
+	
+	}
+}

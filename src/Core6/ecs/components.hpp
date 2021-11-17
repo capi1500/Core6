@@ -28,6 +28,7 @@
 #include <box2d/b2_body.h>
 #include <memory>
 #include "components/entityState.hpp"
+#include "concepts.hpp"
 
 namespace c6{
 	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
@@ -38,10 +39,7 @@ namespace c6{
 		using Drawable = std::shared_ptr<sf::Drawable>;
 		using Transformable = std::shared_ptr<sf::Transformable>;
 		using Physic = std::shared_ptr<b2Body>;
-		
-		using DefaultComponents = MPL::TypeList<EntityState,
-		                                        Drawable,
-		                                        Transformable,
-		                                        Physic>;
 	}
+	template<class ecsConfig>
+	class Widget;
 }

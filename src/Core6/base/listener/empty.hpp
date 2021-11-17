@@ -19,15 +19,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
 #pragma once
 
-namespace c6::component{
-	struct EntityState{
-		bool exists = true;
-		bool alive = true;
-		bool active = true;
-		bool visible = true;
-	};
+namespace c6{
+	class Empty{};
 }
-

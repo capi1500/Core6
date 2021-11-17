@@ -24,7 +24,7 @@
 
 #include <concepts>
 #include <exception>
-#include <Core6/utils/callback.hpp>
+#include <Core6/utils/functional.hpp>
 
 namespace c6{
 	template<class T>

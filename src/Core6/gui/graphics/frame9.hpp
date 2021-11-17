@@ -22,12 +22,38 @@
 
 #pragma once
 
-namespace c6::component{
-	struct EntityState{
-		bool exists = true;
-		bool alive = true;
-		bool active = true;
-		bool visible = true;
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include "widgetGraphics.hpp"
+
+namespace c6::widgets{
+	class Frame9 : public WidgetGraphics{
+		public:
+			class AssetPack{
+				private:
+					std::string textureName[3][3];
+				public:
+					[[nodiscard]]
+					std::string* operator [] (size_t id);
+					[[nodiscard]]
+					const std::string* operator [] (size_t id) const;
+			};
+		private:
+			sf::Sprite sprite;
+			sf::Texture texture;
+			const AssetPack* assetPack;
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		public:
+			void resize(sf::Vector2u size);
+			void setAssetPack(const AssetPack& newAssetPack);
+			
+			sf::FloatRect getLocalBounds() const override;
+			sf::FloatRect getGlobalBounds() const override;
+			
+			Frame9(const AssetPack& newAssetPack, const sf::Vector2u& size);
+			explicit Frame9(const AssetPack& newAssetPack);
+			Frame9();
 	};
 }
 

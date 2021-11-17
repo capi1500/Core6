@@ -23,10 +23,23 @@
 #pragma once
 
 #include <Core6/ecs/config.hpp>
-#include <SFML/Graphics.hpp>
-#include <Core6/utils/functional.hpp>
+#include <Core6/ecs/system.hpp>
+#include <Core6/ecs/components.hpp>
+#include "../widget.hpp"
 
-using Components = c6::ComponentList<c6::Consumer<const sf::Event&>>;
-using Tags = c6::TagList<>;
-
-using ecsConfig = c6::Config<Components, Tags>;
+namespace c6::system{
+		template<concepts::Config Config>
+		System<Config, Signature<component::Transformable, Widget<Config>>> UpdateTransformations = System<Config, Signature<component::Transformable, Widget<Config>>>(
+				[](EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename EntityComponentSystem<Config>::EntityId id, component::Transformable& transformable, Widget<Config>& widget){
+					if(widget.hasGraphics()){
+						sf::Transform parents = sf::Transform::Identity;
+						if(widget.hasParent() && widget.getParent().hasGraphics())
+							parents = widget.getParent().getGraphics().getGlobalTransform();
+						widget.getGraphics().recalculateTransformations(parents, transformable->getTransform());
+						for(auto& child : widget.getChildren()){
+							ecs.template execute(child.get().getHandle(), UpdateTransformations<Config>);
+						}
+					}
+				}
+		);
+	}

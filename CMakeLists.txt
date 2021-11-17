@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.17)
-project(Core6 VERSION 0.5.5 DESCRIPTION "basic game engine, edition 6")
+cmake_minimum_required(VERSION 3.16)
+project(Core6 VERSION 0.5.7 DESCRIPTION "basic game engine, edition 6")
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -34,7 +34,7 @@ include_directories(src/sample)
 
 # add targets
 
-add_library(Core6 SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/builder.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/activable.cpp src/Core6/base/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/base/factory.hpp src/Core6/utils/storage.hpp src/Core6/utils/filepath.cpp src/Core6/utils/filepath.hpp src/Core6/utils/shuffledList.hpp src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/componentManager.hpp src/Core6/ecs/entityFactory.hpp src/Core6/systems/renderer.cpp src/Core6/systems/renderer.hpp src/Core6/systems/resourceManager.cpp src/Core6/systems/resourceManager.hpp src/Core6/systems/inputHandler.cpp src/Core6/systems/inputHandler.hpp src/Core6/systems/soundboard.cpp src/Core6/systems/soundboard.hpp src/Core6/systems/console.cpp src/Core6/systems/console.hpp src/Core6/framework.hpp src/Core6/base/loggable.cpp src/Core6/base/loggable.hpp src/Core6/concurrent/concurrent.hpp src/Core6/application.hpp src/Core6/scene.hpp src/Core6/concurrent/job.cpp src/Core6/concurrent/job.hpp src/Core6/concurrent/jobPool.cpp src/Core6/concurrent/jobPool.hpp src/Core6/physicsConfig.hpp src/Core6/ecs/components.hpp src/Core6/framework.cpp src/Core6/gui/widgetAssetPack.cpp src/Core6/gui/widgetAssetPack.hpp src/Core6/gui/frame9.cpp src/Core6/gui/frame9.hpp src/Core6/base/lazy.hpp src/Core6/gui/button.cpp src/Core6/gui/button.hpp src/Core6/gui/components.hpp src/Core6/utils/callback.cpp src/Core6/utils/callback.hpp src/Core6/animations/animation.hpp src/Core6/animations/parallelAnimation.cpp src/Core6/animations/parallelAnimation.hpp src/Core6/animations/animation.cpp src/Core6/animations/spriteAnimation.cpp src/Core6/animations/spriteAnimation.hpp src/Core6/animations/sequentialAnimation.cpp src/Core6/animations/sequentialAnimation.hpp src/Core6/animations/pathTransition.cpp src/Core6/animations/pathTransition.hpp src/Core6/animations/moveTransition.cpp src/Core6/animations/moveTransition.hpp src/Core6/ecs/entityBuilder.hpp src/Core6/ecs/components/entityState.hpp src/Core6/ecs/components/animatedSprite.cpp src/Core6/ecs/components/animatedSprite.hpp src/Core6/ecs/systems/drawSystem.hpp src/Core6/ecs/systems/drawSystem.hpp src/Core6/ecs/systems/syncPhysicsWithGraphics.hpp src/Core6/gui/widget.cpp src/Core6/gui/widget.hpp)
+add_library(Core6 SHARED src/Core6/base/listener/emitter.hpp src/Core6/base/listener/listener.hpp src/Core6/base/nonCopyable.hpp src/Core6/base/singleton.hpp src/Core6/base/nonMovable.hpp src/Core6/base/state/stateMachine.cpp src/Core6/base/state/stateMachine.hpp src/Core6/base/state/state.cpp src/Core6/base/state/state.hpp src/Core6/base/activable.cpp src/Core6/base/activable.hpp src/Core6/base/state/stateEvent.cpp src/Core6/base/state/stateEvent.hpp src/Core6/utils/storage.hpp src/Core6/utils/filepath.cpp src/Core6/utils/filepath.hpp src/Core6/utils/shuffledList.hpp src/Core6/ecs/config.hpp src/Core6/ecs/system.hpp src/Core6/ecs/entityComponentSystem.hpp src/Core6/ecs/componentManager.hpp src/Core6/ecs/entityFactory.hpp src/Core6/systems/renderer.cpp src/Core6/systems/renderer.hpp src/Core6/systems/resourceManager.cpp src/Core6/systems/resourceManager.hpp src/Core6/systems/inputHandler.cpp src/Core6/systems/inputHandler.hpp src/Core6/systems/soundboard.cpp src/Core6/systems/soundboard.hpp src/Core6/systems/console.cpp src/Core6/systems/console.hpp src/Core6/framework.hpp src/Core6/base/loggable.cpp src/Core6/base/loggable.hpp src/Core6/concurrent/concurrent.hpp src/Core6/application.hpp src/Core6/scene.hpp src/Core6/concurrent/job.cpp src/Core6/concurrent/job.hpp src/Core6/concurrent/jobPool.cpp src/Core6/concurrent/jobPool.hpp src/Core6/physicsConfig.hpp src/Core6/ecs/components.hpp src/Core6/framework.cpp src/Core6/gui/graphics/frame9.cpp src/Core6/gui/graphics/frame9.hpp src/Core6/base/lazy.hpp src/Core6/utils/functional.hpp src/Core6/animations/animation.hpp src/Core6/animations/parallelAnimation.cpp src/Core6/animations/parallelAnimation.hpp src/Core6/animations/animation.cpp src/Core6/animations/spriteAnimation.cpp src/Core6/animations/spriteAnimation.hpp src/Core6/animations/sequentialAnimation.cpp src/Core6/animations/sequentialAnimation.hpp src/Core6/animations/pathTransition.cpp src/Core6/animations/pathTransition.hpp src/Core6/animations/moveTransition.cpp src/Core6/animations/moveTransition.hpp src/Core6/ecs/entityBuilder.hpp src/Core6/ecs/components/entityState.hpp src/Core6/ecs/components/animatedSprite.cpp src/Core6/ecs/components/animatedSprite.hpp src/Core6/ecs/systems/drawSystem.hpp src/Core6/ecs/systems/drawSystem.hpp src/Core6/ecs/systems/syncPhysicsWithGraphics.hpp libraries/MPL/include/MPL/strip.hpp src/Core6/gui/graphics/widgetGraphics.cpp src/Core6/gui/graphics/widgetGraphics.hpp src/Core6/gui/widget.hpp src/Core6/gui/logic/widgetLogic.cpp src/Core6/gui/logic/widgetLogic.hpp src/Core6/base/listener/empty.hpp src/Core6/gui/systems/updateTransformations.hpp src/Core6/ecs/concepts.hpp src/Core6/gui/systems/drawWidget.hpp src/Core6/gui/graphics/empty.cpp src/Core6/gui/graphics/empty.hpp src/Core6/gui/graphics/frame.cpp src/Core6/gui/graphics/frame.hpp)
 
 add_executable(Core6debug src/sample/src/main.cpp src/sample/src/main.cpp src/sample/src/platformer.cpp src/sample/src/platformer.hpp src/sample/src/init.hpp src/sample/src/scenes/mainMenu.cpp src/sample/src/scenes/mainMenu.hpp src/sample/src/scenes/pause.cpp src/sample/src/scenes/pause.hpp src/sample/src/scenes/play.cpp src/sample/src/scenes/play.hpp src/sample/src/systems/ecsEventHandler.cpp src/sample/src/systems/ecsEventHandler.hpp)
 
@@ -45,12 +45,18 @@ set_target_properties(CreateCore6lib PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../too
 set_target_properties(Core6debug PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../src/sample/bin")
 
 # compile options
-target_compile_options(Core6 PRIVATE -Wall -Wextra)
+if(WIN32)
+    set(COMPILE_ARGS -Wall -Wextra)
+else()
+    set(COMPILE_ARGS -Wall -Wextra -fconcepts)
+endif(WIN32)
 
-target_compile_options(CreateCore6lib PRIVATE -Wall -Wextra)
-target_compile_options(tests PRIVATE -Wall -Wextra)
+target_compile_options(Core6 PRIVATE ${COMPILE_ARGS})
 
-target_compile_options(Core6debug PRIVATE -Wall -Wextra)
+target_compile_options(CreateCore6lib PRIVATE ${COMPILE_ARGS})
+target_compile_options(tests PRIVATE ${COMPILE_ARGS})
+
+target_compile_options(Core6debug PRIVATE ${COMPILE_ARGS})
 
 # link libraries
 target_link_libraries(Core6 sfml-graphics sfml-window sfml-system sfml-audio sfml-network)

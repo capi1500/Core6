@@ -102,6 +102,23 @@ namespace c6{
 				});
 			}
 			
+			template<class... Args, concepts::Signature<Config> Signature>
+			void execute(EntityId i, const System<Config, Signature, Args...>& system, Args... args){
+				using Sys = System<Config, Signature, Args...>;
+				Entity& entity = ShuffledList::getItem(i);
+				if(entity.exists && (Sys::key & entity.underlying) == Sys::key)
+					expandSignatureCall<Signature, Sys, Args...>(i, system, args...);
+			}
+			
+			template<class... Args, concepts::Signature<Config> Signature>
+			void execute(Handle handle, const System<Config, Signature, Args...>& system, Args... args){
+				using Sys = System<Config, Signature, Args...>;
+				EntityId i = ShuffledList::getHandleData(handle).itemId;
+				Entity& entity = ShuffledList::getItem(i);
+				if(entity.exists && (Sys::key & entity.underlying) == Sys::key)
+					expandSignatureCall<Signature, Sys, Args...>(i, system, args...);
+			}
+			
 			EntityId add(){
 				EntityId id = ShuffledList::add();
 				addComponent<component::EntityState>(id);
@@ -123,7 +140,6 @@ namespace c6{
 				return handle;
 			}
 		
-		private:
 			template<concepts::Tag<Config> T>
 			[[nodiscard]]
 			bool hasTag(const EntityId& id) const noexcept{
@@ -201,8 +217,6 @@ namespace c6{
 			void deleteComponent(const Handle& handle) noexcept{
 				deleteComponent<T>(ShuffledList::getHandleData(handle).itemId);
 			}
-			
-			friend class EntityBuilder<Config>;
 	};
 }
 

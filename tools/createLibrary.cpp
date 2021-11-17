@@ -29,9 +29,7 @@ int main(){
 	system("mkdir ..\\Core6");
 	system("mkdir ..\\Core6\\bin");
 	system("mkdir ..\\Core6\\include");
-	//system("rmdir /s /q ..\\src\\sample\\mods");
 	system("rmdir /s /q ..\\src\\sample\\bin");
-	//system("mkdir ..\\src\\sample\\mods");
 	system("mkdir ..\\src\\sample\\bin");
 	
 	system("echo Copying library binaries");
@@ -54,10 +52,22 @@ int main(){
 	system("echo Building executable");
 	system("cmake --build ..\\cmake_files\\ --target Core6debug");
 	#elif unix
-	system("rm -r Core5");
-	system("mkdir Core5");
-	system("mkdir Core5/bin");
-	system("mkdir Core5/include");
+	system("echo Preparing project tree");
+	system("rm -r ../Core6");
+	system("mkdir ../Core6");
+	system("mkdir ../Core6/bin");
+	system("mkdir ../Core6/include");
+	system("rm -r ../src/sample/bin");
+	system("mkdir ../src/sample/bin");
+	
+	system("echo Building Core6");
+	system("cmake -B ../cmake_files ../");
+	system("cmake --build ../cmake_files/ --target Core6");
+	
+	system("find ../src -name '*.hpp' -exec cp -prv '{}' '../Core6/include' ';'");
+	
+	system("echo Building test project");
+	system("cmake --build ../cmake_files/ --target Core6debug");
 	//system("rsync -rv --exclude=.cpp src/* include");
 	#endif
 }

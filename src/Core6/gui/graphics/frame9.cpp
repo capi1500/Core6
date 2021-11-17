@@ -24,28 +24,29 @@
 #include <Core6/framework.hpp>
 #include "frame9.hpp"
 
-namespace c6{
+namespace c6::widgets{
+	/*
 	void Frame9::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 		states.transform.combine(getTransform());
 		target.draw(sprite, states);
 	}
 	
-	void Frame9::resize(sf::Vector2u size){
+	void Frame9::resize(sf::Vector2u rect){
 		auto getTexture = [this](size_t i, size_t j) -> const sf::Texture&{
 			return Framework::getResourceManager()->getTexture((*assetPack)[i][j]);
 		};
 		
 		sf::RenderTexture renderTexture;
 		renderTexture.create(
-				getTexture(0, 0).getSize().x + getTexture(0, 1).getSize().x * size.x + getTexture(0, 2).getSize().x,
-				getTexture(0, 0).getSize().y + getTexture(1, 0).getSize().y * size.y + getTexture(2, 0).getSize().y
+				getTexture(0, 0).getSize().x + getTexture(0, 1).getSize().x * rect.x + getTexture(0, 2).getSize().x,
+				getTexture(0, 0).getSize().y + getTexture(1, 0).getSize().y * rect.y + getTexture(2, 0).getSize().y
 		);
 		renderTexture.clear(sf::Color::Transparent);
 		
 		sf::RenderStates renderStates;
 		sf::Sprite tmp;
 		
-		auto drawRow = [&renderStates, &tmp, &size, &renderTexture, &getTexture, this](int row){
+		auto drawRow = [&renderStates, &tmp, &rect, &renderTexture, &getTexture, this](int row){
 			float deltaX = 0;
 			tmp.setTexture(getTexture(row, 0));
 			renderTexture.draw(tmp, renderStates);
@@ -53,7 +54,7 @@ namespace c6{
 			renderStates.transform.translate(tmp.getTexture()->getSize().x, 0);
 			
 			tmp.setTexture(getTexture(row, 1));
-			for(size_t i = 0; i < size.x; i++){
+			for(size_t i = 0; i < rect.x; i++){
 				renderTexture.draw(tmp, renderStates);
 				deltaX += tmp.getTexture()->getSize().x;
 				renderStates.transform.translate(tmp.getTexture()->getSize().x, 0);
@@ -65,7 +66,7 @@ namespace c6{
 		};
 		
 		drawRow(0);
-		for(size_t i = 0; i < size.y; i++)
+		for(size_t i = 0; i < rect.y; i++)
 			drawRow(1);
 		drawRow(2);
 		
@@ -76,13 +77,8 @@ namespace c6{
 		sprite.setTexture(texture, true);
 	}
 	
-	void Frame9::setAssetPack(const WidgetAssetPack::Frame9& newAssetPack){
+	void Frame9::setAssetPack(const AssetPack& newAssetPack){
 		assetPack = &newAssetPack;
-	}
-	
-	void Frame9::setAssetPack(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size){
-		setAssetPack(newAssetPack);
-		resize(size);
 	}
 	
 	sf::FloatRect Frame9::getLocalBounds() const{
@@ -93,15 +89,16 @@ namespace c6{
 		return getTransform().transformRect(sprite.getGlobalBounds());
 	}
 	
-	Frame9::Frame9(const c6::WidgetAssetPack::Frame9& assetPack, const sf::Vector2u& size) : assetPack(nullptr){
-		setAssetPack(assetPack, size);
+	Frame9::Frame9(const AssetPack& assetPack, const sf::Vector2u& rect) : assetPack(nullptr){
+		setAssetPack(assetPack);
+		resize(rect);
 	}
 	
-	Frame9::Frame9(const WidgetAssetPack::Frame9& assetPack) : assetPack(nullptr){
-		setAssetPack(assetPack, {0, 0});
+	Frame9::Frame9(const Frame9::AssetPack& assetPack){
+		setAssetPack(assetPack);
 	}
 	
 	Frame9::Frame9() : assetPack(nullptr){
 	
-	}
+	}*/
 }

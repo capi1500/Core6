@@ -19,75 +19,122 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
 #pragma once
 
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
+#include <memory>
+#include <SFML/System/Vector2.hpp>
+#include <Core6/gui/graphics/widgetGraphics.hpp>
+#include <Core6/gui/logic/widgetLogic.hpp>
+#include <Core6/ecs/entityComponentSystem.hpp>
+#include <Core6/gui/graphics/frame.hpp>
 
 namespace c6{
-	class Widget : public sf::Drawable, public sf::Transformable{
-		public:
-			enum Alignment{
-				Free,
-				TopRightCorner,
-				BottomRightCorner,
-				TopLeftCorner,
-				BottomLeftCorner,
-				TopSide,
-				BottomSide,
-				LeftSide,
-				RightSide,
-				Center
-			};
-			
-			enum Adjustment{
-				Default,
-				FitToWidth,
-				FitToHeight,
-				FitToSize
-			};
+	template<class ecsConfig>
+	class Widget{
 		private:
-			const Widget* parent = nullptr; // nullptr - aligns to window
-			Alignment alignment = Free;
-			sf::Vector2i shift = sf::Vector2i(0, 0);
-			sf::Vector2f factorShift = sf::Vector2f(0, 0);
-			bool cropToFrame;
+			using Handle = typename EntityComponentSystem<ecsConfig>::Handle;
 			
-			Adjustment adjustment = Default;
-			bool keepRatio = true;
-			
-			void recalculatePosition() noexcept;
+			Widget<ecsConfig>* parent; // if nullptr then window
+			std::set<std::reference_wrapper<Widget<ecsConfig>>> children;
+			Handle handle; // handle for this
+			WidgetGraphics* graphics;
+			WidgetLogic* logic;
 		public:
-			virtual ~Widget() = default;
+			// Copy-swap idiom
+			Widget() noexcept : parent(nullptr), graphics(nullptr), logic(nullptr) {}
 			
-			/**
-			 * @brief set adjustment of the widget
-			 * @param adjustment
-			 */
-			void adjust(Adjustment adjustment, bool keepRatio = true) noexcept;
+			Widget(const Widget<ecsConfig>& other) noexcept{
+				parent = other.parent;
+				children = other.children;
+				handle = other.handle;
+				graphics = other.graphics;
+				logic = other.logic;
+			}
 			
-			void align() noexcept;
-			void align(const sf::Vector2i& shift) noexcept;
-			void align(const sf::Vector2f& factorShift) noexcept;
-			void align(const sf::Vector2i& shift, const sf::Vector2f& factorShift) noexcept;
-			void align(Alignment alignment) noexcept;
-			void align(Alignment alignment, const sf::Vector2i& shift) noexcept;
-			void align(Alignment alignment, const sf::Vector2f& factorShift) noexcept;
-			void align(Alignment alignment, const sf::Vector2i& shift, const sf::Vector2f& factorShift) noexcept;
-			void align(const Widget* widget) noexcept;
-			void align(const Widget* widget, const sf::Vector2i& shift) noexcept;
-			void align(const Widget* widget, const sf::Vector2f& factorShift) noexcept;
-			void align(const Widget* widget, const sf::Vector2i& shift, const sf::Vector2f& factorShift) noexcept;
-			void align(const Widget* widget, Alignment alignment) noexcept;
-			void align(const Widget* widget, Alignment alignment, const sf::Vector2i& shift) noexcept;
-			void align(const Widget* widget, Alignment alignment, const sf::Vector2f& factorShift) noexcept;
-			void align(const Widget* widget, Alignment alignment, const sf::Vector2i& shift, const sf::Vector2f& factorShift) noexcept;
+			Widget(Widget<ecsConfig>&& other) noexcept : parent(nullptr), graphics(nullptr), logic(nullptr){
+				swap(*this, other);
+			}
 			
-			void setCropToFrame(bool cropToFrame);
+			~Widget(){
+				if(graphics != nullptr){
+					delete graphics;
+					graphics = nullptr;
+				}
+				if(logic != nullptr){
+					delete logic;
+					logic = nullptr;
+				}
+			}
 			
-			virtual sf::FloatRect getLocalBounds() const = 0;
-			virtual sf::FloatRect getGlobalBounds() const = 0;
+			friend void swap(Widget<ecsConfig>& first, Widget<ecsConfig>& second) noexcept{
+				std::swap(first.parent, second.parent);
+				std::swap(first.children, second.children);
+				std::swap(first.handle, second.handle);
+				std::swap(first.graphics, second.graphics);
+				std::swap(first.logic, second.logic);
+			}
+			
+			Widget<ecsConfig>& operator = (Widget<ecsConfig> other){
+				swap(*this, other);
+				return *this;
+			}
+			
+			// generators
+			//static Widget Button(EntityComponentSystem<ecsConfig>& ecs, Handle handle);
+			static Widget<ecsConfig>& Frame(EntityComponentSystem<ecsConfig>& ecs, Handle handle, sf::FloatRect rect){
+				ecs.template addComponent<component::Transformable>(handle, std::make_shared<sf::Transformable>());
+				Widget<ecsConfig>& widget = ecs.template addComponent<Widget<ecsConfig>>(handle);
+				widget.handle = handle;
+				widget.graphics = new widgets::Frame(rect);
+				return widget;
+			}
+			
+			// getters and setters
+			void setParent(Widget<ecsConfig>& widget){
+				parent = &widget;
+			}
+			[[nodiscard]]
+			const Widget<ecsConfig>& getParent() const{
+				return *parent;
+			}
+			[[nodiscard]]
+			bool hasParent() const{
+				return parent != nullptr;
+			}
+			[[nodiscard]]
+			const std::set<std::reference_wrapper<Widget<ecsConfig>>>& getChildren() const{
+				return children;
+			}
+			
+			[[nodiscard]]
+			const Handle& getHandle() const{
+				return handle;
+			}
+			
+			[[nodiscard]]
+			const WidgetGraphics& getGraphics() const{
+				return *graphics;
+			}
+			[[nodiscard]]
+			WidgetGraphics& getGraphics(){
+				return *graphics;
+			}
+			[[nodiscard]]
+			bool hasGraphics() const{
+				return graphics != nullptr;
+			}
+			
+			[[nodiscard]]
+			const WidgetLogic& getLogic() const{
+				return *logic;
+			}
+			[[nodiscard]]
+			WidgetLogic& getLogic(){
+				return *logic;
+			}
+			[[nodiscard]]
+			bool hasLogic() const{
+				return logic != nullptr;
+			}
 	};
 }
-

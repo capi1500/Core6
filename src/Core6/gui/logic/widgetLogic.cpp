@@ -19,38 +19,10 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
-#pragma once
-
-#include <functional>
+#include "widgetLogic.hpp"
 
 namespace c6{
-	/**
-	 * Implementation of factory design pattern
-	 * @tparam T - created type
-	 */
-	template<class T>
-	class Factory{
-		public:
-			template<class... TArgs>
-			virtual T create(const TArgs&... args) const noexcept = 0;
-			
-			virtual ~Factory() = default;
-	};
-	
-	template<class T, class... TArgs>
-	class SimpleFactory : public Factory<T>{
-			using Supplier = std::function<T(TArgs...)>;
-		private:
-			Supplier supplier;
-		public:
-			T create(const TArgs&... args) const noexcept final{
-				return supplier(args...);
-			}
-			
-			explicit SimpleFactory(const Supplier& supplier) : supplier(supplier) {}
-			explicit SimpleFactory(Supplier&& supplier) : supplier(std::forward<>(supplier)) {}
-	};
+	void WidgetLogic::attachEventHandler(Consumer<const sf::Event&> eventHandler){
+		//this->eventHandler = eventHandler;
+	}
 }
-
-

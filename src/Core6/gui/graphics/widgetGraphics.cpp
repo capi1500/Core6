@@ -19,15 +19,14 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+#include "widgetGraphics.hpp"
 
-#pragma once
-
-namespace c6::component{
-	struct EntityState{
-		bool exists = true;
-		bool alive = true;
-		bool active = true;
-		bool visible = true;
-	};
+namespace c6{
+	const sf::Transform& WidgetGraphics::getGlobalTransform() const{
+		return global;
+	}
+	
+	void WidgetGraphics::recalculateTransformations(const sf::Transform& parent, const sf::Transform& localTransform){
+		global = parent * frame.getTransform() * localTransform;
+	}
 }
-

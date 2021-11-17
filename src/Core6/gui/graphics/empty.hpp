@@ -19,5 +19,16 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
 #pragma once
+
+#include "widgetGraphics.hpp"
+
+namespace c6::widgets{
+	class Empty : public WidgetGraphics{
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		public:
+			sf::FloatRect getLocalBounds() const override;
+			sf::FloatRect getGlobalBounds() const override;
+	};
+}

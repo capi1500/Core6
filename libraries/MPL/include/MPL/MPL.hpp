@@ -16,5 +16,6 @@
 #include "containsAll.hpp"
 #include "filter.hpp"
 #include "unique.hpp"
+#include "strip.hpp"
 
 #endif //MPL_MPL_HPP

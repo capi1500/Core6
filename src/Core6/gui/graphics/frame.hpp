@@ -19,32 +19,21 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
 #pragma once
 
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include "widgetAssetPack.hpp"
+#include "widgetGraphics.hpp"
 
-namespace c6{
-	class Frame9 : public sf::Drawable, public sf::Transformable{
+namespace c6::widgets{
+	class Frame : public WidgetGraphics{
 		private:
-			sf::Sprite sprite;
-			sf::Texture texture;
-			const WidgetAssetPack::Frame9* assetPack;
+			sf::FloatRect rect;
 		protected:
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		public:
-			void resize(sf::Vector2u size);
-			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack);
-			void setAssetPack(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
+			Frame() noexcept;
+			Frame(const sf::FloatRect& rect) noexcept;
 			
-			sf::FloatRect getLocalBounds() const;
-			sf::FloatRect getGlobalBounds() const;
-			
-			Frame9(const WidgetAssetPack::Frame9& newAssetPack, const sf::Vector2u& size);
-			explicit Frame9(const WidgetAssetPack::Frame9& newAssetPack);
-			Frame9();
+			sf::FloatRect getLocalBounds() const override;
+			sf::FloatRect getGlobalBounds() const override;
 	};
 }
-

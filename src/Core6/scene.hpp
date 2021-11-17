@@ -33,9 +33,14 @@
 #include <Core6/framework.hpp>
 #include <Core6/base/state/state.hpp>
 #include <Core6/ecs/entityComponentSystem.hpp>
+#include <Core6/ecs/entityBuilder.hpp>
+#include <Core6/gui/widget.hpp>
+#include "physicsConfig.hpp"
+
 #include <Core6/ecs/systems/drawSystem.hpp>
 #include <Core6/ecs/systems/syncPhysicsWithGraphics.hpp>
-#include "physicsConfig.hpp"
+#include <Core6/gui/systems/updateTransformations.hpp>
+#include <Core6/gui/systems/drawWidget.hpp>
 
 namespace c6{
 	template<concepts::Config ecsConfig>
@@ -50,6 +55,8 @@ namespace c6{
 			bool usesPhysics;
 			PhysicsConfig physicsConfig;
 			b2World physicWorld;
+			
+			typename EntityComponentSystem<ecsConfig>::Handle widgetRoot;
 		protected:
 			Application<ecsConfig>& getApplication() noexcept{
 				return application;
@@ -83,23 +90,27 @@ namespace c6{
 			const b2World& getPhysicWorld() const noexcept{
 				return physicWorld;
 			}
+			
+			[[nodiscard]]
+			const Widget<ecsConfig>& getWidgetRoot() const{
+				return widgetRoot;
+			}
 		public:
 			Scene(Application<ecsConfig>& application, StateMachine& stateMachine, PhysicsConfig physicsConfig) noexcept :
 					State(stateMachine),
 					application(application),
 					usesPhysics(true),
 					physicsConfig(physicsConfig),
-					physicWorld(physicsConfig.gravity){
+					physicWorld(physicsConfig.gravity),
+					widgetRoot(ecs.addWithHandle()){
 				Framework::getInputHandler()->addListener(this);
+				Widget<ecsConfig>::Frame(ecs, widgetRoot, sf::FloatRect(0, 0, 100, 100));
+				ecs.refresh();
 			}
 			
 			Scene(Application<ecsConfig>& application, StateMachine& stateMachine) noexcept :
-					State(stateMachine),
-					application(application),
-					usesPhysics(false),
-					physicsConfig(PhysicsConfig(0, b2Vec2_zero, 0, 0)),
-					physicWorld(b2Vec2_zero){
-				Framework::getInputHandler()->addListener(this);
+					Scene(application, stateMachine, PhysicsConfig(0, b2Vec2_zero, 0, 0)){
+				usesPhysics = false;
 			}
 			
 			~Scene() override{
@@ -118,7 +129,8 @@ namespace c6{
 			}
 			
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){
-				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::draw<ecsConfig>, target, states);
+				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::Draw<ecsConfig>, target, states);
+				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::DrawWidget<ecsConfig>, target, states);
 			}
 			
 			virtual void update(const sf::Time& time){
@@ -126,6 +138,7 @@ namespace c6{
 					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
 					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
 				}
+				ecs.template execute(widgetRoot, system::UpdateTransformations<ecsConfig>);
 			}
 			
 			void onNotify([[maybe_unused]] const sf::Event& event) noexcept override{
