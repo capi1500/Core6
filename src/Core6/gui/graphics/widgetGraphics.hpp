@@ -59,7 +59,7 @@ namespace c6{
 			sf::Transformable frame;
 		public:
 			virtual sf::FloatRect getLocalBounds() const = 0;
-			virtual sf::FloatRect getGlobalBounds() const = 0;
+			sf::FloatRect getGlobalBounds() const;
 			
 			const sf::Transform& getGlobalTransform() const;
 			

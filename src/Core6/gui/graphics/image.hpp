@@ -19,19 +19,21 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-#include <iostream>
-#include "widgetGraphics.hpp"
 
-namespace c6{
-	const sf::Transform& WidgetGraphics::getGlobalTransform() const{
-		return global;
-	}
-	
-	void WidgetGraphics::recalculateTransformations(const sf::Transform& parent, const sf::Transform& localTransform){
-		global = parent * frame.getTransform() * localTransform;
-	}
-	
-	sf::FloatRect WidgetGraphics::getGlobalBounds() const{
-		return getGlobalTransform().transformRect(getLocalBounds());
-	}
+#pragma once
+
+#include <Core6/gui/widget.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+
+namespace c6::widgets{
+	class Image : public WidgetGraphics{
+		private:
+			sf::Sprite sprite;
+		protected:
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		public:
+			sf::FloatRect getLocalBounds() const override;
+			const sf::Sprite& getSprite() const;
+			void setSprite(const sf::Sprite& sprite);
+	};
 }

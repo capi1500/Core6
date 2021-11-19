@@ -49,7 +49,6 @@ namespace c6::widgets{
 			void setAssetPack(const AssetPack& newAssetPack);
 			
 			sf::FloatRect getLocalBounds() const override;
-			sf::FloatRect getGlobalBounds() const override;
 			
 			Frame9(const AssetPack& newAssetPack, const sf::Vector2u& size);
 			explicit Frame9(const AssetPack& newAssetPack);

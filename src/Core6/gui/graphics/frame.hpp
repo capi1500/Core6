@@ -19,6 +19,7 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+
 #pragma once
 
 #include "widgetGraphics.hpp"
@@ -31,9 +32,9 @@ namespace c6::widgets{
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		public:
 			Frame() noexcept;
-			Frame(const sf::FloatRect& rect) noexcept;
-			
+			explicit Frame(const sf::FloatRect& rect) noexcept;
+			const sf::FloatRect& getRect() const noexcept;
+			void setRect(const sf::FloatRect& rect) noexcept;
 			sf::FloatRect getLocalBounds() const override;
-			sf::FloatRect getGlobalBounds() const override;
 	};
 }

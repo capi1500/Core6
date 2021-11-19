@@ -19,19 +19,20 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+#include <Core6/gui/graphics/widgetGraphics.hpp>
 #include <iostream>
-#include "widgetGraphics.hpp"
+#include "button.hpp"
 
-namespace c6{
-	const sf::Transform& WidgetGraphics::getGlobalTransform() const{
-		return global;
+namespace c6::widgets{
+	Button::Button(WidgetGraphics* graphics, const Runnable& runnable) : callback([graphics, runnable](const sf::Event& event){
+			if(event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left){
+				if(graphics->getGlobalBounds().contains(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y)))
+					runnable();
+			}
+		}){
 	}
 	
-	void WidgetGraphics::recalculateTransformations(const sf::Transform& parent, const sf::Transform& localTransform){
-		global = parent * frame.getTransform() * localTransform;
-	}
-	
-	sf::FloatRect WidgetGraphics::getGlobalBounds() const{
-		return getGlobalTransform().transformRect(getLocalBounds());
+	void Button::onNotify(const sf::Event& event) noexcept{
+		callback(event);
 	}
 }

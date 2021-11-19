@@ -19,18 +19,18 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <Core6/utils/functional.hpp>
+#include <Core6/base/listener/listener.hpp>
 
 namespace c6{
-	class WidgetLogic{
-		private:
-			bool mouseHovering;
-			Consumer<const sf::Event&> eventHandler;
+	class WidgetLogic : public Listener<sf::Event>{
 		public:
-			void attachEventHandler(Consumer<const sf::Event&> eventHandler);
+			WidgetLogic();
+			virtual ~WidgetLogic();
 	};
 }

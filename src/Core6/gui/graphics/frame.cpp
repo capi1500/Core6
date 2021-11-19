@@ -31,11 +31,15 @@ namespace c6::widgets{
 		return rect;
 	}
 	
-	sf::FloatRect Frame::getGlobalBounds() const{
-		return getGlobalTransform().transformRect(rect);
+	void Frame::draw([[maybe_unused]] sf::RenderTarget& target, [[maybe_unused]] sf::RenderStates states) const{
+	
 	}
 	
-	void Frame::draw(sf::RenderTarget& target, sf::RenderStates states) const{
+	const sf::FloatRect& Frame::getRect() const noexcept{
+		return rect;
+	}
 	
+	void Frame::setRect(const sf::FloatRect& rect) noexcept{
+		Frame::rect = rect;
 	}
 }

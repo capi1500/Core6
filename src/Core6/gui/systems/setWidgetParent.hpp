@@ -19,19 +19,24 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-#include <iostream>
-#include "widgetGraphics.hpp"
 
-namespace c6{
-	const sf::Transform& WidgetGraphics::getGlobalTransform() const{
-		return global;
-	}
-	
-	void WidgetGraphics::recalculateTransformations(const sf::Transform& parent, const sf::Transform& localTransform){
-		global = parent * frame.getTransform() * localTransform;
-	}
-	
-	sf::FloatRect WidgetGraphics::getGlobalBounds() const{
-		return getGlobalTransform().transformRect(getLocalBounds());
-	}
+#pragma once
+
+#include <Core6/ecs/config.hpp>
+#include <Core6/ecs/system.hpp>
+#include <Core6/ecs/entityComponentSystem.hpp>
+#include "../widget.hpp"
+
+namespace c6::system{
+	template<concepts::Config Config>
+	auto SetWidgetParent = System<Config, Signature<Widget<Config>>, typename c6::EntityComponentSystem<Config>::Handle&>(
+			[](c6::EntityComponentSystem<Config>& ecs, typename c6::EntityComponentSystem<Config>::EntityId id, Widget<Config>& widget, typename c6::EntityComponentSystem<Config>::Handle& handle){
+				if(ecs.template hasComponent<Widget<Config>>(handle)){
+					Widget<Config>& parent = ecs.template getComponent<Widget<Config>>(handle);
+					
+					widget.setParent(handle);
+					parent.getChildren().push_back(widget.getHandle());
+				}
+			}
+	);
 }

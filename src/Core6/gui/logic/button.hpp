@@ -19,19 +19,16 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-#include <iostream>
-#include "widgetGraphics.hpp"
+#pragma once
 
-namespace c6{
-	const sf::Transform& WidgetGraphics::getGlobalTransform() const{
-		return global;
-	}
-	
-	void WidgetGraphics::recalculateTransformations(const sf::Transform& parent, const sf::Transform& localTransform){
-		global = parent * frame.getTransform() * localTransform;
-	}
-	
-	sf::FloatRect WidgetGraphics::getGlobalBounds() const{
-		return getGlobalTransform().transformRect(getLocalBounds());
-	}
+#include "widgetLogic.hpp"
+
+namespace c6::widgets{
+	class Button : public WidgetLogic{
+		private:
+			Consumer<const sf::Event&> callback;
+		public:
+			Button(WidgetGraphics* graphics, const Runnable& runnable);
+			void onNotify(const sf::Event& event) noexcept override;
+	};
 }

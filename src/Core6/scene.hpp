@@ -39,7 +39,7 @@
 
 #include <Core6/ecs/systems/drawSystem.hpp>
 #include <Core6/ecs/systems/syncPhysicsWithGraphics.hpp>
-#include <Core6/gui/systems/updateTransformations.hpp>
+#include <Core6/gui/systems/updateWidgetTree.hpp>
 #include <Core6/gui/systems/drawWidget.hpp>
 
 namespace c6{
@@ -49,6 +49,8 @@ namespace c6{
 	template<concepts::Config ecsConfig>
 	class Scene : public State, public Listener<sf::Event>{
 		private:
+			using Handle = typename EntityComponentSystem<ecsConfig>::Handle;
+			
 			Application<ecsConfig>& application;
 			EntityComponentSystem<ecsConfig> ecs;
 			
@@ -56,7 +58,7 @@ namespace c6{
 			PhysicsConfig physicsConfig;
 			b2World physicWorld;
 			
-			typename EntityComponentSystem<ecsConfig>::Handle widgetRoot;
+			Handle widgetRoot;
 		protected:
 			Application<ecsConfig>& getApplication() noexcept{
 				return application;
@@ -92,7 +94,12 @@ namespace c6{
 			}
 			
 			[[nodiscard]]
-			const Widget<ecsConfig>& getWidgetRoot() const{
+			const Handle& getWidgetRoot() const{
+				return widgetRoot;
+			}
+			
+			[[nodiscard]]
+			Handle& getWidgetRoot(){
 				return widgetRoot;
 			}
 		public:
@@ -104,7 +111,16 @@ namespace c6{
 					physicWorld(physicsConfig.gravity),
 					widgetRoot(ecs.addWithHandle()){
 				Framework::getInputHandler()->addListener(this);
-				Widget<ecsConfig>::Frame(ecs, widgetRoot, sf::FloatRect(0, 0, 100, 100));
+				EntityBuilder<ecsConfig>(ecs, widgetRoot).template attach<Widget<ecsConfig>>(
+						widgetRoot,
+						new widgets::Frame(sf::FloatRect(0,
+									  0,
+									  static_cast<float>(Framework::getRenderer()->getSize().x),
+									  static_cast<float>(Framework::getRenderer()->getSize().y)
+							  )
+					    ),
+						nullptr
+			    );
 				ecs.refresh();
 			}
 			
@@ -138,11 +154,13 @@ namespace c6{
 					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
 					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
 				}
-				ecs.template execute(widgetRoot, system::UpdateTransformations<ecsConfig>);
+				ecs.template execute(widgetRoot, system::UpdateWidgetTree<ecsConfig>);
 			}
 			
 			void onNotify([[maybe_unused]] const sf::Event& event) noexcept override{
-			
+				if(event.type == sf::Event::Resized){
+					dynamic_cast<widgets::Frame&>(ecs.template getComponent<Widget<ecsConfig>>(widgetRoot).getGraphics()).setRect({0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height)});
+				}
 			}
 	};
 }

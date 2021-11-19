@@ -19,10 +19,17 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+
+#include <iostream>
+#include <Core6/framework.hpp>
 #include "widgetLogic.hpp"
 
 namespace c6{
-	void WidgetLogic::attachEventHandler(Consumer<const sf::Event&> eventHandler){
-		//this->eventHandler = eventHandler;
+	WidgetLogic::WidgetLogic(){
+		c6::Framework::getInputHandler()->addListener(this);
+	}
+	
+	WidgetLogic::~WidgetLogic(){
+		c6::Framework::getInputHandler()->removeListener(this);
 	}
 }

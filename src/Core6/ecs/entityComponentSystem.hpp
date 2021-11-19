@@ -36,6 +36,11 @@ namespace c6{
 	template<concepts::Config Config>
 	class EntityBuilder;
 	
+	/*
+	 * TODO
+	 * - rename most function names
+	 * - write a tutorial for using ECS
+	 */
 	template<concepts::Config Config>
 	class EntityComponentSystem : public ShuffledList<typename Config::Key>{
 			using Key = typename Config::Key;

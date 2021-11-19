@@ -22,54 +22,30 @@
 
 #include "mainMenu.hpp"
 #include <Core6/application.hpp>
+#include <Core6/gui/graphics/image.hpp>
+#include <Core6/gui/systems/setWidgetParent.hpp>
 
 MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Scene(app, stateMachine){
 	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb");
 	c6::Framework::getResourceManager()->loadFonts("../assets/fonts");
 	
-	auto buttonFactory = c6::EntityFactoryInline<ecsConfig, const std::string&, int, c6::Runnable>(
-			[](c6::EntityComponentSystem<ecsConfig>& ecs, c6::EntityComponentSystem<ecsConfig>::EntityId id, const std::string& label, int n, const c6::Runnable& callback){
-				auto b = c6::EntityBuilder<ecsConfig>(ecs, id)
-						.attach<sf::Text>(
-								c6::Function<sf::Text>(
-										[&label, &n]{
-											sf::Text text;
-											text.setFont(c6::Framework::getResourceManager()->getFont("../assets/fonts/Pixeled.ttf"));
-											text.setCharacterSize(20);
-											text.setString(label);
-											text.setPosition(
-													(c6::Framework::getRenderer()->getSize().x - text.getLocalBounds().width) / 2,
-													(c6::Framework::getRenderer()->getSize().y - text.getLocalBounds().height) / 2 + n * 40
-											);
-											return text;
-										}
-								)
-						);
-				
-				b.attach<c6::Consumer<const sf::Event&>, sf::Transformable>(
-						c6::Function<c6::Consumer<const sf::Event&>, sf::Transformable&>(
-							[callback](sf::Transformable& transformable){
-								return [callback, &transformable](const sf::Event& event){
-									const auto& t = dynamic_cast<const sf::Text&>(transformable);
-									if(event.type == sf::Event::MouseButtonPressed){
-										if(t.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y))
-											callback();
-									}
-								};
-							}
-						)
-				);
-			}
-	);
+	auto* image = new c6::widgets::Image();
+	sf::Sprite sprite;
+	sprite.setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
+	image->setSprite(sprite);
+	auto* button = new c6::widgets::Button(image, []{std::cout << "Clicked\n";});
 	
-	getECS().addFromFactory<const std::string&, int, c6::Runnable>(buttonFactory, "Press [1] to play", 0, []{
-				std::cout << "Play!\n";
-			}
-	);
-	getECS().addFromFactory<const std::string&, int, c6::Runnable>(buttonFactory, "Press [2] to exit", 1, [this]{
-				getApplication().close();
-			}
-	);
+	auto h = getECS().addWithHandle();
+	auto& builder = c6::EntityBuilder<ecsConfig>(getECS(), h)
+	        .attach<c6::Widget<ecsConfig>>(h, image, button)
+			.attach<c6::component::Transformable>(std::make_shared<sf::Transformable>());
+	
+	auto& widget = builder.get<c6::Widget<ecsConfig>>();
+	
+	getECS().execute<typename c6::EntityComponentSystem<ecsConfig>::Handle&>(h, c6::system::SetWidgetParent<ecsConfig>, getWidgetRoot());
+	
+	auto& transformable = builder.get<c6::component::Transformable>();
+	transformable->move(50, 20);
 	
 	getECS().refresh();
 }

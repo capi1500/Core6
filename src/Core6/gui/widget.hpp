@@ -22,20 +22,27 @@
 #pragma once
 
 #include <memory>
+#include <iostream>
 #include <SFML/System/Vector2.hpp>
 #include <Core6/gui/graphics/widgetGraphics.hpp>
 #include <Core6/gui/logic/widgetLogic.hpp>
 #include <Core6/ecs/entityComponentSystem.hpp>
 #include <Core6/gui/graphics/frame.hpp>
+#include <Core6/gui/logic/button.hpp>
+#include <Core6/framework.hpp>
 
 namespace c6{
+	/* TODO
+	 * - rework setting parent-child relationships between widgets
+	 * - rework each individual Graphic and Logic component
+	 */
 	template<class ecsConfig>
 	class Widget{
 		private:
 			using Handle = typename EntityComponentSystem<ecsConfig>::Handle;
 			
-			Widget<ecsConfig>* parent; // if nullptr then window
-			std::set<std::reference_wrapper<Widget<ecsConfig>>> children;
+			Handle* parent; // if nullptr then window
+			std::vector<Handle> children;
 			Handle handle; // handle for this
 			WidgetGraphics* graphics;
 			WidgetLogic* logic;
@@ -56,11 +63,11 @@ namespace c6{
 			}
 			
 			~Widget(){
-				if(graphics != nullptr){
+				if(hasGraphics()){
 					delete graphics;
 					graphics = nullptr;
 				}
-				if(logic != nullptr){
+				if(hasLogic()){
 					delete logic;
 					logic = nullptr;
 				}
@@ -79,22 +86,20 @@ namespace c6{
 				return *this;
 			}
 			
-			// generators
-			//static Widget Button(EntityComponentSystem<ecsConfig>& ecs, Handle handle);
-			static Widget<ecsConfig>& Frame(EntityComponentSystem<ecsConfig>& ecs, Handle handle, sf::FloatRect rect){
-				ecs.template addComponent<component::Transformable>(handle, std::make_shared<sf::Transformable>());
-				Widget<ecsConfig>& widget = ecs.template addComponent<Widget<ecsConfig>>(handle);
-				widget.handle = handle;
-				widget.graphics = new widgets::Frame(rect);
-				return widget;
+			// constructor
+			Widget(Handle handle, WidgetGraphics* graphics, WidgetLogic* logic) :
+					parent(nullptr),
+					handle(handle),
+					graphics(graphics),
+					logic(logic){
 			}
 			
-			// getters and setters
-			void setParent(Widget<ecsConfig>& widget){
+			// getters and vectorters
+			void setParent(Handle& widget){
 				parent = &widget;
 			}
 			[[nodiscard]]
-			const Widget<ecsConfig>& getParent() const{
+			const Handle& getParent() const{
 				return *parent;
 			}
 			[[nodiscard]]
@@ -102,7 +107,11 @@ namespace c6{
 				return parent != nullptr;
 			}
 			[[nodiscard]]
-			const std::set<std::reference_wrapper<Widget<ecsConfig>>>& getChildren() const{
+			const std::vector<Handle>& getChildren() const{
+				return children;
+			}
+			[[nodiscard]]
+			std::vector<Handle>& getChildren(){
 				return children;
 			}
 			

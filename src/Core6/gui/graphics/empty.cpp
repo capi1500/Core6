@@ -26,10 +26,6 @@ namespace c6::widgets{
 		return sf::FloatRect();
 	}
 	
-	sf::FloatRect Empty::getGlobalBounds() const{
-		return sf::FloatRect();
-	}
-	
 	void Empty::draw([[maybe_unused]] sf::RenderTarget& target, [[maybe_unused]] sf::RenderStates states) const{
 	
 	}

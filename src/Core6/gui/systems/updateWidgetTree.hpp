@@ -29,15 +29,25 @@
 
 namespace c6::system{
 		template<concepts::Config Config>
-		System<Config, Signature<component::Transformable, Widget<Config>>> UpdateTransformations = System<Config, Signature<component::Transformable, Widget<Config>>>(
-				[](EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename EntityComponentSystem<Config>::EntityId id, component::Transformable& transformable, Widget<Config>& widget){
+		System<Config, Signature<component::EntityState, Widget<Config>>> UpdateWidgetTree = System<Config, Signature<component::EntityState, Widget<Config>>>(
+				[](EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename EntityComponentSystem<Config>::EntityId id, component::EntityState& entityState, Widget<Config>& widget){
 					if(widget.hasGraphics()){
 						sf::Transform parents = sf::Transform::Identity;
-						if(widget.hasParent() && widget.getParent().hasGraphics())
-							parents = widget.getParent().getGraphics().getGlobalTransform();
-						widget.getGraphics().recalculateTransformations(parents, transformable->getTransform());
+						if(widget.hasParent()){
+							Widget<Config>& parent = ecs.template getComponent<Widget<Config>>(widget.getParent());
+							if(parent.hasGraphics())
+								parents = parent.getGraphics().getGlobalTransform();
+							component::EntityState& parentState = ecs.template getComponent<component::EntityState>(widget.getParent());
+							entityState.visible &= parentState.visible;
+							entityState.active &= parentState.active;
+						}
+						sf::Transform local = sf::Transform::Identity;
+						if(ecs.template hasComponent<component::Transformable>(id)){
+							local = ecs.template getComponent<component::Transformable>(id)->getTransform();
+						}
+						widget.getGraphics().recalculateTransformations(parents, local);
 						for(auto& child : widget.getChildren()){
-							ecs.template execute(child.get().getHandle(), UpdateTransformations<Config>);
+							ecs.template execute(child, UpdateWidgetTree<Config>);
 						}
 					}
 				}

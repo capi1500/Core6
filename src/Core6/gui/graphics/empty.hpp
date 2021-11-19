@@ -29,6 +29,5 @@ namespace c6::widgets{
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		public:
 			sf::FloatRect getLocalBounds() const override;
-			sf::FloatRect getGlobalBounds() const override;
 	};
 }
