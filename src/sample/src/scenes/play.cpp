@@ -21,8 +21,19 @@
 */
 
 #include "play.hpp"
+#include "pause.hpp"
 
 Play::Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Scene(
 		app,
 		stateMachine,
-		c6::PhysicsConfig(1, b2Vec2(0, -9.81), 9, 15)){}
+		c6::PhysicsConfig(1, b2Vec2(0, -9.81), 9, 15)){
+	
+}
+
+void Play::onNotify(const sf::Event& event) noexcept{
+	Scene::onNotify(event);
+	if(event.type == sf::Event::KeyReleased){
+		if(event.key.code == sf::Keyboard::Escape)
+			getStateMachine().add(new Pause(getApplication(), getStateMachine()));
+	}
+}

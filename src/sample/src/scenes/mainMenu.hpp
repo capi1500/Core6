@@ -27,14 +27,7 @@
 #include <src/systems/ecsEventHandler.hpp>
 
 class MainMenu : public c6::Scene<ecsConfig>{
-	private:
-		c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler{
-				[](c6::Consumer<const sf::Event&>& consumer, const sf::Event& event){
-					consumer(event);
-				}
-		};
 	public:
-		void onNotify(const sf::Event& event) noexcept override;
 		MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
 };
 

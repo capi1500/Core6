@@ -21,3 +21,21 @@
 */
 
 #include "pause.hpp"
+#include "mainMenu.hpp"
+
+Pause::Pause(c6::Application<ecsConfig>& application, c6::StateMachine& stateMachine) : Scene(application, stateMachine){
+
+}
+
+void Pause::onNotify(const sf::Event& event) noexcept{
+	Scene::onNotify(event);
+	if(event.type == sf::Event::KeyReleased){
+		std::cout << "Pause onNotify()\n";
+		if(event.key.code == sf::Keyboard::Escape)
+			getStateMachine().pop();
+		if(event.key.code == sf::Keyboard::Num1){
+			getStateMachine().pop(2);
+			getStateMachine().add(new MainMenu(getApplication(), getStateMachine()));
+		}
+	}
+}

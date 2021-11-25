@@ -28,5 +28,6 @@
 class Play : public c6::Scene<ecsConfig>{
 	public:
 		Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
+		void onNotify(const sf::Event& event) noexcept override;
 };
 

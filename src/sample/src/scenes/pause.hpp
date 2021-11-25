@@ -22,7 +22,12 @@
 
 #pragma once
 
-class Pause{
-	
+#include <Core6/scene.hpp>
+#include <src/init.hpp>
+
+class Pause : public c6::Scene<ecsConfig>{
+	public:
+		Pause(c6::Application<ecsConfig>& application, c6::StateMachine& stateMachine);
+		void onNotify(const sf::Event& event) noexcept override;
 };
 

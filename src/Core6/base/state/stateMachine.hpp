@@ -22,15 +22,15 @@
 
 #pragma once
 
+#include <stack>
 #include "../listener/listener.hpp"
 #include "../listener/emitter.hpp"
-#include <stack>
-#include "stateEvent.hpp"
+#include <Core6/utils/functional.hpp>
 
 namespace c6{
 	class State;
 	
-	class StateMachine : public SimpleListener<StateEvent>, public Emitter<StateEvent>{
+	class StateMachine : public SimpleListener<Runnable>, public Emitter<Runnable>{
 		private:
 			std::stack<State*> pushDownAutomata;
 		public:

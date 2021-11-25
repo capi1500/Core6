@@ -20,12 +20,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Core6/utils/functional.hpp>
+#include <iostream>
 #include "stateMachine.hpp"
-#include "stateEvent.hpp"
 #include "state.hpp"
 
 namespace c6{
 	State* StateMachine::getCurrentState(){
+		//std::cout << "Event count: " << eventCount() << "\n";
 		processEvents();
 		if(pushDownAutomata.empty())
 			throw std::runtime_error("No active State in StateMachine");
@@ -33,56 +35,48 @@ namespace c6{
 	}
 	
 	void StateMachine::add(State* newState) noexcept{
-		notify(StateEvent::add(newState));
+		notify([this, newState]{
+			if(!pushDownAutomata.empty())
+				pushDownAutomata.top()->deactivate();
+			pushDownAutomata.push(newState);
+			pushDownAutomata.top()->activate();
+		});
 	}
 	
 	void StateMachine::pop(unsigned int count) noexcept{
-		notify(StateEvent::pop(count));
+		notify([this, count]{
+			if(pushDownAutomata.size() < count)
+				throw std::runtime_error("Cannot remove States from StateMachine: not enough states");
+			for(unsigned i = 0; i < count; i++){
+				delete pushDownAutomata.top();
+				pushDownAutomata.pop();
+			}
+			if(!pushDownAutomata.empty())
+				pushDownAutomata.top()->activate();
+		});
 	}
 	
 	void StateMachine::replace(State* newState) noexcept{
-		notify(StateEvent::replace(newState));
+		notify([this, newState]{
+			if(pushDownAutomata.empty())
+				throw std::runtime_error("Cannot replace States in StateMachine: StateMachine is empty");
+			delete pushDownAutomata.top();
+			pushDownAutomata.pop();
+			pushDownAutomata.push(newState);
+			pushDownAutomata.top()->activate();
+		});
 	}
 	
 	void StateMachine::clear() noexcept{
-		notify(StateEvent::clear());
+		notify([this]{
+			while(!pushDownAutomata.empty()){
+				delete pushDownAutomata.top();
+				pushDownAutomata.pop();
+			}
+		});
 	}
 	
-	StateMachine::StateMachine() noexcept : SimpleListener(
-			[this](const StateEvent& event){
-				switch(event.getType()){
-					case StateEvent::Add:
-						if(!pushDownAutomata.empty())
-							pushDownAutomata.top()->deactivate();
-						pushDownAutomata.push(event.getNewState());
-						pushDownAutomata.top()->activate();
-						break;
-					case StateEvent::Pop:
-						if(pushDownAutomata.size() < event.getRemoveCount())
-							throw std::runtime_error("Cannot remove States from StateMachine: not enough states");
-						for(unsigned i = 0; i < event.getRemoveCount(); i++){
-							delete pushDownAutomata.top();
-							pushDownAutomata.pop();
-						}
-						if(!pushDownAutomata.empty())
-							pushDownAutomata.top()->activate();
-						break;
-					case StateEvent::Replace:
-						if(pushDownAutomata.empty())
-							throw std::runtime_error("Cannot replace States in StateMachine: StateMachine is empty");
-						delete pushDownAutomata.top();
-						pushDownAutomata.pop();
-						pushDownAutomata.push(event.getNewState());
-						pushDownAutomata.top()->activate();
-						break;
-					case StateEvent::Clear:
-						while(!pushDownAutomata.empty()){
-							delete pushDownAutomata.top();
-							pushDownAutomata.pop();
-						}
-						break;
-				}
-			}){
+	StateMachine::StateMachine() noexcept : SimpleListener([](const Runnable& event){event();}){
 		addListener(this);
 	}
 	

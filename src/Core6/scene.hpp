@@ -110,7 +110,6 @@ namespace c6{
 					physicsConfig(physicsConfig),
 					physicWorld(physicsConfig.gravity),
 					widgetRoot(ecs.addWithHandle()){
-				Framework::getInputHandler()->addListener(this);
 				EntityBuilder<ecsConfig>(ecs, widgetRoot).template attach<Widget<ecsConfig>>(
 						widgetRoot,
 						new widgets::Frame(sf::FloatRect(0,
@@ -130,18 +129,21 @@ namespace c6{
 			}
 			
 			~Scene() override{
-				if(isActive())
-					Framework::getInputHandler()->removeListener(this);
+				deactivate();
 			}
 			
 			void activate() noexcept override{
-				Activable::activate();
-				Framework::getInputHandler()->addListener(this);
+				if(!isActive()){
+					Activable::activate();
+					Framework::getInputHandler()->addListener(this);
+				}
 			}
 			
 			void deactivate() noexcept override{
-				Activable::deactivate();
-				Framework::getInputHandler()->removeListener(this);
+				if(isActive()){
+					Activable::deactivate();
+					Framework::getInputHandler()->removeListener(this);
+				}
 			}
 			
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){

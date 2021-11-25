@@ -21,6 +21,7 @@
 */
 
 #include "mainMenu.hpp"
+#include "play.hpp"
 #include <Core6/application.hpp>
 #include <Core6/gui/graphics/image.hpp>
 #include <Core6/gui/systems/setWidgetParent.hpp>
@@ -33,7 +34,10 @@ MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachi
 	sf::Sprite sprite;
 	sprite.setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
 	image->setSprite(sprite);
-	auto* button = new c6::widgets::Button(image, []{std::cout << "Clicked\n";});
+	auto* button = new c6::widgets::Button(image, [this]{
+		std::cout << "Main Menu click\n";
+		getStateMachine().replace(new Play(getApplication(), getStateMachine()));
+	});
 	
 	auto h = getECS().addWithHandle();
 	auto& builder = c6::EntityBuilder<ecsConfig>(getECS(), h)
@@ -48,9 +52,4 @@ MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachi
 	transformable->move(50, 20);
 	
 	getECS().refresh();
-}
-
-void MainMenu::onNotify(const sf::Event& event) noexcept{
-	Scene::onNotify(event);
-	getECS().execute<const sf::Event&>(ecsEventHandler, event);
 }
