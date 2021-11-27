@@ -32,13 +32,13 @@ namespace c6{
 	}
 	namespace system{
 		template<concepts::Config Config>
-		auto Draw = System<Config, signature::Draw, sf::RenderTarget&, sf::RenderStates>(
-				[]([[maybe_unused]] EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename EntityComponentSystem<Config>::EntityId id, component::EntityState& entityState, component::Drawable& drawable, sf::RenderTarget& renderTarget, sf::RenderStates renderStates){
+		auto Draw = System<Config, signature::Draw, Renderer&, sf::RenderStates>(
+				[]([[maybe_unused]] EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename EntityComponentSystem<Config>::EntityId id, component::EntityState& entityState, component::Drawable& drawable, Renderer& renderer, sf::RenderStates renderStates){
 					if(entityState.visible){
 						// TODO: change below to support transformable component not merged with drawable component
 						//if(ecs.template hasComponent<component::Transformable>(id))
 						//	renderStates.transform.combine((ecs.template getComponent<component::Transformable>(id))->getTransform());
-						renderTarget.draw(*drawable, renderStates);
+						renderer.draw(*drawable, renderStates);
 					}
 				}
 		);

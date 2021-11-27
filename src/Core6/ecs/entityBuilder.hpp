@@ -46,6 +46,7 @@ namespace c6{
 		public:
 			EntityBuilder(ECS& ecs, EntityId id) noexcept : ecs(ecs), isHandle(false), id(std::move(id)) {}
 			EntityBuilder(ECS& ecs, Handle handle) noexcept : ecs(ecs), isHandle(true), handle(std::move(handle)) {}
+			explicit EntityBuilder(ECS& ecs) noexcept : EntityBuilder(ecs, ecs.addWithHandle()) {}
 			
 			// getters and setters
 			

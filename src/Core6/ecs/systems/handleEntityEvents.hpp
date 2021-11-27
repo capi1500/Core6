@@ -20,23 +20,22 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "image.hpp"
-#include <SFML/Graphics/RenderTarget.hpp>
+#pragma once
 
-namespace c6::widgets{
-	sf::FloatRect Image::getLocalBounds() const{
-		return sprite.getLocalBounds();
+#include "../components.hpp"
+
+namespace c6{
+	namespace signature{
+		using HandleEvents = Signature<component::EntityState, component::EventHandler>;
 	}
-	
-	void Image::draw(sf::RenderTarget& target, sf::RenderStates states) const{
-		target.draw(sprite, states);
-	}
-	
-	const sf::Sprite& Image::getSprite() const{
-		return sprite;
-	}
-	
-	void Image::setSprite(const sf::Sprite& sprite){
-		Image::sprite = sprite;
+	namespace system{
+		template<concepts::Config Config>
+		auto handleEvents = System<Config, signature::HandleEvents, const sf::Event&>(
+				[](component::EntityState& entityState, component::EventHandler& eventHandler, const sf::Event& event){
+					if(entityState.active){
+						eventHandler(event);
+					}
+				}
+		);
 	}
 }

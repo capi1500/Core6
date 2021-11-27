@@ -30,6 +30,8 @@
 namespace c6{
 	class WidgetLogic : public Listener<sf::Event>{
 		public:
+			virtual void update(const sf::Time& time) = 0;
+			
 			WidgetLogic();
 			virtual ~WidgetLogic();
 	};

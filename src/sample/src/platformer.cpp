@@ -20,12 +20,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <Core6/gui/graphics/primitive.hpp>
+#include <Core6/gui/systems/setWidgetParent.hpp>
 #include "platformer.hpp"
 #include "scenes/mainMenu.hpp"
 
 void Platformer::init(){
 	Application::init();
 	c6::Framework::getRenderer()->create(sf::VideoMode(600, 500), "Platformer");
+	
+	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb");
+	c6::Framework::getResourceManager()->loadFonts("../assets/fonts");
+	
 	getScenes().add(new MainMenu(*this, getScenes()));
 }
 
@@ -39,6 +45,38 @@ Platformer::Platformer() : c6::Application<ecsConfig>(c6::ConsoleBuilder()
 																	.useMessageType(c6::Message::Debug)
 																	.useMessageType(c6::Message::Error)
 																	.useMessageType(c6::Message::Info)
-																	.create()){
+																	.create()),
+						   textButtonFactory([](c6::EntityComponentSystem<ecsConfig>& ecs, c6::EntityComponentSystem<ecsConfig>::Handle& parent, const c6::Runnable& runnable, const std::string& label, const sf::Vector2f& position){
+							   auto* text = new c6::widgets::Primitive<sf::Text>();
+							   text->get().setFont(c6::Framework::getResourceManager()->getFont("../assets/fonts/Pixeled.ttf"));
+							   text->get().setString(label);
+							   text->get().setPosition(position.x - text->get().getLocalBounds().width / 2, position.y - text->get().getLocalBounds().height / 2);
+							
+							   auto* button = c6::widgets::ButtonBuilder()
+									   .setGraphics(text)
+									   .setOnReleased(runnable)
+									   .setOnHoverStart([text]{
+										   text->get().setFillColor(sf::Color(255, 127, 127));
+									   })
+									   .setOnHoverEnd([text]{
+										   text->get().setFillColor(sf::Color(255, 255, 255));
+									   })
+									   .setOnClicked([text]{
+										   text->get().setFillColor(sf::Color(127, 127, 127));
+									   })
+									   .buildPointer();
+							
+							   auto h = ecs.addWithHandle();
+							   auto& builder = c6::EntityBuilder<ecsConfig>(ecs, h)
+									   .attach<c6::Widget<ecsConfig>>(h, text, button)
+									   .attach<c6::component::Transformable>(std::make_shared<sf::Transformable>());
+							
+							   ecs.execute<typename c6::EntityComponentSystem<ecsConfig>::Handle&>(h, c6::system::SetWidgetParent<ecsConfig>, parent);
+							   return builder;
+						   }){
 	
+}
+
+const c6::Function<c6::EntityBuilder<ecsConfig>, c6::EntityComponentSystem<ecsConfig>&, c6::EntityComponentSystem<ecsConfig>::Handle&, const c6::Runnable&, const std::string&, const sf::Vector2f&>& Platformer::getTextButtonFactory() const{
+	return textButtonFactory;
 }

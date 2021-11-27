@@ -26,6 +26,8 @@
  * - Finish Job Pools
  * - Finish animations
  * - Finish widgets
+ * - Refactor whole ECS so it can used copy-swap idiom wherever possible AND allow for copy/move semantics in adding components
+ * - Add console logs wherever they should be
  */
 
 int main(){

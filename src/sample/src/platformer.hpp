@@ -27,8 +27,11 @@
 
 class Platformer : public c6::Application<ecsConfig>{
 	protected:
+		c6::Function<c6::EntityBuilder<ecsConfig>, c6::EntityComponentSystem<ecsConfig>&, c6::EntityComponentSystem<ecsConfig>::Handle&, const c6::Runnable&, const std::string&, const sf::Vector2f&> textButtonFactory;
+		
 		void init() override;
 	public:
+		const c6::Function<c6::EntityBuilder<ecsConfig>, c6::EntityComponentSystem<ecsConfig>&, c6::EntityComponentSystem<ecsConfig>::Handle&, const c6::Runnable&, const std::string&, const sf::Vector2f&>& getTextButtonFactory() const;
 		void close() override;
 		Platformer();
 };

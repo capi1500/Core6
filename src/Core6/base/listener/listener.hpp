@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <functional>
+#include <Core6/utils/functional.hpp>
 
 namespace c6{
 	/**
@@ -44,14 +44,13 @@ namespace c6{
 	template<class Event>
 	class SimpleListener : public Listener<Event>{
 		private:
-			using Function = std::function<void(const Event&)>;
-			const Function f_;
+			const Consumer<const Event&> f_;
 		public:
 			void onNotify(const Event& event) noexcept final{
 				f_(event);
 			}
 			
-			explicit SimpleListener(const Function& f) noexcept : f_(f) {}
-			explicit SimpleListener(Function&& f) noexcept : f_(std::move(f)) {}
+			explicit SimpleListener(const Consumer<const Event&>& f) noexcept : f_(f) {}
+			explicit SimpleListener(Consumer<const Event&>&& f) noexcept : f_(std::move(f)) {}
 	};
 }

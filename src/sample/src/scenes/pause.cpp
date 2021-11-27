@@ -20,22 +20,46 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include <src/platformer.hpp>
 #include "pause.hpp"
 #include "mainMenu.hpp"
 
 Pause::Pause(c6::Application<ecsConfig>& application, c6::StateMachine& stateMachine) : Scene(application, stateMachine){
-
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&stateMachine]{
+				stateMachine.pop();
+			},
+			"Resume",
+			sf::Vector2f(0, 0)
+	);
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&stateMachine, &application]{
+				stateMachine.pop(2);
+				stateMachine.add(new MainMenu(application, stateMachine));
+			},
+			"Main menu",
+			sf::Vector2f(0, 50)
+	);
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&application]{
+				application.close();
+			},
+			"Exit",
+			sf::Vector2f(0, 100)
+	);
+	getECS().refresh();
 }
 
 void Pause::onNotify(const sf::Event& event) noexcept{
 	Scene::onNotify(event);
 	if(event.type == sf::Event::KeyReleased){
-		std::cout << "Pause onNotify()\n";
 		if(event.key.code == sf::Keyboard::Escape)
 			getStateMachine().pop();
-		if(event.key.code == sf::Keyboard::Num1){
-			getStateMachine().pop(2);
-			getStateMachine().add(new MainMenu(getApplication(), getStateMachine()));
-		}
 	}
 }

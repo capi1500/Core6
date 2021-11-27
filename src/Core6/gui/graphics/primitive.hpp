@@ -22,18 +22,44 @@
 
 #pragma once
 
-#include <Core6/gui/widget.hpp>
-#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include "widgetGraphics.hpp"
 
 namespace c6::widgets{
-	class Image : public WidgetGraphics{
+	template<class T>
+	concept BoundedDrawable = requires(T t){
+		std::is_base_of_v<sf::Drawable, T>;
+		{t.getGlobalBounds()} -> std::same_as<sf::FloatRect>;
+	};
+	
+	template<BoundedDrawable T>
+	class Primitive : public WidgetGraphics{
 		private:
-			sf::Sprite sprite;
+			T t;
 		protected:
-			void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+			void draw(sf::RenderTarget& target, sf::RenderStates states) const override{
+				target.draw(t, states);
+			}
 		public:
-			sf::FloatRect getLocalBounds() const override;
-			const sf::Sprite& getSprite() const;
-			void setSprite(const sf::Sprite& sprite);
+			sf::FloatRect getLocalBounds() const override{
+				return t.getGlobalBounds();
+			}
+			
+			T& get(){
+				return t;
+			}
+			
+			const T& get() const{
+				return t;
+			}
+			
+			void set(T copy){
+				t = std::move(copy);
+			}
+			
+			void set(T&& move){
+				t = std::forward<T&&>(move);
+			}
 	};
 }

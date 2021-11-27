@@ -31,4 +31,4 @@
 
 using EcsEventHandlerSig = c6::Signature<c6::Consumer<const sf::Event&>>;
 
-//extern c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler;
+extern c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler;

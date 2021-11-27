@@ -29,11 +29,11 @@
 
 namespace c6::system{
 	template<concepts::Config Config>
-	auto DrawWidget = System<Config, Signature<component::EntityState, Widget<Config>>, sf::RenderTarget&, sf::RenderStates>(
-			[](component::EntityState& entityState, Widget<Config>& widget, sf::RenderTarget& renderTarget, sf::RenderStates renderStates){
+	auto DrawWidget = System<Config, Signature<component::EntityState, Widget<Config>>, Renderer&, sf::RenderStates>(
+			[](component::EntityState& entityState, Widget<Config>& widget, Renderer& renderer, sf::RenderStates renderStates){
 				if(widget.hasGraphics() && entityState.visible){
 					renderStates.transform.combine(widget.getGraphics().getGlobalTransform());
-					renderTarget.draw(widget.getGraphics(), renderStates);
+					renderer.draw(widget.getGraphics(), renderStates);
 				}
 			}
 	);

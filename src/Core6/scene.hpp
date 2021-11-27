@@ -41,6 +41,9 @@
 #include <Core6/ecs/systems/syncPhysicsWithGraphics.hpp>
 #include <Core6/gui/systems/updateWidgetTree.hpp>
 #include <Core6/gui/systems/drawWidget.hpp>
+#include <Core6/ecs/systems/updateEntity.hpp>
+#include <Core6/ecs/systems/handleEntityEvents.hpp>
+#include <Core6/gui/systems/updateWidget.hpp>
 
 namespace c6{
 	template<concepts::Config ecsConfig>
@@ -53,6 +56,8 @@ namespace c6{
 			
 			Application<ecsConfig>& application;
 			EntityComponentSystem<ecsConfig> ecs;
+			
+			sf::View view;
 			
 			bool usesPhysics;
 			PhysicsConfig physicsConfig;
@@ -120,12 +125,23 @@ namespace c6{
 					    ),
 						nullptr
 			    );
+				Framework::getInputHandler()->addListener(new SimpleListener<sf::Event>([this](const sf::Event& event){
+					if(event.type == sf::Event::Resized){
+						sf::Vector2f centre = view.getCenter();
+						view.setSize(event.size.width, event.size.height);
+						view.setCenter(centre);
+						Framework::getRenderer()->setView(view);
+					}
+				}));
 				ecs.refresh();
 			}
 			
 			Scene(Application<ecsConfig>& application, StateMachine& stateMachine) noexcept :
 					Scene(application, stateMachine, PhysicsConfig(0, b2Vec2_zero, 0, 0)){
 				usesPhysics = false;
+				view = Framework::getRenderer()->getDefaultView();
+				view.setCenter(0, 0);
+				Framework::getRenderer()->setView(view);
 			}
 			
 			~Scene() override{
@@ -146,12 +162,14 @@ namespace c6{
 				}
 			}
 			
-			virtual void draw(sf::RenderTarget& target, sf::RenderStates states){
-				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::Draw<ecsConfig>, target, states);
-				ecs.template execute<sf::RenderTarget&, sf::RenderStates>(system::DrawWidget<ecsConfig>, target, states);
+			virtual void draw(Renderer& target, sf::RenderStates states){
+				ecs.template execute<Renderer&, sf::RenderStates>(system::Draw<ecsConfig>, target, states);
+				ecs.template execute<Renderer&, sf::RenderStates>(system::DrawWidget<ecsConfig>, target, states);
 			}
 			
 			virtual void update(const sf::Time& time){
+				ecs.template execute<const sf::Time&>(system::updateWidget<ecsConfig>, time);
+				ecs.template execute<const sf::Time&>(system::updateEntity<ecsConfig>, time);
 				if(usesPhysics){
 					physicWorld.Step(time.asSeconds(), physicsConfig.velocityIterations, physicsConfig.positionIterations);
 					ecs.template execute<const PhysicsConfig&>(system::syncPhysicsWithGraphics<ecsConfig>, physicsConfig);
@@ -163,6 +181,7 @@ namespace c6{
 				if(event.type == sf::Event::Resized){
 					dynamic_cast<widgets::Frame&>(ecs.template getComponent<Widget<ecsConfig>>(widgetRoot).getGraphics()).setRect({0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height)});
 				}
+				ecs.template execute<const sf::Event&>(system::handleEvents<ecsConfig>, event);
 			}
 	};
 }

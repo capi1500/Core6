@@ -40,6 +40,8 @@ namespace c6{
 			                                        component::Drawable,
 			                                        component::Transformable,
 			                                        component::Physic,
+													component::Updater,
+													component::EventHandler,
 													Widget<ThisType>>;
 		public:
 			using ComponentList = MPL::Concat<TComponentList, DefaultComponents>;

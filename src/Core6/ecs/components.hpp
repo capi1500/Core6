@@ -22,13 +22,15 @@
 
 #pragma once
 
-#include <MPL/MPL.hpp>
+#include <memory>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Window/Event.hpp>
 #include <box2d/b2_body.h>
-#include <memory>
+#include <MPL/MPL.hpp>
 #include "components/entityState.hpp"
 #include "concepts.hpp"
+#include <Core6/utils/functional.hpp>
 
 namespace c6{
 	template<class... Ts> using Signature = MPL::TypeList<Ts...>;
@@ -39,6 +41,8 @@ namespace c6{
 		using Drawable = std::shared_ptr<sf::Drawable>;
 		using Transformable = std::shared_ptr<sf::Transformable>;
 		using Physic = std::shared_ptr<b2Body>;
+		using Updater = Consumer<const sf::Time&>;
+		using EventHandler = Consumer<const sf::Event&>;
 	}
 	template<class ecsConfig>
 	class Widget;

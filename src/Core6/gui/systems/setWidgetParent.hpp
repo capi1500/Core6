@@ -30,7 +30,7 @@
 namespace c6::system{
 	template<concepts::Config Config>
 	auto SetWidgetParent = System<Config, Signature<Widget<Config>>, typename c6::EntityComponentSystem<Config>::Handle&>(
-			[](c6::EntityComponentSystem<Config>& ecs, typename c6::EntityComponentSystem<Config>::EntityId id, Widget<Config>& widget, typename c6::EntityComponentSystem<Config>::Handle& handle){
+			[](c6::EntityComponentSystem<Config>& ecs, [[maybe_unused]] typename c6::EntityComponentSystem<Config>::EntityId id, Widget<Config>& widget, typename c6::EntityComponentSystem<Config>::Handle& handle){
 				if(ecs.template hasComponent<Widget<Config>>(handle)){
 					Widget<Config>& parent = ecs.template getComponent<Widget<Config>>(handle);
 					

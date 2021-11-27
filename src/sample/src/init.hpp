@@ -26,7 +26,7 @@
 #include <SFML/Graphics.hpp>
 #include <Core6/utils/functional.hpp>
 
-using Components = c6::ComponentList<c6::Consumer<const sf::Event&>>;
+using Components = c6::ComponentList<>;
 using Tags = c6::TagList<>;
 
 using ecsConfig = c6::Config<Components, Tags>;

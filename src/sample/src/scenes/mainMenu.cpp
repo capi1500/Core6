@@ -23,33 +23,27 @@
 #include "mainMenu.hpp"
 #include "play.hpp"
 #include <Core6/application.hpp>
-#include <Core6/gui/graphics/image.hpp>
-#include <Core6/gui/systems/setWidgetParent.hpp>
+#include <src/platformer.hpp>
 
 MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Scene(app, stateMachine){
-	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb");
-	c6::Framework::getResourceManager()->loadFonts("../assets/fonts");
-	
-	auto* image = new c6::widgets::Image();
-	sf::Sprite sprite;
-	sprite.setTexture(c6::Framework::getResourceManager()->getTexture("../assets/textures/rgb/red.png"));
-	image->setSprite(sprite);
-	auto* button = new c6::widgets::Button(image, [this]{
-		std::cout << "Main Menu click\n";
-		getStateMachine().replace(new Play(getApplication(), getStateMachine()));
-	});
-	
-	auto h = getECS().addWithHandle();
-	auto& builder = c6::EntityBuilder<ecsConfig>(getECS(), h)
-	        .attach<c6::Widget<ecsConfig>>(h, image, button)
-			.attach<c6::component::Transformable>(std::make_shared<sf::Transformable>());
-	
-	auto& widget = builder.get<c6::Widget<ecsConfig>>();
-	
-	getECS().execute<typename c6::EntityComponentSystem<ecsConfig>::Handle&>(h, c6::system::SetWidgetParent<ecsConfig>, getWidgetRoot());
-	
-	auto& transformable = builder.get<c6::component::Transformable>();
-	transformable->move(50, 20);
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&stateMachine, &app]{
+				stateMachine.replace(new Play(app, stateMachine));
+			},
+			"Play",
+			sf::Vector2f(0, 0)
+	);
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&app]{
+				app.close();
+			},
+			"Exit",
+			sf::Vector2f(0, 50)
+	);
 	
 	getECS().refresh();
 }

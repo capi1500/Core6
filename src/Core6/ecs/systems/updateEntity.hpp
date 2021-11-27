@@ -19,8 +19,23 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
+
 #pragma once
 
+#include "../components.hpp"
+
 namespace c6{
-	class Empty{};
+	namespace signature{
+		using UpdateEntity = Signature<component::EntityState, component::Updater>;
+	}
+	namespace system{
+		template<concepts::Config Config>
+		auto updateEntity = System<Config, signature::UpdateEntity, const sf::Time&>(
+				[](component::EntityState& entityState, component::Updater& updater, const sf::Time& time){
+					if(entityState.active){
+						updater(time);
+					}
+				}
+		);
+	}
 }

@@ -30,7 +30,6 @@
 #include "config.hpp"
 #include "system.hpp"
 #include "componentManager.hpp"
-#include "entityFactory.hpp"
 
 namespace c6{
 	template<concepts::Config Config>
@@ -128,21 +127,6 @@ namespace c6{
 				EntityId id = ShuffledList::add();
 				addComponent<component::EntityState>(id);
 				return id;
-			}
-			
-			template<class... Args>
-			EntityId addFromFactory(const EntityFactory<Config, Args...>& factory, Args&&... args){
-				EntityId id = add();
-				factory.spawn(*this, id, std::forward<Args>(args)...);
-				return id;
-			}
-			
-			template<class... Args>
-			[[nodiscard]]
-			Handle addWithHandleFromFactory(const EntityFactory<Config, Args...>& factory, Args&&... args){
-				Handle handle = this->addWithHandle();
-				factory.spawn(*this, ShuffledList::getItemId(handle), std::forward<Args>(args)...);
-				return handle;
 			}
 		
 			template<concepts::Tag<Config> T>

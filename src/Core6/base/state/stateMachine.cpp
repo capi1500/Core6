@@ -21,13 +21,11 @@
 */
 
 #include <Core6/utils/functional.hpp>
-#include <iostream>
 #include "stateMachine.hpp"
 #include "state.hpp"
 
 namespace c6{
 	State* StateMachine::getCurrentState(){
-		//std::cout << "Event count: " << eventCount() << "\n";
 		processEvents();
 		if(pushDownAutomata.empty())
 			throw std::runtime_error("No active State in StateMachine");

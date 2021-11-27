@@ -22,40 +22,17 @@
 
 #pragma once
 
-#include "config.hpp"
+#include <Core6/ecs/config.hpp>
+#include <Core6/ecs/system.hpp>
+#include "../widget.hpp"
 
-namespace c6{
+namespace c6::system{
 	template<concepts::Config Config>
-	class EntityComponentSystem;
-	
-	template<concepts::Config Config, class... Args>
-	class EntityFactory{
-			using ECS = EntityComponentSystem<Config>;
-		public:
-			using EntityId = typename ECS::EntityId;
-		protected:
-			virtual void spawn(ECS& entityManager, EntityId id, Args&&... args) const = 0;
-			
-			friend class EntityComponentSystem<Config>;
-	};
-	
-	template<concepts::Config Config, class... Args>
-	class EntityFactoryInline : public EntityFactory<Config, Args...>{
-			using ECS = EntityComponentSystem<Config>;
-		public:
-			using EntityId = typename ECS::EntityId;
-		private:
-			using Function = std::function<void(ECS&, EntityId, Args&&...)>;
-			
-			Function function;
-		protected:
-			void spawn(ECS& entityManager, EntityId id, Args&&... args) const final{
-				function(entityManager, id, std::forward<Args>(args)...);
+	auto updateWidget = System<Config, Signature<component::EntityState, Widget<Config>>, const sf::Time&>(
+			[](component::EntityState& entityState, Widget<Config>& widget, const sf::Time& time){
+				if(widget.hasLogic() && entityState.active){
+					widget.getLogic().update(time);
+				}
 			}
-			
-			friend class EntityComponentSystem<Config>;
-		public:
-			explicit EntityFactoryInline(const Function& function) : function(function){}
-	};
+	);
 }
-

@@ -21,9 +21,9 @@
 */
 
 #include "ecsEventHandler.hpp"
-/*
+
 c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler(
 		[](c6::Consumer<const sf::Event&>& consumer, const sf::Event& event){
 			consumer(event);
 		}
-);*/
+);

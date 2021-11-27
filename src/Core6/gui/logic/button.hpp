@@ -26,9 +26,40 @@
 namespace c6::widgets{
 	class Button : public WidgetLogic{
 		private:
+			Runnable onClicked;
+			Runnable onReleased;
+			Runnable onHoverStart;
+			Runnable onHoverEnd;
+			
+			bool clicked = false;
+			
 			Consumer<const sf::Event&> callback;
+			Consumer<const sf::Time&> updater;
 		public:
-			Button(WidgetGraphics* graphics, const Runnable& runnable);
+			Button(WidgetGraphics* graphics, const Runnable& onClicked, const Runnable& onReleased, const Runnable& onHoverStart, const Runnable& onHoverEnd);
 			void onNotify(const sf::Event& event) noexcept override;
+			void setOnHoverStart(const Runnable& onHoverStart);
+			void setOnHoverEnd(const Runnable& onHoverEnd);
+			void setOnClicked(const Runnable& onClicked);
+			void setOnReleased(const Runnable& onReleased);
+			void update(const sf::Time& time) override;
+	};
+	
+	class ButtonBuilder{
+		private:
+			WidgetGraphics* graphics;
+			Runnable onHoverStart;
+			Runnable onHoverEnd;
+			Runnable onClicked;
+			Runnable onReleased;
+		public:
+			ButtonBuilder& setGraphics(WidgetGraphics* graphics);
+			ButtonBuilder& setOnHoverStart(const Runnable& onHoverStart);
+			ButtonBuilder& setOnHoverEnd(const Runnable& onHoverEnd);
+			ButtonBuilder& setOnClicked(const Runnable& onClicked);
+			ButtonBuilder& setOnReleased(const Runnable& onReleased);
+			
+			Button build();
+			Button* buildPointer();
 	};
 }
