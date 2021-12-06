@@ -23,7 +23,7 @@
 #pragma once
 
 #include <Core6/scene.hpp>
-#include <Core6/tileset/isometricGrid.hpp>
+#include <Core6/grid/isometricGrid.hpp>
 #include <src/cube/cube.hpp>
 #include <src/world/world.hpp>
 #include "../init.hpp"

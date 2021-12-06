@@ -24,7 +24,7 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector3.hpp>
-#include <Core6/tileset/isometricGrid.hpp>
+#include <Core6/grid/isometricGrid.hpp>
 #include <src/utils/rotation.hpp>
 #include <src/cube/cube.hpp>
 
