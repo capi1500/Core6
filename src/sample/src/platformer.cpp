@@ -23,16 +23,16 @@
 #include <Core6/gui/graphics/primitive.hpp>
 #include <Core6/gui/systems/setWidgetParent.hpp>
 #include "platformer.hpp"
-#include "scenes/mainMenu.hpp"
+#include "scenes/play.hpp"
 
 void Platformer::init(){
 	Application::init();
 	c6::Framework::getRenderer()->create(sf::VideoMode(600, 500), "Platformer");
 	
-	c6::Framework::getResourceManager()->loadTextures("../assets/textures/rgb");
+	c6::Framework::getResourceManager()->loadTextures("../assets/textures/cubes/PNG/Voxel tiles");
 	c6::Framework::getResourceManager()->loadFonts("../assets/fonts");
 	
-	getScenes().add(new MainMenu(*this, getScenes()));
+	getScenes().add(new Play(*this, getScenes()));
 }
 
 void Platformer::close(){

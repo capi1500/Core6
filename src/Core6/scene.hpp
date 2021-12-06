@@ -44,13 +44,14 @@
 #include <Core6/ecs/systems/updateEntity.hpp>
 #include <Core6/ecs/systems/handleEntityEvents.hpp>
 #include <Core6/gui/systems/updateWidget.hpp>
+#include <Core6/base/updatable.hpp>
 
 namespace c6{
 	template<concepts::Config ecsConfig>
 	class Application;
 	
 	template<concepts::Config ecsConfig>
-	class Scene : public State, public Listener<sf::Event>{
+	class Scene : public State, public Listener<sf::Event>, public Updatable{
 		private:
 			using Handle = typename EntityComponentSystem<ecsConfig>::Handle;
 			
@@ -107,6 +108,14 @@ namespace c6{
 			Handle& getWidgetRoot(){
 				return widgetRoot;
 			}
+		
+			const sf::View& getView() const{
+				return view;
+			}
+			
+			sf::View& getView(){
+				return view;
+			}
 		public:
 			Scene(Application<ecsConfig>& application, StateMachine& stateMachine, PhysicsConfig physicsConfig) noexcept :
 					State(stateMachine),
@@ -134,14 +143,14 @@ namespace c6{
 					}
 				}));
 				ecs.refresh();
+				view = Framework::getRenderer()->getDefaultView();
+				view.setSize(Framework::getRenderer()->getSize().x, Framework::getRenderer()->getSize().y);
+				view.setCenter(0, 0);
 			}
 			
 			Scene(Application<ecsConfig>& application, StateMachine& stateMachine) noexcept :
 					Scene(application, stateMachine, PhysicsConfig(0, b2Vec2_zero, 0, 0)){
 				usesPhysics = false;
-				view = Framework::getRenderer()->getDefaultView();
-				view.setCenter(0, 0);
-				Framework::getRenderer()->setView(view);
 			}
 			
 			~Scene() override{
@@ -152,6 +161,7 @@ namespace c6{
 				if(!isActive()){
 					Activable::activate();
 					Framework::getInputHandler()->addListener(this);
+					Framework::getRenderer()->setView(view);
 				}
 			}
 			
@@ -167,7 +177,7 @@ namespace c6{
 				ecs.template execute<Renderer&, sf::RenderStates>(system::DrawWidget<ecsConfig>, target, states);
 			}
 			
-			virtual void update(const sf::Time& time){
+			void update(const sf::Time& time) override{
 				ecs.template execute<const sf::Time&>(system::updateWidget<ecsConfig>, time);
 				ecs.template execute<const sf::Time&>(system::updateEntity<ecsConfig>, time);
 				if(usesPhysics){

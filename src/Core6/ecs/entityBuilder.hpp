@@ -190,5 +190,11 @@ namespace c6{
 			This& attach(const Function<Component, Args&...>& provider){
 				return attach<Component>(std::make_shared<Component>(provider(get<Args>()...)));
 			}
+			
+			template<class Component, class... Args>
+			requires std::is_base_of_v<sf::Drawable, Component>
+			This& attach(const Function<std::shared_ptr<Component>, Args&...>& provider){
+				return attach<Component>(provider(get<Args>()...));
+			}
 	};
 }

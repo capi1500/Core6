@@ -23,11 +23,19 @@
 #pragma once
 
 #include <Core6/scene.hpp>
+#include <Core6/tileset/isometricGrid.hpp>
+#include <src/cube/cube.hpp>
+#include <src/world/world.hpp>
 #include "../init.hpp"
 
 class Play : public c6::Scene<ecsConfig>{
+	private:
+		World world;
 	public:
 		Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
+		
+		void draw(c6::Renderer& target, sf::RenderStates states) override;
+		void update(const sf::Time& time) override;
 		void onNotify(const sf::Event& event) noexcept override;
 };
 
