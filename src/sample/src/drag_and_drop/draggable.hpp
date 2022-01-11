@@ -20,10 +20,19 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "ecsEventHandler.hpp"
+#pragma once
 
-c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler(
-		[](c6::Consumer<const sf::Event&>& consumer, const sf::Event& event){
-			consumer(event);
-		}
-);
+#include <SFML/System/Vector2.hpp>
+#include <Core6/utils/functional.hpp>
+#include <SFML/Window/Event.hpp>
+
+class Draggable{
+	public:
+		static bool anyDragged;
+		
+		bool dragged;
+		sf::Vector2f position;
+		sf::Vector2f relative;
+		c6::Function<bool, const sf::Event&> shouldDrag;
+		c6::Function<bool, const sf::Event&> shouldEndDrag;
+};

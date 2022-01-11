@@ -23,19 +23,12 @@
 #pragma once
 
 #include <Core6/scene.hpp>
-#include <Core6/grid/isometricGrid.hpp>
-#include <src/cube/cube.hpp>
-#include <src/world/world.hpp>
-#include "../init.hpp"
+#include <src/init.hpp>
 
-class Play : public c6::Scene<ecsConfig>{
-	private:
-		World world;
+class DragAndDropTest : public c6::Scene<ecsConfig>{
 	public:
-		Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
-		
-		void draw(c6::Renderer& target, sf::RenderStates states) override;
-		void update(const sf::Time& time) override;
+		DragAndDropTest(c6::Application<ecsConfig>& application, c6::StateMachine& stateMachine);
 		void onNotify(const sf::Event& event) noexcept override;
+		void update(const sf::Time& time) override;
+	
 };
-

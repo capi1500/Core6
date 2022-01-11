@@ -19,16 +19,28 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
 */
-
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <Core6/ecs/entityComponentSystem.hpp>
-#include <Core6/ecs/config.hpp>
+#include <SFML/Graphics/Transform.hpp>
 #include <Core6/utils/functional.hpp>
-#include <src/drag_and_drop/draggable.hpp>
+#include "grid.hpp"
 
-using Components = c6::ComponentList<Draggable>;
-using Tags = c6::TagList<>;
-
-using ecsConfig = c6::Config<Components, Tags>;
+namespace c6{
+	class OrtographicGrid : public Grid{
+		private:
+			sf::Vector2f origin;
+			sf::Transform transform;
+			float angle;
+		public:
+			OrtographicGrid() = default;
+			OrtographicGrid(const sf::Vector2f& origin, const sf::Vector2f& ihat, const sf::Vector2f& jhat);
+			explicit OrtographicGrid(const sf::Vector2f& size);
+			
+			[[nodiscard]] sf::Vector2i mapPointToCoordinate(const sf::Vector2f& point) const override;
+			[[nodiscard]] sf::Vector2f mapCoordinateToPoint(const sf::Vector2i& coordinate) const override;
+			
+			[[nodiscard]] sf::Vector2f getSize() const;
+			const sf::Vector2f& getOrigin() const;
+			float getAngle() const;
+	};
+}

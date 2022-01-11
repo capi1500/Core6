@@ -21,7 +21,8 @@
 */
 
 #include "mainMenu.hpp"
-#include "play.hpp"
+#include "sample/src/voxels/IsometricVoxels.hpp"
+#include "dragAndDropTest.hpp"
 #include <Core6/application.hpp>
 #include <src/platformer.hpp>
 
@@ -30,10 +31,19 @@ MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachi
 			getECS(),
 			getWidgetRoot(),
 			[&stateMachine, &app]{
-				stateMachine.replace(new Play(app, stateMachine));
+				stateMachine.replace(new IsometricVoxels(app, stateMachine));
 			},
-			"Play",
+			"Isometric Voxels",
 			sf::Vector2f(0, 0)
+	);
+	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
+			getECS(),
+			getWidgetRoot(),
+			[&stateMachine, &app]{
+				stateMachine.replace(new DragAndDropTest(app, stateMachine));
+			},
+			"Drag and Drop",
+			sf::Vector2f(0, 50)
 	);
 	dynamic_cast<Platformer&>(getApplication()).getTextButtonFactory()(
 			getECS(),
@@ -42,7 +52,7 @@ MainMenu::MainMenu(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachi
 				app.close();
 			},
 			"Exit",
-			sf::Vector2f(0, 50)
+			sf::Vector2f(0, 100)
 	);
 	
 	getECS().refresh();

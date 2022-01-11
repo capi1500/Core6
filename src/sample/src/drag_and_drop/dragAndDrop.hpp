@@ -22,13 +22,8 @@
 
 #pragma once
 
-#include <Core6/ecs/components.hpp>
-#include <Core6/utils/functional.hpp>
-#include <SFML/Window/Event.hpp>
 #include <Core6/ecs/system.hpp>
-#include <Core6/ecs/entityComponentSystem.hpp>
 #include <src/init.hpp>
 
-using EcsEventHandlerSig = c6::Signature<c6::Consumer<const sf::Event&>>;
-
-extern c6::System<ecsConfig, EcsEventHandlerSig, const sf::Event&> ecsEventHandler;
+extern c6::System<ecsConfig, c6::Signature<Draggable, c6::component::Transformable>> drag;
+extern c6::System<ecsConfig, c6::Signature<c6::component::EntityState, Draggable, c6::component::Transformable>, const sf::Event&> isDragged;

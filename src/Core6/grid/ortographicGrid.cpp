@@ -21,33 +21,42 @@
 */
 
 #include <cmath>
-#include "isometricGrid.hpp"
+#include "ortographicGrid.hpp"
 
 namespace c6{
-	IsometricGrid::IsometricGrid(const sf::Vector2f& origin, const sf::Vector2f& ihat, const sf::Vector2f& jhat) :
+	OrtographicGrid::OrtographicGrid(const sf::Vector2f& origin, const sf::Vector2f& ihat, const sf::Vector2f& jhat) :
 			origin(origin),
 			transform(ihat.x, jhat.x, 0,
 					  ihat.y, jhat.y, 0,
-					  0, 0, 1){}
+					  0, 0, 1),
+		    angle(std::acos(
+					(ihat.x * jhat.x + ihat.x * jhat.x) /
+				       (std::sqrt(ihat.x * ihat.x + ihat.y * ihat.y) * std::sqrt(jhat.x * jhat.x + jhat.y * jhat.y))
+			     )
+		    ){}
 	
-	IsometricGrid::IsometricGrid(const sf::Vector2f& size) : IsometricGrid({size.x / 2, 0}, {-size.x / 2, size.y / 2}, {size.x / 2, size.y / 2}){}
+	OrtographicGrid::OrtographicGrid(const sf::Vector2f& size) : OrtographicGrid({size.x / 2, 0}, {-size.x / 2, size.y / 2}, {size.x / 2, size.y / 2}){}
 	
-	sf::Vector2i IsometricGrid::mapPointToCoordinate(const sf::Vector2f& point) const{
+	sf::Vector2i OrtographicGrid::mapPointToCoordinate(const sf::Vector2f& point) const{
 		sf::Vector2f tmp = transform.getInverse().transformPoint(point - origin);
 		return sf::Vector2i(std::floor(tmp.x), std::floor(tmp.y));
 	}
 	
-	sf::Vector2f IsometricGrid::mapCoordinateToPoint(const sf::Vector2i& coordinate) const{
+	sf::Vector2f OrtographicGrid::mapCoordinateToPoint(const sf::Vector2i& coordinate) const{
 		return transform.transformPoint(coordinate.x, coordinate.y) + origin;
 	}
 	
-	sf::Vector2f IsometricGrid::getSize() const{
+	sf::Vector2f OrtographicGrid::getSize() const{
 		sf::Vector2f ihat = mapCoordinateToPoint({1, 0});
 		sf::Vector2f jhat = mapCoordinateToPoint({0, 1});
 		return {std::abs(ihat.x) + std::abs(jhat.x), std::abs(ihat.y) + std::abs(jhat.y)};
 	}
 	
-	const sf::Vector2f& IsometricGrid::getOrigin() const{
+	const sf::Vector2f& OrtographicGrid::getOrigin() const{
 		return origin;
+	}
+	
+	float OrtographicGrid::getAngle() const{
+		return angle;
 	}
 }

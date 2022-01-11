@@ -23,7 +23,7 @@
 #include <Core6/gui/graphics/primitive.hpp>
 #include <Core6/gui/systems/setWidgetParent.hpp>
 #include "platformer.hpp"
-#include "scenes/play.hpp"
+#include "scenes/mainMenu.hpp"
 
 void Platformer::init(){
 	Application::init();
@@ -32,7 +32,7 @@ void Platformer::init(){
 	c6::Framework::getResourceManager()->loadTextures("../assets/textures/cubes/PNG/Voxel tiles");
 	c6::Framework::getResourceManager()->loadFonts("../assets/fonts");
 	
-	getScenes().add(new Play(*this, getScenes()));
+	getScenes().add(new MainMenu(*this, getScenes()));
 }
 
 void Platformer::close(){

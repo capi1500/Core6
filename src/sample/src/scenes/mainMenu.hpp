@@ -24,7 +24,6 @@
 
 #include <src/init.hpp>
 #include <Core6/scene.hpp>
-#include <src/systems/ecsEventHandler.hpp>
 
 class MainMenu : public c6::Scene<ecsConfig>{
 	public:

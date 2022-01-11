@@ -24,13 +24,13 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector3.hpp>
-#include <Core6/grid/isometricGrid.hpp>
+#include <Core6/grid/ortographicGrid.hpp>
 #include <src/utils/rotation.hpp>
-#include <src/cube/cube.hpp>
+#include <sample/src/voxels/cube/cube.hpp>
 
 class Chunk : public sf::Drawable{
 	public:
-		static const c6::IsometricGrid grid;
+		static const c6::OrtographicGrid grid;
 		static const sf::Vector2f shift;
 		static sf::Vector2f mapCubeToPoint(const sf::Vector3i& coord, const Rotation& rotation);
 		static sf::Vector2f mapCubeToPoint(int x, int y, int z, const Rotation& rotation);

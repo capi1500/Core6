@@ -22,9 +22,9 @@
 
 #include "chunk.hpp"
 
-c6::IsometricGrid const Chunk::grid = {{  0,  0},
-									     {-55, 32},
-                                         { 55, 32}};
+c6::OrtographicGrid const Chunk::grid = {{0,   0},
+                                         {-55, 32},
+                                         {55,  32}};
 sf::Vector2f const Chunk::shift = {-15 * 55, -15 * 64};
 
 Chunk::Chunk(){

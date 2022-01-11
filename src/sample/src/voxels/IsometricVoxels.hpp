@@ -22,13 +22,20 @@
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <Core6/ecs/entityComponentSystem.hpp>
-#include <Core6/ecs/config.hpp>
-#include <Core6/utils/functional.hpp>
-#include <src/drag_and_drop/draggable.hpp>
+#include <Core6/scene.hpp>
+#include <Core6/grid/ortographicGrid.hpp>
+#include "cube/cube.hpp"
+#include "world/world.hpp"
+#include "sample/src/init.hpp"
 
-using Components = c6::ComponentList<Draggable>;
-using Tags = c6::TagList<>;
+class IsometricVoxels : public c6::Scene<ecsConfig>{
+	private:
+		World world;
+	public:
+		IsometricVoxels(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine);
+		
+		void draw(c6::Renderer& target, sf::RenderStates states) override;
+		void update(const sf::Time& time) override;
+		void onNotify(const sf::Event& event) noexcept override;
+};
 
-using ecsConfig = c6::Config<Components, Tags>;

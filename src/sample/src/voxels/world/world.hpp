@@ -30,7 +30,7 @@
 #include <Core6/base/listener/listener.hpp>
 #include <Core6/base/updatable.hpp>
 #include "sample/src/utils/util.hpp"
-#include "../utils/rotation.hpp"
+#include "sample/src/utils/rotation.hpp"
 #include "chunk.hpp"
 
 class World : public sf::Drawable, public c6::Listener<sf::Event>, public c6::Updatable{

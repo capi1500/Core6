@@ -20,12 +20,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <src/systems/ecsEventHandler.hpp>
-#include "play.hpp"
-#include "pause.hpp"
-#include "../world/world.hpp"
+#include "IsometricVoxels.hpp"
+#include "../scenes/pause.hpp"
 
-Play::Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Scene(
+IsometricVoxels::IsometricVoxels(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Scene(
 		app,
 		stateMachine,
 		c6::PhysicsConfig(1, b2Vec2(0, -9.81), 9, 15)){
@@ -38,7 +36,7 @@ Play::Play(c6::Application<ecsConfig>& app, c6::StateMachine& stateMachine) : Sc
 	c6::Framework::getRenderer()->setView(getView());
 }
 
-void Play::onNotify(const sf::Event& event) noexcept{
+void IsometricVoxels::onNotify(const sf::Event& event) noexcept{
 	Scene::onNotify(event);
 	if(event.type == sf::Event::KeyReleased){
 		if(event.key.code == sf::Keyboard::Escape)
@@ -47,12 +45,12 @@ void Play::onNotify(const sf::Event& event) noexcept{
 	world.onNotify(event);
 }
 
-void Play::draw(c6::Renderer& target, sf::RenderStates states){
+void IsometricVoxels::draw(c6::Renderer& target, sf::RenderStates states){
 	target.draw(world, states);
 	Scene::draw(target, states);
 }
 
-void Play::update(const sf::Time& time){
+void IsometricVoxels::update(const sf::Time& time){
 	Scene::update(time);
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
 		getView().move(0, -1000 * time.asSeconds());
